@@ -1,0 +1,113 @@
+<template>
+  <!-- Error page-->
+  <div class="misc-wrapper">
+    <b-link class="brand-logo">
+      <vuexy-logo />
+      <h2 class="brand-text text-primary ml-1">
+        Vuexy
+      </h2>
+    </b-link>
+
+    <div class="misc-inner p-2 p-sm-3">
+      <div class="w-100 text-center">
+        <h2 class="mb-1">
+          Page Not Found 🕵🏻‍♀️
+        </h2>
+        <p class="mb-2">
+          Oops! 😖 The requested URL was not found on this server.
+        </p>
+
+        <b-button
+          variant="primary"
+          class="mb-1 btn-sm-block"
+          @click="gotoDefault()"
+        >Go to Home</b-button>
+        &nbsp;
+        <b-button
+          variant="primary"
+          class="mb-1 btn-sm-block"
+          @click="loginRoute()"
+        >Go to Login</b-button>
+
+        <!-- image -->
+        <b-img
+          fluid
+          :src="imgUrl"
+          alt="Error page"
+        />
+      </div>
+    </div>
+  </div>
+<!-- / Error page-->
+</template>
+
+<script>
+/* eslint-disable global-require */
+import { BLink, BButton, BImg } from 'bootstrap-vue';
+import VuexyLogo from '@core/layouts/components/Logo.vue';
+import store from '@/store/index';
+import { initialAbility } from '@/libs/acl/config';
+
+import { mapActions } from "vuex";
+
+
+export default {
+  components: {
+    VuexyLogo,
+    BLink,
+    BButton,
+    BImg,
+  },
+  data() {
+    return {
+      downImg: require('@/assets/images/pages/error.svg'),
+    }
+  },
+  computed: {
+    imgUrl() {
+      if (store.state.appConfig.layout.skin === 'dark') {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.downImg = require('@/assets/images/pages/error-dark.svg')
+        return this.downImg
+      }
+      return this.downImg
+    },
+    
+  },
+  
+  methods: {
+    ...mapActions(["LogOut"]),
+    async loginRoute() {
+      console.log("loginRoute"); 
+      // const user = JSON.parse(localStorage.getItem('userData'))
+      // getHomeRouteForLoggedInUser(user ? user.role : null);
+
+      // window.localStorage.clear();
+
+      // return {name:'auth-login'};
+
+      this.$ability.update(initialAbility)
+      let response = await this.LogOut();
+      // Redirect to login page
+      this.$router.push({ name: 'auth-login' })
+    },
+    gotoDefault()
+    {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      console.log(userData.defaultPage);
+      if (userData.defaultPage &&userData.defaultPage!='') 
+      {
+        this.$router.push({ name: userData.defaultPage });
+      }
+      else
+      {
+        this.$router.push({ name: 'auth-login' });
+      }
+    }
+  },
+}
+</script>
+
+<style lang="scss">
+@import '@core/scss/vue/pages/page-misc.scss';
+</style>

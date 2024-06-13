@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "@core/*": ["src/@core/*"]
+        },
+        "target": "ES6",
+        "esModuleInterop": true
+    }
+}
