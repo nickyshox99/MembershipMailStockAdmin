@@ -600,5 +600,7 @@
   "Interest Paid":"ดอกเบี้ยชำระแล้ว",
   "Remain Principle":"เงินต้นคงเหลือ",
   "Loan time must more than 0":"ระยะเวลาการกู้ต้องมากกว่า 0 วัน",
-  "Per":"ต่อ"
+  "Per":"ต่อ",
+  "Member":"สมาชิก",
+  "Line Id":"ไลน์ไอดี"
 }

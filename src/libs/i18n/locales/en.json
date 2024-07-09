@@ -599,5 +599,7 @@
   "Interest Paid":"Interest Paid",
   "Remain Principle":"Remain Principle",
   "Loan time must more than 0":"Loan time must more than 0",
-  "Per":"Per"
+  "Per":"Per",
+  "Member":"Member",
+  "Line Id":"Line Id"
 }

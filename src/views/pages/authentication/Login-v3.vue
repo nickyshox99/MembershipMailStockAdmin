@@ -1,21 +1,21 @@
 <template>
-  <div style="background-image: url('bg.jpg');background-repeat: repeat;background-size: 1714px 1142px;">
+  <div style="background-image: url('bg.png');background-repeat: repeat;background-size: 1714px 1142px;">
     <div class="auth-wrapper auth-v1 px-2">
       <div class="auth-inner py-2" >
 
         <!-- Login v1 -->
-        <b-card class="mb-0" style="background-color: rgb(224, 244, 242);">
+        <b-card class="mb-0" style="background-color: rgb(255, 255, 242);">
           <b-link class="brand-logo">
             <vuexy-logo />
 
             <h2 class="brand-text text-primary ml-1">
-              Loan System
+              BigaByte Membership
             </h2>
           </b-link>
 
           <b-card-title class="mb-1 ">
             <!-- Welcome to Loan System! 👋 -->
-            ยินดีต้อนรับเข้าสู่ระบบจัดการเงินกู้! 👋
+            ยินดีต้อนรับเข้าสู่ระบบจัดการสมาชิก! 👋
           </b-card-title>
           <b-card-text class="mb-2 ">
             <!-- Please sign-in to your account and start the adventure -->

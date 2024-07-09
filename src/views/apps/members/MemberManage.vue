@@ -73,7 +73,7 @@
       </b-card>
     </Transition>
     <Transition name="fade" mode="out-in">
-      <b-card :title="t('Manage Deptor')" v-if="!(isEditFormActive)&&!(isAddFormActive)">
+      <b-card :title="t('Manage Member')" v-if="!(isEditFormActive)&&!(isAddFormActive)">
         <!-- table -->
         <vue-good-table ref="my-table" :columns="columns" :rows="rows" :rtl="direction" :line-numbers="true"
           :search-options="{
@@ -117,7 +117,7 @@
               </b-media>
             </div>
 
-            <div v-if="props.column.field === 'create_at2'">      
+            <div v-if="props.column.field === 'create_at2'" @click="edititem(props.row)" style="cursor: pointer;">      
                     {{formatDateAssigned(props.row.create_at)}}
             </div>
 
@@ -133,7 +133,7 @@
 
          
 
-            <div v-if="props.column.field === 'status2'">              
+            <div v-if="props.column.field === 'status2'" @click="edititem(props.row)" style="cursor: pointer;">              
                 <b-badge
                     pill
                     :variant="resolveStatusVariant(props.row.status)"
@@ -174,7 +174,7 @@
             </span>
 
             <!-- Column: Common -->
-            <span>
+            <span @click="edititem(props.row)" style="cursor: pointer;">
               {{ props.formattedRow[props.column.field] }}
             </span>
           </template>
@@ -269,6 +269,10 @@ export default {
           field: 'id2',
         },
         {
+          label: t('Line Id'),
+          field: 'lineid',
+        }, 
+        {
           label: t('Tel No.'),
           field: 'mobile_no',
         },        
@@ -293,11 +297,11 @@ export default {
           label: t('Status'),
           field: 'status2',          
         },       
-        {
-          label: t('Action'),
-          field: 'action',
-          width: '5%',
-        },
+        // {
+        //   label: t('Action'),
+        //   field: 'action',
+        //   width: '5%',
+        // },
       ];
     
 
@@ -317,6 +321,7 @@ export default {
       credit_bonus: 0.00,
       date: null,
       username: '',
+      lineid: '',
     };
 
     return {
@@ -602,13 +607,14 @@ export default {
         //create_at: new Date().toLocaleString('en-US',{timeZone: "asia/bangkok"}),
         create_at: new Date().toISOString('en-US',{timeZone: "asia/bangkok"}),
         knowus: "",
-        status: 0,        
+        status: 0,       
+        lineid:"" ,
       };
 
       this.selectedDataRow = EmptyRow;
     },
     async edititem(row) {
-      // console.log(row);
+      
       this.isAddFormActive = false;
       this.isEditFormActive = true;
       this.isSearchFormActive = false;
@@ -650,7 +656,7 @@ export default {
           row.sumwithdraw = tmpData.SumAW?tmpData.SumAW:0.00;
           row.sumprofit = tmpData.Profit?tmpData.Profit:0.00;
       }
-
+      
       this.selectedDataRow = row;
       
     },

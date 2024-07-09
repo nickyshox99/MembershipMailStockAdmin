@@ -93,9 +93,45 @@
 
                                 
                                 </b-row>
+                                <b-row>                            
+                                    <b-col md="6">                                
+                                        <b-form-group :label="t('Bank')"  label-for="bank-selected">
+                                            <b-input-group class="input-group-merge">
+                                                <b-input-group-prepend is-text>
+                                                    <feather-icon icon="CreditCardIcon" />
+                                                </b-input-group-prepend>
+                                                <b-form-select v-model="bankSelected" :options="bankOptions"></b-form-select>
+                                            </b-input-group>
+                                        </b-form-group>
+                                    </b-col>
+
+                                    <b-col md="6">                                
+                                        <b-form-group :label="t('Bank Account Number')"  label-for="bank_account_no">
+                                            <b-input-group class="input-group-merge">
+                                                <b-input-group-prepend is-text>
+                                                    <feather-icon icon="CreditCardIcon" />
+                                                </b-input-group-prepend>
+                                                <b-form-input id="bank_account_no" v-model="pRowData.bank_acc_no" />
+                                                <b-input-group-append is-text>                                                                                        
+                                                        <feather-icon icon="SearchIcon" /> &nbsp;<small> {{t('Get Fullname')}}</small>                                            
+                                                </b-input-group-append>
+                                            </b-input-group>
+                                        </b-form-group>
+                                    </b-col>
+                                </b-row>
                                 <b-row>
                                     
-
+                                    <b-col md="6">                                
+                                        <b-form-group :label="t('Line Id')"  label-for="lineid">
+                                            <b-input-group class="input-group-merge">
+                                                <b-input-group-prepend is-text >
+                                                    <feather-icon icon="UserIcon" />
+                                                </b-input-group-prepend>
+                                                <b-form-input id="lineid" :value="pRowData.lineid" />
+                                            </b-input-group>
+                                        </b-form-group>
+                                    </b-col>       
+                                    
                                     <b-col md="6">                                
                                         <b-form-group :label="t('Register Date')" label-for="register_date">
                                             <b-input-group class="input-group-merge">
@@ -106,6 +142,12 @@
                                             </b-input-group>
                                         </b-form-group>
                                     </b-col>
+
+                                </b-row>
+                                <b-row>
+                                    
+
+                                    
 
                                     <b-col md="6">                                
                                         <b-form-group :label="t('Created By')" label-for="createdBy">
@@ -1701,6 +1743,7 @@ import {
     BPagination,
     BModal,
     BFormTextarea,
+    BInputGroupAppend,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table';
 import {
@@ -1743,6 +1786,8 @@ export default {
         BPagination,
         BModal,
         BFormTextarea,
+        BInputGroup,         
+        BInputGroupAppend,
     },
     directives: {
         Ripple,

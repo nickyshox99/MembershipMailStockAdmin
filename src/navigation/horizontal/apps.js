@@ -1,14 +1,14 @@
 export default [
   {
-    header: "Manage Deptor",
+    header: "Manage Member",
     submenu : ["apps-members-manage","apps-alliances-manage","apps-agent-refer"],
   },
   {
-    title: "Deptor",
+    title: "Member",
     icon: "UserIcon",
     children: [
       {
-        title: "Manage Deptor",
+        title: "Manage Member",
         route: "apps-members-manage",        
       },     
     ],

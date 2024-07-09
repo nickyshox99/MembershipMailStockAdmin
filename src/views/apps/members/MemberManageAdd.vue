@@ -30,7 +30,7 @@
                     <b-form>
                         <b-row>
 
-                            <!-- Field: Full Name -->
+                            
                             <b-col md="6">
                                 
                                 <b-form-group :label="t('Fullname')" label-for="fullname">
@@ -44,8 +44,7 @@
                                 </b-form-group>
 
                             </b-col>
-
-                            <!-- Field: Email -->
+                            
                             <b-col md="6">                                
                                 <b-form-group :label="t('Mobile No')" label-for="mobile_no">
                                     <b-input-group class="input-group-merge">
@@ -58,7 +57,7 @@
                             </b-col>
 
                         </b-row>
-                        <!-- <b-row>                            
+                        <b-row>                            
                             <b-col md="6">                                
                                 <b-form-group :label="t('Bank')"  label-for="bank-selected">
                                     <b-input-group class="input-group-merge">
@@ -85,9 +84,19 @@
                             </b-col>
 
                            
-                        </b-row> -->
+                        </b-row>
                         <b-row>
-                            <!-- Field: Email -->
+                            
+                            <b-col md="6">                                
+                                <b-form-group :label="t('Line Id')"  label-for="lineid">
+                                    <b-input-group class="input-group-merge">
+                                        <b-input-group-prepend is-text >
+                                            <feather-icon icon="UserIcon" />
+                                        </b-input-group-prepend>
+                                        <b-form-input id="lineid" :value="pRowData.lineid" />
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
 
                             <b-col md="6">                                
                                 <b-form-group :label="t('Register Date')"  label-for="register_date">
@@ -112,7 +121,10 @@
                                 </b-form-group>
                             </b-col> -->
                             
+                            
+
                         </b-row>
+
                     </b-form>
 
                     <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" type="submit" variant="primary" class="mr-1" @click="registerMember">
