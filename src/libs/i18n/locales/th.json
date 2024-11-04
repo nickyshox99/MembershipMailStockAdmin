@@ -602,5 +602,7 @@
   "Loan time must more than 0":"ระยะเวลาการกู้ต้องมากกว่า 0 วัน",
   "Per":"ต่อ",
   "Member":"สมาชิก",
-  "Line Id":"ไลน์ไอดี"
+  "Line Id":"ไลน์ไอดี",
+  "Subscription History":"ประวัติการสมัครสมาชิก",
+  "Subscription Type":"ประเภท Subscription"
 }

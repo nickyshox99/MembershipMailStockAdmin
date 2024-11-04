@@ -601,5 +601,7 @@
   "Loan time must more than 0":"Loan time must more than 0",
   "Per":"Per",
   "Member":"Member",
-  "Line Id":"Line Id"
+  "Line Id":"Line Id",
+  "Subscription History":"Subscription History",
+  "Subscription Type":"Subscription Type"
 }

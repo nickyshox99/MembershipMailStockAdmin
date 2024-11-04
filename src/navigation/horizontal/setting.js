@@ -6,7 +6,7 @@ export default [
     ,"apps-setting-announcement","apps-promotion-setting","apps-bank-admin","apps-bank-transaction","apps-truewallet-admin"
     ,"apps-staff-manage","apps-staff-permission"
     ,"apps-agent-account"
-    ,"apps-agent-refer","apps-setting-admin-pin","apps-loantype-setting","apps-setting-percentreport"
+    ,"apps-agent-refer","apps-setting-admin-pin","apps-loantype-setting","apps-setting-percentreport","apps-setting-subscription-type"
     ],
   },
   {
@@ -23,6 +23,10 @@ export default [
     title: "Basic Setting",
     icon: "SettingsIcon",
     children: [
+      {
+        title: "Subscription Type",
+        route: "apps-setting-subscription-type",
+      },
       //   {
       //     title: "General Setting",
       //     route: "apps-setting-general",
@@ -31,10 +35,10 @@ export default [
       //   title: "General Setting",
       //   route: "apps-setting-general",
       // },
-      // {
-      //   title: "Ux/Ui Setting",
-      //   route: "apps-setting-uxui",
-      // },
+      {
+        title: "Ux/Ui Setting",
+        route: "apps-setting-uxui",
+      },
       // {
       //   title: "Banner Setting",
       //   route: "apps-setting-banner",

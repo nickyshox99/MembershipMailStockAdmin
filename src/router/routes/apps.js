@@ -171,6 +171,12 @@ export default [
 
   {
     path: '/apps/setting/',
+    name: 'apps-setting-subscription-type',
+    component: () => import('@/views/apps/setting/SubscriptionType.vue'),
+  },
+
+  {
+    path: '/apps/setting/',
     name: 'apps-setting-percentreport',
     component: () => import('@/views/apps/setting/ReportPercentSettingMain.vue'),
   },

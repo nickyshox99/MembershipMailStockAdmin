@@ -1590,6 +1590,44 @@ const actions = {
     }
     return response;
   },
+  async GetSubscriptionType({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        searchWord: inputData.get("searchWord"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiontype/GetSubscriptionType",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetInterestType({commit}, inputData) {
         
     var headers = {
@@ -1627,7 +1665,7 @@ const actions = {
       
     }
     return response;
-  },
+  }, 
   async GetInterestPeriod({commit}, inputData) {
         
     var headers = {
