@@ -28,11 +28,11 @@ export default [
     component: () => import('@/views/apps/report/ReportPaidSuccess.vue'),
   },
 
-  {
-    path: '/apps/report/oldsummary/',
-    name: 'apps-report-oldsummary',
-    component: () => import('@/views/apps/report/ReportOldSummary.vue'),
-  },
+  // {
+  //   path: '/apps/report/oldsummary/',
+  //   name: 'apps-report-oldsummary',
+  //   component: () => import('@/views/apps/report/ReportOldSummary.vue'),
+  // },
 
   // {
   //   path: '/apps/report/deposit/',
@@ -107,7 +107,11 @@ export default [
     name: 'apps-members-manage',
     component: () => import('@/views/apps/members/MemberManage.vue'),
   },
-
+  {
+    path: '/apps/members/groupsub',
+    name: 'apps-group-sub',
+    component: () => import('@/views/apps/members/GroupSub.vue'),
+  },
   {
     path: '/apps/loan/onduedate',
     name: 'apps-loan-onduedate',
@@ -170,9 +174,15 @@ export default [
   },
 
   {
-    path: '/apps/setting/',
+    path: '/apps/setting/subscriptiontype',
     name: 'apps-setting-subscription-type',
     component: () => import('@/views/apps/setting/SubscriptionType.vue'),
+  },
+
+  {
+    path: '/apps/setting/productsetting',
+    name: 'apps-product-setting',
+    component: () => import('@/views/apps/setting/ProductSetting.vue'),
   },
 
   {

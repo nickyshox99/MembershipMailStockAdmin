@@ -6,19 +6,19 @@ export default [
     ,"apps-setting-announcement","apps-promotion-setting","apps-bank-admin","apps-bank-transaction","apps-truewallet-admin"
     ,"apps-staff-manage","apps-staff-permission"
     ,"apps-agent-account"
-    ,"apps-agent-refer","apps-setting-admin-pin","apps-loantype-setting","apps-setting-percentreport","apps-setting-subscription-type"
+    ,"apps-agent-refer","apps-setting-admin-pin","apps-loantype-setting","apps-setting-percentreport","apps-setting-subscription-type","apps-product-setting"
     ],
   },
-  {
-    title: "Loan Setting",
-    icon: "CreditCardIcon",
-    children: [
-      {
-        title: "Loan Type",
-        route: "apps-loantype-setting",
-      },
-    ],
-  },
+  // {
+  //   title: "Loan Setting",
+  //   icon: "CreditCardIcon",
+  //   children: [
+  //     {
+  //       title: "Loan Type",
+  //       route: "apps-loantype-setting",
+  //     },
+  //   ],
+  // },
   {
     title: "Basic Setting",
     icon: "SettingsIcon",
@@ -26,6 +26,10 @@ export default [
       {
         title: "Subscription Type",
         route: "apps-setting-subscription-type",
+      },
+      {
+        title: "Product Setting",
+        route: "apps-product-setting",
       },
       //   {
       //     title: "General Setting",

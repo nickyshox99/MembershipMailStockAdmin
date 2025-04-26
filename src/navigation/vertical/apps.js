@@ -1,7 +1,7 @@
 export default [
   {
     header: "Manage Member",
-    submenu : ["apps-members-manage","apps-alliances-manage","apps-agent-refer"],
+    submenu : ["apps-members-manage","apps-alliances-manage","apps-agent-refer","apps-group-sub"],
   },
   {
     title: "Member",
@@ -10,7 +10,11 @@ export default [
       {
         title: "Manage Member",
         route: "apps-members-manage",        
-      },     
+      },   
+      {
+        title: "Group Subscription",
+        route: "apps-group-sub",        
+      },  
     ],
   },  
   // {

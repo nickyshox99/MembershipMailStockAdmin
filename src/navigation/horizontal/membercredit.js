@@ -5,7 +5,7 @@ export default [
     submenu : ["apps-members-depwit","apps-loan-onduedate","apps-loan-overduedate","apps-loan-closed","apps-loan-all"],
   },
   {
-    title: "Loan List",
+    title: "MemberShip List",
     icon: "CreditCardIcon",
     children: [
       {
@@ -16,10 +16,6 @@ export default [
         title: "Over Due",
         route: "apps-loan-overduedate",
       }, 
-      {
-        title: "Closed",
-        route: "apps-loan-closed",
-      },
       {
         title: "All",
         route: "apps-loan-all",
@@ -37,7 +33,7 @@ export default [
     icon: "CreditCardIcon",
     children: [
       {
-        title: "Loan All",
+        title: "List All",
         route: "apps-report-loanall",
       },
 
@@ -46,10 +42,6 @@ export default [
         route: "apps-report-paidsuccess",
       },
 
-      {
-        title: "Old Report Summary",
-        route: "apps-report-oldsummary",
-      },
       
     ],
   },

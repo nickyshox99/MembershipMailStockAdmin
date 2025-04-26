@@ -284,6 +284,71 @@
                         </div>
                     </b-tab> 
 
+                    
+                    <b-tab>
+                        <template #title>
+                            <feather-icon icon="InfoIcon" size="16" class="mr-0 mr-sm-50" />
+                            <span class="d-none d-sm-inline">{{t('Email')}}</span>
+                        </template>
+                        <div>
+                            <b-media class="mb-2">
+                                <template #aside>
+                                    <b-avatar ref="previewEl" :src="pRowData.img_url" :text="pRowData.fullname" size="90px" rounded />
+                                </template>
+                                <h4 class="mb-1">
+                                    {{ pRowData.fullname }}
+                                </h4>
+                                <h4 class="mb-1">
+                                    {{ pRowData.id }}
+                                </h4>
+                                <b-badge
+                                    pill
+                                    :variant="`light-${this.resolveStatusVariant(pRowData.status)}`"
+                                    class="text-capitalize"
+                                >
+                                    {{t(this.resolveStatusText(pRowData.status))}}
+                                </b-badge>
+                                <div class="d-flex flex-wrap">
+
+                                </div>
+                            </b-media>
+
+                            <b-form>
+                                <b-row>
+                                    <b-col md="6">
+                                        <b-form-group :label="t('Add Email')" label-for="inputEmail">
+                                            <b-form-input id="inputEmail" v-model="inputEmail"  />
+                                        </b-form-group>
+                                    </b-col>                                    
+                                </b-row>  
+                            </b-form>
+
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" type="submit" variant="primary" class="mr-1" v-if="isModeEdit" @click="addMemberEmail" :disabled="!pagePermission.canEdit">
+                                <feather-icon icon="EditIcon" />
+                                {{t('Add')}}
+                            </b-button>
+                            
+                            <b-button @click="close" v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="reset" variant="outline-secondary">
+                                <feather-icon icon="DeleteIcon" />
+                                {{t('Close')}}
+                            </b-button>
+                            <b-form>
+                                <b-row style="padding:20px;">
+                                   <h3>{{ t('Email List') }}</h3>
+                                </b-row>
+                                <b-row v-for="item in emailList" :key="item.id" style="padding-left: 30px;" >
+                                    <b-col>
+                                        <b-icon-trash style="color:red;cursor: pointer;" @click="confirmDeleteEmail(item.id)"></b-icon-trash>
+                                        <span style="padding-left: 10px;color:grey;cursor: pointer;"> {{ item.email }} </span>
+                                    </b-col>
+                                </b-row>
+                            </b-form>
+
+                        </div>
+                    </b-tab> 
+
+
+                    <!-- 
                     <b-tab>
                         <template #title>
                             <feather-icon icon="Share2Icon" size="16" class="mr-0 mr-sm-50" />
@@ -336,7 +401,7 @@
                             </b-button>
 
                         </div>
-                    </b-tab>
+                    </b-tab> -->
 
                     <b-tab>
                         <template #title>
@@ -367,6 +432,15 @@
                             </b-media>
 
                             <b-form>
+                                <b-row>
+                                    <b-col md="12">
+                                        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="success" class="mr-1" v-if="isModeEdit" @click="confirmRequest" >
+                                        <feather-icon icon="EditIcon" />
+                                        {{t('Add Subscription')}}
+                                    </b-button>
+                                    </b-col>
+                                </b-row>                               
+                                
                                 <b-row>
                                     <b-col md="12">
                                         <hr/>
@@ -776,6 +850,81 @@
         </Transition>
     
         <b-modal
+            id="modal-request"
+            ref="modalRequest"
+            v-model="showModalRequest"
+            :title="t('Please confirm that you want to subscribe')"
+            @show="resetModalApprove"        
+            @hidden="resetModalApprove"
+            @ok="handleOkRequest"      
+            size="sm"  
+            :hideHeaderClose="false"            
+            ok-variant="success"
+            :okTitle="t('YES')"
+            buttonSize="sm"
+            :cancelTitle="t('NO')"
+            footerClass="p-2"
+        >
+            
+            <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        :label="t('Note')"
+                        label-for="request-note-input"                    
+                        >
+                        
+                        <b-form-textarea
+                            id="request-note-input"
+                            v-model="requestNoteInput"                
+                            rows="2"
+                            max-rows="4"
+                        ></b-form-textarea>
+                    </b-form-group>
+                </b-col>                
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                    <b-form-group :label="t('Select Email')" label-for="email-selected">
+                        <b-input-group class="input-group-merge">
+                            <b-input-group-prepend is-text>
+                                <feather-icon icon="EmailIcon" />
+                            </b-input-group-prepend>
+                            <b-form-select v-model="selectedSubScribeEmail" :options="optionSubScribeEmail"></b-form-select>
+                        </b-input-group>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+    
+            <b-row>                
+                <div class="dialog-content2" style="padding-left: 20px;">
+                    <h4>{{t('Select Product')}}</h4>
+                    <div class="content-container">     
+                        <div class="grid-container">
+                            <div class="grid-item" style="padding-top: 10px;padding-bottom: 10px; padding-left: 10px; padding-right: 10px;  cursor: pointer;" 
+                                v-for="(product) in productList" :key="product.id" >
+                                
+                                <div v-if="product.id==selectedProductId" @click="changeSelectedProduct(product.id)" style="color:black;background-color: antiquewhite;" > 
+                                    <img :src="product.product_img" height="50px" width="50px" /> <br/>
+                                    <span style="color:grey;font-size: 12px; font-weight: 500;" > {{product.product_name}}</span><br/>
+                                    <span style="color:grey;font-size: 10px;" > {{product.product_desc}}</span>
+                                </div>
+                                
+                                <div v-if="product.id!=selectedProductId" @click="changeSelectedProduct(product.id)" > 
+                                    <img :src="product.product_img" height="50px" width="50px" /> <br/>
+                                    <span style="color:grey;font-size: 12px;font-weight: 500;" > {{product.product_name}}</span><br/>
+                                    <span style="color:grey;font-size: 10px;" > {{product.product_desc}}</span>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </b-row>
+             
+        </b-modal>
+
+        <b-modal
             id="modal-approve"
             ref="modalApprove"
             v-model="showModalApprove"
@@ -1029,6 +1178,7 @@ import {
     BModal,
     BFormTextarea,
     BInputGroupAppend,
+    BIconTrash,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table';
 import {
@@ -1073,6 +1223,7 @@ export default {
         BFormTextarea,
         BInputGroup,         
         BInputGroupAppend,
+        BIconTrash,
     },
     directives: {
         Ripple,
@@ -1400,7 +1551,10 @@ export default {
 
             selectedLoanId: 0,
             showModalApprove:false,
+            showModalRequest:false,
+
             approveNoteInput:"",
+            requestNoteInput:"",
 
             showModalReject:false,
             rejectNoteInput:"",
@@ -1499,6 +1653,16 @@ export default {
             sharePercent:100,
             pagePermission:[],
 
+            productList:[],
+            selectedProductId:0,
+            inputEmail:'',
+            emailList:[],
+
+            selectedSubScribeEmail :0,
+            optionSubScribeEmail : [{
+                value: "",
+                text: 'Select Email'
+            },],
         }
     },
     props: {
@@ -1518,10 +1682,9 @@ export default {
         pRowData: async function (newVal, oldVal) {
             this.bankSelected = newVal.bank_id;           
             this.newPassword = newVal.password;
-            this.getRequestLoan();
-            this.getRejectLoan();
-            this.getApproveLoan();
-
+            
+            this.getMemberEmail(),
+            
             this.provinceSelected = newVal.province_id;
             this.districtSelected = newVal.district_id;
             this.subDistrictSelected = newVal.subdistrict_id;
@@ -1547,7 +1710,8 @@ export default {
             this.getInterestType(),
             this.getAllProvince(),
             this.getAllDistrict(),
-            this.getAllAdminActive(),           
+            this.getAllAdminActive(),         
+            this.getProductList(),  
         ]);        
             
         this.titleCard = "";        
@@ -1576,6 +1740,9 @@ export default {
         ...mapActions(["GetAllSubDistrict"]),
         ...mapActions(["GetAllAdminActive"]),
         ...mapActions(["GetPagePermission"]), 
+        ...mapActions(["GetActiveProductSetting"]), 
+        ...mapActions(["GetMemberEmail"]), 
+        
         formatDateAssigned(value) {
             let formattedDate = new Date(value);
             formattedDate = new Date(formattedDate.getTime() - 3600000); // 60 * 60 * 1000 * 1
@@ -1591,6 +1758,10 @@ export default {
         },
         clearForm() {
             console.log("Clear Form");
+        },
+        changeSelectedProduct(id)
+        {
+            this.selectedProductId= id;
         },
         loanTypeChange()
         {
@@ -1990,6 +2161,96 @@ export default {
                 });
                 
             }
+        },
+        async getProductList() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const User = new FormData();
+
+            User.append("userid", userData.username);
+            User.append("token", userData.token);
+            User.append("page_name", this.$route.name);
+
+            const response = await this.GetActiveProductSetting(User);
+            if (response.data.status == 'success') {                
+                this.productList = response.data.data; 
+            } else {
+
+            }
+        },
+        async getMemberEmail() {
+            console.log("getMemberEmail")
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const User = new FormData();
+
+            User.append("userid", userData.username);
+            User.append("token", userData.token);
+
+            User.append("selected_id", this.pRowData.id);            
+            User.append("page_name", this.$route.name);
+
+            const response = await this.GetMemberEmail(User);
+            if (response.data.status == 'success') {                       
+                this.emailList = response.data.data; 
+                let tmpArray = [];                
+                this.emailList.forEach(element => {
+                        tmpArray.push({
+                            value: element.email,
+                            text: element.email
+                        });
+                    });             
+                this.optionSubScribeEmail = tmpArray;
+                this.selectedSubScribeEmail = tmpArray[0].value;
+
+            } else {
+
+            }
+        },
+        async addMemberEmail()
+        {
+            console.log('addMemberEmail');
+            
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            var headers = {
+                userid: userData.username,
+                token: userData.token,
+            }
+
+            var body = {        
+                selected_userid: this.pRowData.id,
+                email : this.inputEmail,
+            }
+
+            let response;
+            await axios.post("api/member/addMemberEmail",body,
+            {
+                headers: {            
+                'Content-Type': 'application/json',
+                'userid': headers.userid,
+                'token': headers.token,
+                }
+            }).then(
+                resp => 
+                {
+                    response = resp;
+                }
+            );
+        
+            if (response.data.status == 'success') {
+                this.getMemberEmail();
+            }
+            else {
+                this.$toast(
+                {
+                    component: ToastificationContent,
+                    props: {
+                    title: response.data.message,
+                    icon: 'EditIcon',
+                    variant: 'error',
+                    },
+                });
+            }
+            
         },
         async updateMember() {
             //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
@@ -2490,6 +2751,12 @@ export default {
             }
             
         },
+        async confirmRequest()
+        {
+            console.log('confirmRequest');
+            this.showModalRequest=true;
+            
+        },
         async confirmApprove(loanId)
         {
             console.log('confirmApprove');
@@ -2521,15 +2788,105 @@ export default {
             this.showModalApprove=true;
             
         },
+        async confirmDeleteEmail(emailId)
+        {
+            console.log('confirmDeleteEmail');
+            
+            this.boxTwo = '';
+            await this.$bvModal.msgBoxConfirm(this.$t('Please confirm that you want to delete'), {
+            title: this.$t('Please Confirm'),
+            size: 'sm',
+            buttonSize: 'sm',
+            okVariant: 'danger',
+            okTitle: 'YES',
+            cancelTitle: 'NO',
+            footerClass: 'p-2',
+            hideHeaderClose: false,
+            centered: true
+            })
+            .then(value => {
+
+                if (value) {
+                this.deleteEmail(emailId);
+
+                }
+
+            })
+            .catch(err => {
+
+            })
+            
+            
+        },
+        async deleteEmail(emailId)
+        {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            var headers = {
+                userid: userData.username,
+                token: userData.token,
+            }
+
+            var body = {        
+                listId: [emailId]
+            }
+
+            let response;
+            await axios.post("api/member/deleteMemberEmail",body,
+            {
+                headers: {            
+                'Content-Type': 'application/json',
+                'userid': headers.userid,
+                'token': headers.token,
+                }
+            }).then(
+                resp => 
+                {
+                    response = resp;
+                }
+            );
+        
+            if (response.data.status == 'success') {
+                this.getMemberEmail();
+            }
+            else {
+                this.$toast(
+                {
+                    component: ToastificationContent,
+                    props: {
+                    title: response.data.message,
+                    icon: 'EditIcon',
+                    variant: 'error',
+                    },
+                });
+            }
+        },
         resetModalApprove()
         {
             this.approveNoteInput = "";
+        },
+        async handleOkRequest()
+        {   
+            const note = this.requestNoteInput;
+            console.log("handleOkRequest");
+
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const form = new FormData();
+
+            form.append("userid", userData.username);
+            form.append("token", userData.token);
+
+            form.append("admin_id", userData.username);
+            form.append("request_note", note?note:'');
+            form.append("product_id", this.selectedProductId);
+
+
         },
         async handleOkApprove()
         {
             
             const note = this.approveNoteInput;
-            console.log("requestApprove");
+            console.log("handleOkApprove");
 
             const sumPercent = this.sharePersonList.reduce((accumulator, currentValue) => accumulator + currentValue.percent, 0);
             if(sumPercent!=100)
@@ -2905,6 +3262,10 @@ export default {
             this.paymentNoteAt = tmpPaymentNoteData['note'+pageValue+'_at']!=null?this.formatDateAssigned(tmpPaymentNoteData['note'+pageValue+'_at']):'';
             this.paymentNoteBy = tmpPaymentNoteData['note'+pageValue+'_by']!=''?tmpPaymentNoteData['note'+pageValue+'_by']:'';
         },
+        addSubscribeRequest()
+        {
+
+        },
         addSharePerson()
         {
             const sumPercent = this.sharePersonList.reduce((accumulator, currentValue) => accumulator + currentValue.percent, 0);
@@ -2994,7 +3355,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .bounce-enter-active {
     animation: bounce-in 0.5s;
 }
@@ -3017,6 +3378,79 @@ export default {
     }
 }
 
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 20px;
+  z-index: 9999; /* Adjust z-index to bring it front of other elements */
+}
+
+.dialog-content {
+  /* Add your styles for dialog content */
+  min-width: 400px;
+  min-height: 600px;
+}
+
+.dialog2 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 20px;
+  z-index: 9999; /* Adjust z-index to bring it front of other elements */
+}
+
+.dialog-content2 {
+  /* Add your styles for dialog content */
+  min-width: 380px;
+  min-height: 300px;
+}
+
+.dialog3 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 20px;
+  z-index: 9999; /* Adjust z-index to bring it front of other elements */
+}
+
+.dialog-content3 {
+  /* Add your styles for dialog content */
+  min-width: 400px;
+  min-height: 500px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.content-container {
+  max-height: 300px; /* Set your desired max height */
+  overflow-y: auto; /* Add vertical scrollbar */
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust as needed */
+  gap: 10px; /* Adjust gap between grid items */
+}
+
+.grid-item {
+  /* Add any additional styling for grid items */
+  color:grey;
+}
 
 </style>
 
