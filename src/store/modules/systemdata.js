@@ -1590,6 +1590,161 @@ const actions = {
     }
     return response;
   },
+  async CreateAndApproveSubScribeOrder({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {        
+        username : inputData.get("admin_id"),
+        page_name: inputData.get("page_name"),
+        user_id: inputData.get("user_id"),
+        email: inputData.get("email"),
+        product_id: inputData.get("product_id"),
+        note: inputData.get("note"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/CreateAndApproveSubScribeOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetHistorySubScribeOrderByMemberID({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        member_id: inputData.get("member_id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/GetHistorySubScribeOrderByMemberID",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async CancelSubScribeOrder({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        note :  inputData.get("note"),       
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/CancelSubScribeOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async ApproveSubScribeOrder({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        note :  inputData.get("note"),       
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/ApproveSubScribeOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetMemberEmail({commit}, inputData) {
         
     var headers = {
@@ -1609,6 +1764,44 @@ const actions = {
 
     let response;
     await axios.post("api/member/getMemberEmail",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetAllMemberEmail({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),        
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/member/getAllMemberEmail",body,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -1765,6 +1958,282 @@ const actions = {
 
     let response;
     await axios.post("api/subscriptiongroup/getSubscriptionGroup",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetActiveSubscriptionGroup({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        searchWord: inputData.get("searchWord"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/getActiveSubscriptionGroup",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetSubscribeMemberByGroupById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        id: inputData.get("id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscribeMemberByGroupById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetGroupOfMemberByMemberId({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        user_id: inputData.get("user_id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/GetGroupOfMemberByMemberId",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetSubscribePaymentById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        group_id: inputData.get("group_id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscribePaymentById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async AddMemberToGroup({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {        
+        username : inputData.get("admin_id"),
+        page_name: inputData.get("page_name"),
+        user_id: inputData.get("user_id"),
+        email: inputData.get("email"),
+        group_id: inputData.get("group_id"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/addMemberToGroup",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async AddMemberToGroupById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {        
+        username : inputData.get("admin_id"),
+        page_name: inputData.get("page_name"),
+        id: inputData.get("id"),        
+        group_id: inputData.get("group_id"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/addMemberToGroupById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async AddPaymentNoteGroup({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {        
+        username : inputData.get("admin_id"),
+        page_name: inputData.get("page_name"),        
+        group_id: inputData.get("group_id"),
+        start_at: inputData.get("start_at"),
+        end_at: inputData.get("end_at"),
+        paid_amount: inputData.get("paid_amount"),
+        paid_by: inputData.get("paid_by"),
+        ref_img1: inputData.get("ref_img1"),
+        ref_img2: inputData.get("ref_img2"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/addPaymentNoteGroup",body,
     {
         headers: {            
         'Content-Type': 'application/json',

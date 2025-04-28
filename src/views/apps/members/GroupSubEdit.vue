@@ -202,7 +202,8 @@ export default {
   watch: {
     pRowData: function (newVal, oldVal) {
       this.statusActive = newVal.status;
-      this.subscribeTypeSelected = newVal.subscription_type_id;           
+      this.subscribeTypeSelected = newVal.subscription_type_id; 
+      
     },
     isModeEdit: function (newVal, oldVal) {
       if (newVal == true) {
@@ -229,30 +230,20 @@ export default {
     ...mapActions(["GetSubscriptionType"]),
     ...mapActions(["UploadFileAndDeleteOldFile"]),  
     ...mapActions(["DeleteOldFile"]), 
+    ...mapActions(["GetSubscribePaymentById"]), 
     getCurrentTimeString(ctime) {
       return ctime;
-      const ctime2 = new Date(ctime);
-      const hours = String(ctime2.getHours()).padStart(2, "0");
-      const minutes = String(ctime2.getMinutes()).padStart(2, "0");
-      const seconds = String(ctime2.getSeconds()).padStart(2, "0");
-      return `${hours}:${minutes}:${seconds}`;
+      // const ctime2 = new Date(ctime);
+      // const hours = String(ctime2.getHours()).padStart(2, "0");
+      // const minutes = String(ctime2.getMinutes()).padStart(2, "0");
+      // const seconds = String(ctime2.getSeconds()).padStart(2, "0");
+      // return `${hours}:${minutes}:${seconds}`;
     },
     close() {
       this.$emit("close-edit-form");
     },
     clearForm() {
       console.log("Clear Form");
-    },
-    changePeriod() {
-      console.log(this.periodTypeSelected);
-
-      if (this.periodTypeOptions3.length > 0) {
-        const getPeriod = this.periodTypeOptions3.find(
-          (x) => x.value == this.periodTypeSelected
-        );
-        this.pRowData.period_unit = getPeriod.text;
-        this.forceRerender();
-      }
     },
     forceRerender() {
       // Removing my-component from the DOM
@@ -441,6 +432,31 @@ export default {
         });
         this.subscribeTypeOptions = tmpArray;
         this.subscribeTypeSelected = 1;
+      }
+      else {
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: response.data.message,
+              icon: 'EditIcon',
+              variant: 'error',
+            },
+          });
+      }
+    },
+    async getSubscribePaymentById(){
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const formData = new FormData();
+
+      formData.append("userid", userData.username);
+      formData.append("token", userData.token);
+
+      formData.append("group_id", this.pRowData.id);
+
+      const response = await this.GetSubscribePaymentById(formData);
+      if (response.data.status == 'success') {  
+        
       }
       else {
         this.$toast(

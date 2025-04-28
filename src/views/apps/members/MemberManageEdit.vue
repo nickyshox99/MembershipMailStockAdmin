@@ -287,7 +287,7 @@
                     
                     <b-tab>
                         <template #title>
-                            <feather-icon icon="InfoIcon" size="16" class="mr-0 mr-sm-50" />
+                            <feather-icon icon="MailIcon" size="16" class="mr-0 mr-sm-50" />
                             <span class="d-none d-sm-inline">{{t('Email')}}</span>
                         </template>
                         <div>
@@ -405,7 +405,7 @@
 
                     <b-tab>
                         <template #title>
-                            <feather-icon icon="UpIcon" size="16" class="mr-0 mr-sm-50" />
+                            <feather-icon icon="BookIcon" size="16" class="mr-0 mr-sm-50" />
                             <span class="d-none d-sm-inline">{{t('Subscription History')}}</span>
                         </template>
                         <div>
@@ -448,7 +448,138 @@
                                 </b-row>                               
                                 <b-row>
                                     <b-col md="12">
-                                        <hr/>
+                                        <vue-good-table ref="my-table-order-history" :columns="columnsOrderHistory" :rows="rowsOrderHistory" :rtl="directionOrderHistory" :line-numbers="true"
+                                            :search-options="{
+                                                enabled: false,                                        
+                                            }" :select-options="{
+                                                enabled: false,
+                                                selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
+                                                selectionInfoClass: 'custom-class',
+                                                selectionText: 'rows selected',
+                                                clearSelectionText: 'clear',
+                                                disableSelectInfo: true, // disable the select info panel on top
+                                                selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
+                                            }" :pagination-options="{
+                                                enabled: true,
+                                                perPage: pageLengthOrderHistory
+                                            }" theme="polar-bear">                                        
+                                                <template slot="table-row" slot-scope="props">
+
+                                                    <span v-if="props.column.field === 'subscription_img2'">       
+                                                        <b-img :src="props.row.subscription_img" fluid thumbnail style="height: 50px;" />                                                        
+                                                        <div style="font-size: 14px;color:gray">{{props.row.product_name}}</div>
+                                                    </span>
+
+                                                    <span v-if="props.column.field === 'create_date2'">              
+                                                        {{formatDateAssigned2(props.row.create_date)}}
+                                                    </span>
+
+                                                    <span v-if="props.column.field === 'start_date2'">              
+                                                        {{formatDateAssigned2(props.row.start_date)}}
+                                                    </span>
+
+                                                    <span v-if="props.column.field === 'end_date2'">              
+                                                        {{formatDateAssigned2(props.row.end_date)}}
+                                                    </span>
+
+                                                    <span v-if="props.column.field === 'remain'">              
+                                                            <b-badge
+                                                                v-if="props.row.diffDay<=0"
+                                                                pill
+                                                                :variant="`light-warning`"
+                                                                class="text-capitalize"
+                                                            >                                                                 
+                                                                {{ t('Expired') }}
+                                                            </b-badge> 
+                                                            <b-badge
+                                                                v-if="props.row.diffDay>0"
+                                                                pill
+                                                                :variant="`light-success`"
+                                                                class="text-capitalize"
+                                                            >                                                                 
+                                                                {{ t('Remaining') }} {{props.row.diffDay}} {{t('Day')}}
+                                                            </b-badge> 
+                                                    </span>
+
+                                                    <span v-if="props.column.field === 'approved'">              
+                                                            <b-badge
+                                                                v-if="props.row.canceled==0 && props.row.approve_by !=''"
+                                                                pill
+                                                                :variant="`light-success`"
+                                                                class="text-capitalize"
+                                                            >                                                                 
+                                                                {{ t('Approved') }}
+                                                                {{ ((props.row.approve_date != null) ? formatDateAssigned2(props.row.approve_date) : '') }}
+                                                            </b-badge> 
+                                                            <b-badge
+                                                                v-if="props.row.canceled==0 && props.row.approve_by ==''"
+                                                                pill
+                                                                :variant="`light-info`"
+                                                                class="text-capitalize"
+                                                            >                                                                 
+                                                                <feather-icon icon="ClockIcon" size="16" class="mr-0 mr-sm-50" />      
+                                                                รอพิจารณาอนุมัติ                                                     
+                                                            </b-badge>  
+                                                            <b-badge
+                                                                v-if="props.row.canceled==1"
+                                                                pill
+                                                                :variant="`light-danger`"
+                                                                class="text-capitalize"
+                                                            >   
+                                                                {{ t('Canceled') }}
+                                                            </b-badge> 
+                                                    </span>
+
+                                                    <span>
+                                                    {{ props.formattedRow[props.column.field] }}
+                                                    </span>
+
+                                                    <span v-if="props.column.field === 'action'">  
+                                                        <b-badge v-if="props.row.approve_by!=''&&props.row.canceled!=1" style="cursor: pointer; margin-right:2px" variant="danger" @click="inspectCancel(props.row)">
+                                                            <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
+                                                            <span class="d-none d-sm-inline">{{t('Cancel')}}</span>
+                                                        </b-badge>  
+                                                        <b-badge v-if="props.row.canceled==1" style="cursor: pointer; margin-right:2px" variant="info" @click="inspectData(props.row)">
+                                                            <feather-icon icon="SearchIcon" size="16" class="mr-0 mr-sm-50" />
+                                                            <span class="d-none d-sm-inline">{{t('Information')}}</span>
+                                                        </b-badge>                                                
+                                                        <b-badge v-if="props.row.approve_by==''" style="cursor: pointer; margin-right:2px" variant="success" @click="inspectApprove(props.row)">
+                                                            <feather-icon icon="CheckIcon" size="16" class="mr-0 mr-sm-50" />
+                                                            <span class="d-none d-sm-inline">{{t('Approve')}}</span>
+                                                        </b-badge>
+                                                        <b-badge v-if="props.row.approve_by==''" style="cursor: pointer; margin-right:2px" variant="warning" @click="inspectReject(props.row)">
+                                                            <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
+                                                            <span class="d-none d-sm-inline">{{t('Reject')}}</span>
+                                                        </b-badge>
+                                                    </span>
+
+                                                </template>
+                                                
+                                                <template slot="pagination-bottom" slot-scope="props">
+                                                    <div class="d-flex justify-content-between flex-wrap">
+                                                    <div class="d-flex align-items-center mb-0 mt-1">
+                                                        <span class="text-nowrap ">
+                                                        {{t("Showing") +" 1 " + t("to") }}
+                                                        </span>
+                                                        <b-form-select v-model="pageLengthOrderHistory" :options="['3', '5', '10', '20', '50', '100']" class="mx-1"
+                                                        @input="(value) => props.perPageChanged({ currentPerPage: value })" />
+                                                        <span class="text-nowrap"> {{t('of')}} {{ props.total }} {{t('entries')}} </span>
+                                                    </div>
+                                                    <div>
+                                                        <b-pagination :value="1" :total-rows="props.total" :per-page="pageLengthOrderHistory" first-number last-number
+                                                            align="right" prev-class="prev-item" next-class="next-item" class="mt-1 mb-0"
+                                                        @input="(value) => props.pageChanged({ currentPage: value })">
+                                                        <template #prev-text>
+                                                            <feather-icon icon="ChevronLeftIcon" size="18" />
+                                                        </template>
+                                                        <template #next-text>
+                                                            <feather-icon icon="ChevronRightIcon" size="18" />
+                                                        </template>
+                                                        </b-pagination>
+                                                    </div>
+                                                    </div>
+                                                </template>
+                                            </vue-good-table>     
                                     </b-col>
                                 </b-row>
                             </b-form>
@@ -456,398 +587,127 @@
                         </div>
                     </b-tab> 
 
+                    <b-tab>
+                        <template #title>
+                            <feather-icon icon="UsersIcon" size="16" class="mr-0 mr-sm-50" />
+                            <span class="d-none d-sm-inline">{{t('Group')}}</span>
+                        </template>
+                        <div>
+                            <b-media class="mb-2">
+                                <template #aside>
+                                    <b-avatar ref="previewEl" :src="pRowData.img_url" :text="pRowData.fullname" size="90px" rounded />
+                                </template>
+                                <h4 class="mb-1">
+                                    {{ pRowData.fullname }}
+                                </h4>
+                                <h4 class="mb-1">
+                                    {{ pRowData.id }}
+                                </h4>
+                                <b-badge
+                                    pill
+                                    :variant="`light-${this.resolveStatusVariant(pRowData.status)}`"
+                                    class="text-capitalize"
+                                >
+                                    {{t(this.resolveStatusText(pRowData.status))}}
+                                </b-badge>
+                                <div class="d-flex flex-wrap">
+
+                                </div>
+                            </b-media>
+
+                            <b-form>
+                                <b-row>
+                                    <b-col md="12">
+                                        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="success" class="mr-1" v-if="isModeEdit" @click="confirmJoinGroup" >
+                                        <feather-icon icon="UsersIcon" />
+                                        {{t('Join Group')}}
+                                    </b-button>
+                                    </b-col>
+                                </b-row>                               
+                                
+                                <b-row>
+                                    <b-col md="12">
+                                        <hr/>
+                                    </b-col>
+                                </b-row>                               
+                                <b-row>
+                                    <b-col md="12">
+                                        <vue-good-table ref="my-table-group-of-member" :columns="columnsGroupOfMember" :rows="rowsGroupOfMember" :rtl="directionGroupOfMember" :line-numbers="true"
+                                            :search-options="{
+                                                enabled: false,                                        
+                                            }" :select-options="{
+                                                enabled: false,
+                                                selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
+                                                selectionInfoClass: 'custom-class',
+                                                selectionText: 'rows selected',
+                                                clearSelectionText: 'clear',
+                                                disableSelectInfo: true, // disable the select info panel on top
+                                                selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
+                                            }" :pagination-options="{
+                                                enabled: true,
+                                                perPage: pageLengthGroupOfMember
+                                            }" theme="polar-bear">                                        
+                                                <template slot="table-row" slot-scope="props">
+
+                                                    <span v-if="props.column.field === 'group_name2'">       
+                                                        <b-img :src="props.row.subscription_img" fluid thumbnail style="height: 50px;" />                                                        
+                                                        <div style="font-size: 14px;color:gray">{{props.row.group_name}}</div>
+                                                    </span>
+
+                                                    <span v-if="props.column.field === 'update_date2'">              
+                                                        {{formatDateAssigned2(props.row.update_at)}}
+                                                    </span>
+
+                                                    <span>
+                                                    {{ props.formattedRow[props.column.field] }}
+                                                    </span>
+
+                                                    <span v-if="props.column.field === 'action'">  
+                                                        <b-badge style="cursor: pointer; margin-right:2px" variant="warning" @click="confirmDeleteMemberInGroup(props.row)">
+                                                            <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
+                                                            <span class="d-none d-sm-inline">{{t('Delete')}}</span>
+                                                        </b-badge>
+                                                    </span>
+
+                                                </template>
+                                                
+                                                <template slot="pagination-bottom" slot-scope="props">
+                                                    <div class="d-flex justify-content-between flex-wrap">
+                                                    <div class="d-flex align-items-center mb-0 mt-1">
+                                                        <span class="text-nowrap ">
+                                                        {{t("Showing") +" 1 " + t("to") }}
+                                                        </span>
+                                                        <b-form-select v-model="pageLengthGroupOfMember" :options="['3', '5', '10', '20', '50', '100']" class="mx-1"
+                                                        @input="(value) => props.perPageChanged({ currentPerPage: value })" />
+                                                        <span class="text-nowrap"> {{t('of')}} {{ props.total }} {{t('entries')}} </span>
+                                                    </div>
+                                                    <div>
+                                                        <b-pagination :value="1" :total-rows="props.total" :per-page="pageLengthGroupOfMember" first-number last-number
+                                                            align="right" prev-class="prev-item" next-class="next-item" class="mt-1 mb-0"
+                                                        @input="(value) => props.pageChanged({ currentPage: value })">
+                                                        <template #prev-text>
+                                                            <feather-icon icon="ChevronLeftIcon" size="18" />
+                                                        </template>
+                                                        <template #next-text>
+                                                            <feather-icon icon="ChevronRightIcon" size="18" />
+                                                        </template>
+                                                        </b-pagination>
+                                                    </div>
+                                                    </div>
+                                                </template>
+                                            </vue-good-table>  
+                                    </b-col>
+                                </b-row>
+                            </b-form>
+
+                        </div>
+                    </b-tab> 
                     
                 </b-tabs>
             </b-card-code>
 
         </Transition>
-
-        <Transition name="bounce">
-            <b-card-code v-if="showInspectApprove">
-                
-                <b-row>
-                    <b-col md="12">                                
-                        <b-form-group              
-                            :label="t('Loan Type')"
-                            label-for="loan-type-selected"
-                            >
-                            {{ inspectApproveData.interest_name }}
-                            
-                        </b-form-group>
-                    </b-col>
-                </b-row>  
-                <b-row>
-                    <b-col md="12">
-                        <hr/>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col md="2">
-                        <b-form-group :label="t('Period Type')" label-for="period-name">                                                
-                            {{ period_name2 }}
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="2">
-                        <b-form-group :label="t('Collateral')" label-for="Collateral">                                                
-                            {{ collateral_name2 }}
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="2">
-                        <b-form-group :label="t('Calculate Interest Every')" label-for="cal-interest-every">                                                
-                            {{ period_number2 }}&nbsp;{{ period_unit2 }}
-                        </b-form-group>
-                    </b-col>
-                    
-                </b-row>
-                <b-row>
-                    <b-col md="12">
-                        <hr/>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col md="2">
-                        <b-form-group :label="t('Need Loan Amount')" label-for="loan-amount">                                                
-                            {{ loan_amount2 }}
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="2">
-                        <b-form-group :label="t('Interest')" label-for="interest">                                                
-                            {{ interest2 }}
-                        </b-form-group>
-                    </b-col>
-                    
-                    <b-col md="2">
-                        <b-form-group :label="t('Longtime')+' ('+period_unit2+')'" label-for="loan_longtime_number">                                                
-                            {{ loan_longtime_number2 }}
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="2">
-                        <b-form-group :label="t('Start Date')" label-for="loan_start_at">                                    
-                            {{ formatDateAssigned2(loan_start_at2) }}
-                        </b-form-group>
-                    </b-col>
-
-                    <b-col md="2">
-                        <b-form-group :label="t('Effective Rate')" label-for="effective_rate">
-                            <b-form-checkbox
-                                id="effective_rate2"
-                                name="effective_rate2"
-                                v-model="effective_rate2"
-                                value="1"
-                                unchecked-value="0"    
-                                :disabled="true"
-                            >
-                                {{t('Yes')}}          
-                            </b-form-checkbox>                        
-                        </b-form-group>
-                    </b-col>
-
-                </b-row>
-
-                <b-row>
-                    <b-col md="12">
-                        <hr/>
-                    </b-col>
-                </b-row>
-                
-                <b-row>
-                    <b-col md="12">
-                        <b-form-group
-                            :label="t('Share Person')"
-                            label-for="share-person-input"                    
-                            >                            
-                        </b-form-group>  
-                    </b-col>
-                </b-row>
-                <b-row v-for="item in rowsShareLoan"
-                        :key="item.id"   >
-                    <b-col md="3">
-                        {{ item.fullName }}
-                    </b-col>
-                    <b-col md="3">
-                        {{ item.share_percent }} %
-                    </b-col>
-                    <b-col md="6">
-
-                    </b-col>
-                </b-row>
-
-                <b-row>
-                    <b-col md="12">
-                        <hr/>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col md="3" v-if="inspectApproveData.collateral_img1.length>0">
-                        <b-form-group              
-                            :label="t('Attach File')"
-                            label-for="attach-file1"
-                            >
-                            <a target="_blank" :href="inspectApproveData.collateral_img1">
-                                <b-img :src="inspectApproveData.collateral_img1" fluid thumbnail style="height: 200px;" />
-                            </a>
-                        </b-form-group>
-                        
-                    </b-col>
-
-                    <b-col md="3" v-if="inspectApproveData.collateral_img2.length>0">
-                        <b-form-group              
-                            :label="t('Attach File')"
-                            label-for="attach-file2"
-                            >
-                            <a target="_blank" :href="inspectApproveData.collateral_img2">
-                                <b-img :src="inspectApproveData.collateral_img2" fluid thumbnail style="height: 200px;" />
-                            </a>  
-                        </b-form-group>                                          
-                    </b-col>
-
-                    <b-col md="3" v-if="inspectApproveData.collateral_img3.length>0">
-                        <b-form-group              
-                            :label="t('Attach File')"
-                            label-for="attach-file3"
-                            >
-                            <a target="_blank" :href="inspectApproveData.collateral_img3">
-                                <b-img :src="inspectApproveData.collateral_img3" fluid thumbnail style="height: 200px;" />
-                            </a>          
-                        </b-form-group>                                   
-                    </b-col>
-
-                    <b-col md="3" v-if="inspectApproveData.collateral_img4.length>0">
-                        <b-form-group              
-                            :label="t('Attach File')"
-                            label-for="attach-file4"
-                            >
-                            <a target="_blank" :href="inspectApproveData.collateral_img4">
-                                <b-img :src="inspectApproveData.collateral_img4" fluid thumbnail style="height: 200px;" />
-                            </a>
-                        </b-form-group>
-                    </b-col>
-                </b-row>
-
-                <b-row v-if="inspectApproveData.collateral_img1.length>0 || inspectApproveData.collateral_img2.length>0 || inspectApproveData.collateral_img3.length>0 || inspectApproveData.collateral_img4.length>0" >
-                    <b-col md="12">
-                        <hr/>
-                    </b-col>
-                </b-row>
-                
-                <b-row>
-                    <b-col md="12" v-if="!showLoanPayment">                                            
-                        <vue-good-table ref="my-table-calculate2" :columns="columnsCal" :rows="rowsCal" :rtl="direction" :line-numbers="true"
-                        :search-options="{
-                            enabled: false,                                        
-                        }" :select-options="{
-                            enabled: false,
-                            selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
-                            selectionInfoClass: 'custom-class',
-                            selectionText: 'rows selected',
-                            clearSelectionText: 'clear',
-                            disableSelectInfo: true, // disable the select info panel on top
-                            selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-                        }" :pagination-options="{
-                            enabled: true,
-                            perPage: pageLength3
-                        }" theme="polar-bear">                                        
-                            <template slot="table-row" slot-scope="props">
-
-                                <span v-if="props.column.field === 'payment_date2'">              
-                                    {{formatDateAssigned2(props.row.payment_date)}}
-                                </span>
-                                
-                                <span v-if="props.column.field === 'principle_amount2'">       
-                                    
-                                        {{(props.row.principle_amount).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}}
-                                    
-                                </span>
-                                
-                                <span v-if="props.column.field === 'interest_amount2'">              
-                                    
-                                    
-                                        {{(props.row.interest_amount).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}}
-                                    
-                                </span>
-
-                                <span v-if="props.column.field === 'payment_amount2'">    
-                                    <b-badge
-                                        pill
-                                        variant="success"
-                                    >
-                                    {{(props.row.payment_amount).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}}
-                                    </b-badge>                                                
-                                </span>
-
-                                <span>
-                                {{ props.formattedRow[props.column.field] }}
-                                </span>
-
-                            </template>
-                            
-                            <template slot="pagination-bottom" slot-scope="props">
-                                <div class="d-flex justify-content-between flex-wrap">
-                                <div class="d-flex align-items-center mb-0 mt-1">
-                                    <span class="text-nowrap ">
-                                    {{t("Showing") +" 1 " + t("to") }}
-                                    </span>
-                                    <b-form-select v-model="pageLength3" :options="['3', '5', '10', '20', '50', '100']" class="mx-1"
-                                    @input="(value) => props.perPageChanged({ currentPerPage: value })" />
-                                    <span class="text-nowrap"> {{t('of')}} {{ props.total }} {{t('entries')}} </span>
-                                </div>
-                                <div>
-                                    <b-pagination :value="1" :total-rows="props.total" :per-page="pageLength3" first-number last-number
-                                        align="right" prev-class="prev-item" next-class="next-item" class="mt-1 mb-0"
-                                    @input="(value) => props.pageChanged({ currentPage: value })">
-                                    <template #prev-text>
-                                        <feather-icon icon="ChevronLeftIcon" size="18" />
-                                    </template>
-                                    <template #next-text>
-                                        <feather-icon icon="ChevronRightIcon" size="18" />
-                                    </template>
-                                    </b-pagination>
-                                </div>
-                                </div>
-                            </template>
-                        </vue-good-table>                                            
-                    </b-col>
-
-                    <b-col md="12" v-if="showLoanPayment">                                            
-                        <vue-good-table ref="my-table-payment" :columns="columnsPayment" :rows="rowsPayment" :rtl="direction" :line-numbers="true"
-                        :search-options="{
-                            enabled: false,                                        
-                        }" :select-options="{
-                            enabled: false,
-                            selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
-                            selectionInfoClass: 'custom-class',
-                            selectionText: 'rows selected',
-                            clearSelectionText: 'clear',
-                            disableSelectInfo: true, // disable the select info panel on top
-                            selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-                        }" :pagination-options="{
-                            enabled: true,
-                            perPage: pageLength3
-                        }" theme="polar-bear">                                        
-                            <template slot="table-row" slot-scope="props">
-
-                                <span v-if="props.column.field === 'due_date2'">              
-                                    {{formatDateAssigned2(props.row.due_date)}}
-                                </span>
-                                
-                                <span v-if="props.column.field === 'principle_amount2'">       
-                                    
-                                        {{(props.row.principle_amount).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}}
-                                    
-                                </span>
-                                
-                                <span v-if="props.column.field === 'interest_amount2'">              
-                                    
-                                    
-                                        {{(props.row.interest_amount).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}}
-                                    
-                                </span>
-
-                                <span v-if="props.column.field === 'total_amount2'">    
-                                    <b-badge
-                                        pill
-                                        variant="success"
-                                    >
-                                    {{(props.row.total_amount).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}}
-                                    </b-badge>                                                
-                                </span>
-
-                                <span v-if="props.column.field === 'payment_status2'">
-                                    <b-badge
-                                        pill
-                                        :variant="`light-success`"
-                                        class="text-capitalize"
-                                        v-if="props.row.paid==1"
-                                    >
-                                        {{ t('Paid')+' '+ formatDateAssigned(props.row.paid_at) }}                                        
-                                    </b-badge>
-                                    <b-badge
-                                        pill
-                                        :variant="`light-success`"
-                                        class="text-capitalize"
-                                        v-if="props.row.paid==1"
-                                    >
-                                        {{t('Receive Amount')}} :
-                                        {{  (props.row.total_received_amount)?(props.row.total_received_amount).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }):'0.00' }}
-                                    </b-badge>
-                                    <b-badge
-                                        pill
-                                        :variant="`light-danger`"
-                                        class="text-capitalize"
-                                        v-if="props.row.paid==0"
-                                    >
-                                        {{ t('Not Paid')}}
-                                    </b-badge>
-                                    
-                                </span>
-
-                                <span v-if="props.column.field === 'action'">                                                    
-                                    <b-badge style="cursor: pointer; margin-right:2px" variant="info" @click="showPaymentNote(props.row)">
-                                        <feather-icon icon="SearchIcon" size="16" class="mr-0 mr-sm-50" />
-                                        <span class="d-none d-sm-inline">{{t('Inspect')}}</span>
-                                    </b-badge>
-                                </span>
-
-
-                                <span>
-                                {{ props.formattedRow[props.column.field] }}
-                                </span>
-
-                            </template>
-                            
-                            <template slot="pagination-bottom" slot-scope="props">
-                                <div class="d-flex justify-content-between flex-wrap">
-                                <div class="d-flex align-items-center mb-0 mt-1">
-                                    <span class="text-nowrap ">
-                                    {{t("Showing") +" 1 " + t("to") }}
-                                    </span>
-                                    <b-form-select v-model="pageLength3" :options="['3', '5', '10', '20', '50', '100']" class="mx-1"
-                                    @input="(value) => props.perPageChanged({ currentPerPage: value })" />
-                                    <span class="text-nowrap"> {{t('of')}} {{ props.total }} {{t('entries')}} </span>
-                                </div>
-                                <div>
-                                    <b-pagination :value="1" :total-rows="props.total" :per-page="pageLength3" first-number last-number
-                                        align="right" prev-class="prev-item" next-class="next-item" class="mt-1 mb-0"
-                                        @input="(value) => props.pageChanged({ currentPage: value })">
-                                        <template #prev-text>
-                                            <feather-icon icon="ChevronLeftIcon" size="18" />
-                                        </template>
-                                        <template #next-text>
-                                            <feather-icon icon="ChevronRightIcon" size="18" />
-                                        </template>
-                                    </b-pagination>
-                                </div>
-                                </div>
-                            </template>
-                        </vue-good-table>                                            
-                    </b-col>
-                </b-row>
-
-                
-
-                <b-row>
-                    <b-col md="12">
-                        <hr/>
-                    </b-col>
-                </b-row>
-
-                <b-button @click="closeInspectionApprove" v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="reset" variant="outline-secondary" >
-                        <feather-icon icon="DeleteIcon" />
-                        {{t('Back')}}
-                </b-button>  &nbsp;
-
-                <b-button @click="confirmApprove(inspectApproveData.id)" v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="reset" variant="success" v-if="inspectCanAction" :disabled="pagePermission.canApprove==0" >
-                        <feather-icon icon="CheckSquareIcon" />
-                        {{t('Approve')}}
-                </b-button>&nbsp;
-
-                <b-button @click="confirmReject(inspectApproveData.id)" v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="reset" variant="warning" v-if="inspectCanAction" :disabled="pagePermission.canApprove==0">
-                        <feather-icon icon="XSquareIcon" />
-                        {{t('Reject')}}
-                </b-button>
-                
-            </b-card-code>
-        </Transition>
+    
     
         <b-modal
             id="modal-request"
@@ -887,7 +747,7 @@
                     <b-form-group :label="t('Select Email')" label-for="email-selected">
                         <b-input-group class="input-group-merge">
                             <b-input-group-prepend is-text>
-                                <feather-icon icon="EmailIcon" />
+                                <feather-icon icon="MailIcon" />
                             </b-input-group-prepend>
                             <b-form-select v-model="selectedSubScribeEmail" :options="optionSubScribeEmail"></b-form-select>
                         </b-input-group>
@@ -957,66 +817,6 @@
                     </b-form-group>
                 </b-col>
             </b-row>
-            <b-row>
-                <b-col md="12">
-                    <b-form-group
-                        :label="t('Share Person')"
-                        label-for="share-person-input"                    
-                        >                            
-                    </b-form-group>  
-                </b-col>
-            </b-row>
-            <b-row v-for="item in sharePersonList"
-                    :key="item.id"   >
-                <b-col md="6">
-                    {{ item.fullName }}
-                </b-col>
-                <b-col md="4">
-                    {{ item.percent }} %
-                </b-col>
-                <b-col md="2">
-                    <b-badge style="cursor: pointer; margin-right:2px" variant="warning" @click="deleteSharePerson(item.id)" >
-                                <feather-icon icon="XSquareIcon" size="16" class="mr-0 mr-sm-50" />                                                    
-                        </b-badge>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col md="12">
-                    <hr/>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col md="5">
-                    <b-form-group
-                        :label="t('Select Share Person')"
-                        label-for="select-share-percent"                    
-                        >
-                        <b-form-select id="select-share-percent" v-model="shareSelected" :options="shareOptions"  ></b-form-select>
-                    </b-form-group>
-                </b-col>
-                <b-col md="3">
-                    <b-form-group
-                        :label="t('Percent')"
-                        label-for="share-percent"                    
-                        >
-                        <b-form-input
-                            id="sharePercent" v-model="sharePercent" type="number"
-                        />
-                    </b-form-group>
-                </b-col>
-                <b-col md="4">
-                    <b-form-group
-                        :label="t('Percent')"
-                        label-for="share-percent"                    
-                        >
-                        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mr-1" @click="addSharePerson">
-                                <feather-icon icon="PlusIcon" />
-                                {{t('Add')}}
-                        </b-button>
-                    </b-form-group>
-                </b-col>
-            </b-row>
-              
         </b-modal>
 
         <b-modal
@@ -1035,120 +835,162 @@
             :cancelTitle="t('NO')"
             footerClass="p-2"
         >
-            <form ref="form" @submit.stop.prevent="handleOkReject">
-                <b-form-group
-                :label="t('Note')"
-                label-for="reject-note-input"                    
-                >
-                
-                <b-form-textarea
-                    id="reject-note-input"
-                    v-model="rejectNoteInput"                
-                    rows="3"
-                    max-rows="6"
-                ></b-form-textarea>
-
-                </b-form-group>
-            </form>
+        <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        :label="t('Note')"
+                        label-for="cancel-note-input"                    
+                        >
+                        
+                        <b-form-textarea
+                            id="cancel-note-input"
+                            v-model="cancelNoteInput"                
+                            rows="3"
+                            max-rows="6"
+                        ></b-form-textarea>
+                    </b-form-group>
+                </b-col>
+            </b-row>
         </b-modal>
 
         <b-modal
-            id="modal-payment-note"
-            ref="modalPaymentNote"
-            v-model="showModalPaymentNote"
-            :title="t('Note')"
-            @show="resetModalPaymentNote"
-            @hidden="resetModalPaymentNote"
-            @ok="handleOkPaymentNote"      
+            id="modal-cancel"
+            ref="modalCancel"
+            v-model="showModalCancel"
+            :title="t('Please confirm that you want to cancel')"
+            @show="resetModalCancel"        
+            @hidden="resetModalCancel"
+            @ok="handleOkCancel"      
             size="sm"  
             :hideHeaderClose="false"            
-            ok-variant="info"
-            :okTitle="t('Close')"
-            buttonSize="lg"            
+            ok-variant="success"
+            :okTitle="t('YES')"
+            buttonSize="sm"
+            :cancelTitle="t('NO')"
             footerClass="p-2"
-            ok-only
-            
         >
-            <form ref="form" @submit.stop.prevent="handleOkPaymentNote">
-                <b-row>
-                    <b-col md="12">
-                        <b-form-group 
-                        :label="t('Attach File')"
-                        label-for="payment-note-img1"                    
+            
+            <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        :label="t('Note')"
+                        label-for="cancel-note-input"                    
                         >
-                            <a target="_blank" :href="paymentRefImg">
-                                <b-img :src="paymentRefImg" fluid thumbnail style="height: 200px;" /><br/>
-                            </a>
-                        </b-form-group>
-                    </b-col>
-                </b-row>
-                
-                <b-row>
-                    <b-col md="12">
-                        <b-form-group
-                            :label="t('Note')"
-                            label-for="payment-note-input"                    
-                            >
-                            <b-form-textarea
-                                id="payment-note-input"
-                                v-model="paymentRefNote"                
-                                rows="3"
-                                max-rows="6"
-                                readonly
-                            ></b-form-textarea>
-                        </b-form-group>
-                    </b-col>
-                </b-row>
+                        
+                        <b-form-textarea
+                            id="cancel-note-input"
+                            v-model="cancelNoteInput"                
+                            rows="3"
+                            max-rows="6"
+                        ></b-form-textarea>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+        </b-modal>
 
-                <b-row>
-                    <b-col md="12">
-                        <b-form-group
-                        :label="t('Note Date')"
-                        label-for="payment-note-input"                    
+        <b-modal
+            id="modal-note"
+            ref="modalNote"
+            v-model="showModalNote"
+            :title="t('Note')"
+            @show="resetModalNote"        
+            @hidden="resetModalNote"
+            @ok="handleOkNote"      
+            size="sm"  
+            :hideHeaderClose="false"            
+            ok-variant="success"
+            :okTitle="t('Ok')"
+            buttonSize="sm"
+            hide-footer
+        >
+            
+            <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        :label="t('Note')"
+                        label-for="cancel-note-input"                    
                         >
-                            <b-badge style="cursor: pointer; margin-right:2px" variant="info" >                                        
-                                        <span class="d-none d-sm-inline">{{ paymentNoteAt }}</span>
-                            </b-badge>
-                        </b-form-group>
-                    </b-col>
-                </b-row>
+                        
+                        <b-form-textarea
+                            id="cancel-note-input"
+                            v-model="cancelNoteInput"                
+                            rows="3"
+                            max-rows="6"
+                        ></b-form-textarea>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+        </b-modal>
 
-                <b-row>
-                    <b-col md="12">
-                        <b-form-group
-                        :label="t('Note By')"
-                        label-for="payment-note-input"                    
-                        >
-                            <b-badge style="cursor: pointer; margin-right:2px" variant="info" >                                        
-                                        <span class="d-none d-sm-inline">{{ paymentNoteBy }}</span>
-                            </b-badge>
-                            
-                        </b-form-group> 
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col md="12">
-                        <hr/>
-                    </b-col>
-                </b-row>
-
-                <b-row>
-                    <b-col md="12">
-                        <b-pagination :value="paymentNotePage" :total-rows="4" :per-page="1" first-number last-number
-                                align="right" prev-class="prev-item" next-class="next-item" class="mt-1 mb-0"
-                                @input="(value) => paymentNoteChange(value)"
-                        >
-                                <template #prev-text>
-                                    <feather-icon icon="ChevronLeftIcon" size="18" />
-                                </template>
-                                <template #next-text>
-                                    <feather-icon icon="ChevronRightIcon" size="18" />
-                                </template>
-                        </b-pagination>
-                    </b-col>
-                </b-row>
-                
-            </form>
+        <b-modal
+            id="modal-join-group"
+            ref="modalJoinGroup"
+            v-model="showModalJoinGroup"
+            :title="t('Join Group')"
+            @show="resetModalJoinGroup"        
+            @hidden="resetModalJoinGroup"
+            @ok="handleOkJoinGroup"      
+            size="md"  
+            :hideHeaderClose="false"            
+            ok-variant="success"
+            :okTitle="t('YES')"
+            buttonSize="md"
+            :cancelTitle="t('NO')"
+            footerClass="p-2"
+        >
+            
+            <b-row>
+                <b-col md="12">
+                    <b-form-group :label="t('Select Email')" label-for="email-selected">
+                        <b-input-group class="input-group-merge">
+                            <b-input-group-prepend is-text>
+                                <feather-icon icon="MailIcon" />
+                            </b-input-group-prepend>
+                            <b-form-select v-model="selectedSubScribeEmail" :options="optionSubScribeEmail"></b-form-select>
+                        </b-input-group>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+    
+            <b-row>                
+                <b-col md="12">
+                    <b-form-group :label="t('Select Group')" label-for="group-selected">
+                        <b-input-group class="input-group-merge">
+                            <b-input-group-prepend is-text>
+                                <feather-icon icon="UsersIcon" />
+                            </b-input-group-prepend>
+                            <b-form-select v-model="selectedSubScribeGroupId" :options="optionSubScribeGroup" @change="groupChange()"></b-form-select>
+                        </b-input-group>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                   <hr/>
+                </b-col>
+            </b-row>
+           
+            <b-row>
+                <b-col md="12">
+                    <span>{{ t('Amount') }}: <b-badge pill :variant="`light-success`" class="text-capitalize">{{memberInGroupList.length}}</b-badge> {{ t('Member') }}</span>
+                </b-col>                
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                   <hr/>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                    <b-form-group :label="t('Member in group')" label-for="member-in-group">
+                        <b-row v-for="item in memberInGroupList" :key="item.email" style="padding-left: 30px;" >
+                            <b-col>
+                                <span style="padding-left: 10px;color:grey;cursor: pointer;"> {{ item.email }} </span>
+                            </b-col>
+                        </b-row>
+                    </b-form-group>
+                </b-col>
+            </b-row>
         </b-modal>
 
     </div>
@@ -1239,6 +1081,26 @@ export default {
         this.dir = false
         return this.dir
         },
+        directionOrderHistory() {
+        if (store.state.appConfig.isRTL) {
+            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+            this.dirOrderHistory = true
+            return this.dirOrderHistory
+        }
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.dirOrderHistory = false
+        return this.dirOrderHistory
+        },
+        directionGroupOfMember() {
+        if (store.state.appConfig.isRTL) {
+            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+            this.dirGroupOfMember = true
+            return this.dirGroupOfMember
+        }
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.dirGroupOfMember = false
+        return this.dirGroupOfMember
+        },
     },
     setup(props, {
         emit
@@ -1285,206 +1147,88 @@ export default {
             },                   
         ];
 
-        const columnsRequestLoan =  [
+        const columnsOrderHistory =  [
             {
-                label: t('Request Date'),
-                field: 'create_at2',
+            label: t('Product'),
+            field: 'subscription_img2',  
+            width: '15%',          
             },
             {
-                label: t('Create By'),
-                field: 'create_by',            
-            },  
-            {
-                label: t('Loan Name'),
-                field: 'interest_name',            
+            label: t('Email'),
+            field: 'email',  
+            width: '10%',          
             },
             {
-                label: t('Loan Amount'),
-                field: 'loan_amoun2',                   
-            },   
-            {
-                label: t('Loan Time'),
-                field: 'loan_longtime_number2',                   
-            }, 
-            {
-                label: t('Interest'),
-                field: 'interest2',                   
-            },    
-             
-            {
-                label: t('Calculate Interest Every'),
-                field: 'period_number2',                   
-            },  
-            {
-                label: t('Start Date Contract'),
-                field: 'loan_start_at2',
+            label: t('Create Date'),
+            field: 'create_date2',
+            width: '10%',
             },
             {
-                label: t('Action'),
-                field: 'action',
-            },
-        ];
-
-        const columnsRejectLoan =  [
-            {
-                label: t('Request Date'),
-                field: 'create_at2',
-            },
-            {
-                label: t('Create By'),
-                field: 'create_by',            
-            },  
-            {
-                label: t('Loan Name'),
-                field: 'interest_name',            
-            },
-            {
-                label: t('Loan Amount'),
-                field: 'loan_amoun2',                   
-            },   
-            {
-                label: t('Loan Time'),
-                field: 'loan_longtime_number2',                   
-            }, 
-            {
-                label: t('Interest'),
-                field: 'interest2',                   
-            },    
-            
-            {
-                label: t('Calculate Interest Every'),
-                field: 'period_number2',                   
-            },  
-            {
-                label: t('Start Date Contract'),
-                field: 'loan_start_at2',
-            },   
-            {
-                label: t('Reject By'),
-                field: 'reject_by2',
-            },    
-            {
-                label: t('Note'),
-                field: 'reject_note',
-            },      
-            {
-                label: t('Action'),
-                field: 'action',
-            },
-        ];
-
-        const columnsApproveLoan =  [
-            {
-                label: t('Request Date'),
-                field: 'create_at2',
-            },
-            {
-                label: t('Create By'),
-                field: 'create_by',            
-            },  
-            {
-                label: t('Loan Name'),
-                field: 'interest_name',            
-            },
-            {
-                label: t('Loan Amount'),
-                field: 'loan_amoun2',                   
-            },   
-            {
-                label: t('Remain Principle'),
-                field: 'remain_loan2',                   
-            },   
-            {
-                label: t('Loan Time'),
-                field: 'loan_longtime_number2',                   
-            }, 
-            {
-                label: t('Interest'),
-                field: 'interest2',                   
-            },    
-            
-            {
-                label: t('Calculate Interest Every'),
-                field: 'period_number2',                   
-            },  
-            {
-                label: t('Start Date Contract'),
-                field: 'loan_start_at2',
-            },   
-            {
-                label: t('Approve By'),
-                field: 'approve_by2',
-            },    
-            {
-                label: t('Note'),
-                field: 'approve_note',
-            },      
-            {
-                label: t('Action'),
-                field: 'action',
-            },
-        ];
-        
-        const columnsCal =  [
-            {
-            label: t('Payment Date'),
-            field: 'payment_date2',
-            },
-            {
-            label: t('Principle Amount'),
-            field: 'principle_amount2',  
-            width: '20%',          
-            },
-            {
-            label: t('Interest Amount'),
-            field: 'interest_amount2',
+            label: t('Start Date'),
+            field: 'start_date2',
             width: '10%',
             },       
             {
-            label: t('Total Payment'),
-            field: 'payment_amount2',
-            width: '30%',
-            },                   
-        ];
-
-        const columnsPayment =  [
+            label: t('End Date'),
+            field: 'end_date2',
+            width: '10%',
+            }, 
             {
-                label: t('Due Date'),
-                field: 'due_date2',
+            label: t('Remain'),
+            field: 'remain',
+            width: '10%',
+            }, 
+            {
+            label: t('Approve'),
+            field: 'approved',
+            width: '10%',
             },
+           
             {
-                label: t('Principle Amount'),
-                field: 'principle_amount2',  
-                
-            },
-            {
-                label: t('Interest Amount'),
-                field: 'interest_amount2',
-                
-            },       
-            {
-                label: t('Total Payment'),
-                field: 'total_amount2',                
-            },
-            {
-                label: t('Payment Status'),
-                field: 'payment_status2',                
-            },    
+            label: t('Approve By'),
+            field: 'approve_by',
+            width: '10%',
+            },   
             {
                 label: t('Action'),
                 field: 'action',                
-            },                 
+            },             
+        ];
+
+        const columnsGroupOfMember =  [
+            {
+                label: t('Group Name'),
+                field: 'group_name2',  
+                width: '20%',          
+            },
+            {
+                label: t('Email'),
+                field: 'email',                  
+            },
+            {
+                label: t('Latest Update'),
+                field: 'update_date2',
+                width: '10%',
+            },  
+            {
+                label: t('Update By'),
+                field: 'update_by',
+                width: '10%',
+            },   
+            {
+                label: t('Action'),
+                field: 'action',    
+                width: '10%',            
+            },             
         ];
 
         return {
             resetForm,
             t,
             columns,
-            columnsRequestLoan,
-            columnsRejectLoan,
-            columnsApproveLoan,
-            columnsCal,
-            columnsPayment,
+            columnsOrderHistory,
+            columnsGroupOfMember,
+            
         }
     },      
     model: {        
@@ -1509,13 +1253,17 @@ export default {
             pageLength: 10,
             pageLength2: 10,
             pageLength3: 10,
+            pageLengthOrderHistory:10,
+            pageLengthGroupOfMember:10,
 
             dir: false,            
             dir2: false,
+            dirOrderHistory:false,
+            dirGroupOfMember:false,
+
             rows: [],
-            rowsCal:[],
-            rowsPayment:[],
-            rowsShareLoan:[],
+            rowsOrderHistory:[],
+            rowsGroupOfMember:[],
             
             searchTerm: '',            
             searchTerm2: '',            
@@ -1524,71 +1272,7 @@ export default {
             tmpFileUpload:[],
             tmpFileUpload2:[],
 
-            period_name:"",
-            period_unit:"",
-            collateral_name:"",
-            period_number:0,            
-            loan_amount:1000.0,
-            interest:3.0,
-            loan_longtime_number:10,
-            effective_rate:0,
-            loan_start_at: fDate,
-            calculated_interest : false,
-
             tabIndex:0,
-
-            collateral_img1:"",
-            collateral_img2:"",
-            collateral_img3:"",
-            collateral_img4:"",
-
-            requestLoan : [],
-            rejectLoan : [],
-            approveLoan : [],
-            view_detail_request_loan:false,
-            view_detail_reject_loan:false,
-            view_detail_approve_loan:false,
-
-            selectedLoanId: 0,
-            showModalApprove:false,
-            showModalRequest:false,
-
-            approveNoteInput:"",
-            requestNoteInput:"",
-
-            showModalReject:false,
-            rejectNoteInput:"",
-
-            interestTypeSelected: 0,
-            interestTypeOptions: [{
-                value: 0,
-                text: this.$t('Select Loan Type')
-            }, ],
-            interestTypeData:[],
-
-            interestPerSelected:1,
-            interestPerOptions: [
-                {
-                    value: 1,
-                    text: '1 '+this.$t('Days')
-                }, 
-                {
-                    value: 7,
-                    text: '7 '+this.$t('Days')
-                },
-                {
-                    value: 15,
-                    text: '15 '+this.$t('Days')
-                },
-                {
-                    value: 30,
-                    text: '1 '+this.$t('Months')
-                }, 
-                {
-                    value: 365,
-                    text: '1 '+this.$t('Year')
-                }, 
-            ],
 
             provinceSelected: 0,
             provinceOptions: [{
@@ -1612,57 +1296,44 @@ export default {
             subDistrictData:[],
 
             showCollateralImg1:false,     
-            showInspectApprove:false,      
-            
-            inspectApproveData:[],
-            inspectCanAction:false,
-            period_name2:"",
-            period_unit2:"",
-            collateral_name2:"",
-            period_number2:0,            
-            loan_amount2:1000.0,
-            interest2:3.0,
-            interestper2:"วัน",
-            loan_longtime_number2:10,
-            effective_rate2:0,
-            loan_start_at: fDate,
-
+            showModalRequest:false,
+            showInspectApprove:false,
             showLoanPayment:false,
+            showModalReject:false,
+            showModalApprove:false,
+            showModalCancel:false,
+            showModalJoinGroup:false,
+            approveNoteInput:'',
+            rejectNoteInput:'',
+            requestNoteInput:'',
             loanPaymentData:[],
 
-            showModalPaymentNote:false,
-            paymentNoteInput:'',
-            paymentNoteData:[],
-
-            paymentRefImg:'',
-            paymentRefNote:'',
-            paymentNoteAt:'',
-            paymentNoteBy:'',
-
-            paymentNotePage:1,
-
-            shareSelected:'',
-            shareDatas:[],
-
-            shareOptions: [{
-                value: "",
-                text: 'Select Share Person'
-            }, ],
-
-            sharePersonList:[],
-            sharePercent:100,
-            pagePermission:[],
-
+            showModalNote:false,
+            
             productList:[],
+            groupList:[],
             selectedProductId:0,
             inputEmail:'',
-            emailList:[],
 
-            selectedSubScribeEmail :0,
+            emailList:[],
+            selectedSubScribeGroupId:0,
+            optionSubScribeGroup : [{
+                value: 0,
+                text: 'Select Group'
+            },],
+
+            selectedSubScribeEmail :"",
             optionSubScribeEmail : [{
                 value: "",
                 text: 'Select Email'
             },],
+
+            cancelNoteInput:"",
+            cancelOrderId : 0,
+            approveOrderId : 0,
+
+            memberInGroupList:[],
+            
         }
     },
     props: {
@@ -1683,7 +1354,9 @@ export default {
             this.bankSelected = newVal.bank_id;           
             this.newPassword = newVal.password;
             
-            this.getMemberEmail(),
+            this.getMemberEmail();
+            this.getHistoryOrder();
+            this.getGroupOfMemberByMemberId();
             
             this.provinceSelected = newVal.province_id;
             this.districtSelected = newVal.district_id;
@@ -1706,12 +1379,11 @@ export default {
         await this.getPagePermission();
         await Promise.all([
             this.getAllSubDistrict(),
-            this.getBankInfo(),
-            this.getInterestType(),
+            this.getBankInfo(),            
             this.getAllProvince(),
-            this.getAllDistrict(),
-            this.getAllAdminActive(),         
+            this.getAllDistrict(),            
             this.getProductList(),  
+            this.getActiveGroupList(),            
         ]);        
             
         this.titleCard = "";        
@@ -1725,16 +1397,6 @@ export default {
         ...mapActions(["UploadFile"]),    
         ...mapActions(["UploadFileAndDeleteOldFile"]),  
         ...mapActions(["DeleteOldFile"]),  
-        ...mapActions(["GetInterestType"]),
-        ...mapActions(["CalculateLoanInterest"]),        
-        ...mapActions(["RequestLoan"]),    
-        ...mapActions(["GetRequestLoan"]),            
-        ...mapActions(["GetRejectLoan"]),
-        ...mapActions(["GetApproveLoan"]),
-        ...mapActions(["GetLoanPaymentByLoanId"]),        
-        ...mapActions(["GetShareLoanByLoanId"]), 
-        ...mapActions(["ApproveLoanById"]),
-        ...mapActions(["RejectLoanById"]),
         ...mapActions(["GetAllProvince"]),
         ...mapActions(["GetAllDistrict"]),
         ...mapActions(["GetAllSubDistrict"]),
@@ -1742,7 +1404,14 @@ export default {
         ...mapActions(["GetPagePermission"]), 
         ...mapActions(["GetActiveProductSetting"]), 
         ...mapActions(["GetMemberEmail"]), 
-        
+        ...mapActions(["CreateAndApproveSubScribeOrder"]), 
+        ...mapActions(["GetHistorySubScribeOrderByMemberID"]),  
+        ...mapActions(["CancelSubScribeOrder"]), 
+        ...mapActions(["ApproveSubScribeOrder"]), 
+        ...mapActions(["GetActiveSubscriptionGroup"]), 
+        ...mapActions(["GetSubscribeMemberByGroupById"]),
+        ...mapActions(["AddMemberToGroup"]),
+        ...mapActions(["GetGroupOfMemberByMemberId"]),
         formatDateAssigned(value) {
             let formattedDate = new Date(value);
             formattedDate = new Date(formattedDate.getTime() - 3600000); // 60 * 60 * 1000 * 1
@@ -1762,25 +1431,6 @@ export default {
         changeSelectedProduct(id)
         {
             this.selectedProductId= id;
-        },
-        loanTypeChange()
-        {
-            const item = this.interestTypeData.find(x=> x.id == this.interestTypeSelected);            
-            if (item) 
-            {
-                this.period_name=this.$t(item.period_name);
-                this.period_unit=this.$t(item.period_unit);
-                this.collateral_name=this.$t(item.collateral_name);
-                this.period_number=item.period_number;
-            }
-            else
-            {
-                this.period_name="";
-                this.period_unit="";
-                this.collateral_name="";
-                this.period_number=0.0;
-            }
-            
         },
         async getPagePermission(){
             console.log('getPagePermission');
@@ -1835,33 +1485,7 @@ export default {
             } else {
 
             }
-        },
-        async getInterestType() {
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            const User = new FormData();
-
-            User.append("userid", userData.username);
-            User.append("token", userData.token);
-
-            const response = await this.GetInterestType(User);
-            if (response.data.status == 'success') {
-                const interestInfo = response.data.data;                
-                let tmpArray = [];
-                interestInfo.forEach(element => {
-                    tmpArray.push({
-                        value: element.id,
-                        text: element.interest_name
-                    });
-                });
-
-                this.interestTypeData = interestInfo;
-                this.interestTypeOptions = tmpArray;
-                this.interestTypeSelected = tmpArray[0].value;
-                this.loanTypeChange();
-            } else {
-
-            }
-        },
+        },        
         async getAllProvince() {
             const userData = JSON.parse(localStorage.getItem('userData'));
             const User = new FormData();
@@ -2009,157 +1633,24 @@ export default {
         },
         subDistrictChange()
         {
-        },
-        async getRequestLoan()
+        },     
+        async groupChange()
         {
-            console.log("getRequestLoan");
-
+            console.log("groupChange")
             const userData = JSON.parse(localStorage.getItem('userData'));
-            const form = new FormData();
+            const User = new FormData();
 
-            form.append("userid", userData.username);
-            form.append("token", userData.token);
+            User.append("userid", userData.username);
+            User.append("token", userData.token);
+            User.append("page_name", this.$route.name);
+            User.append("id", this.selectedSubScribeGroupId);
 
-            form.append("member_id", this.pRowData.id);
-
-            const response = await this.GetRequestLoan(form);
-            if (response.data.status == "success") {                
-                this.requestLoan = response.data.data;
-            } else {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Get Request Loan`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: `${response.data.message}`,
-                    },
-                    autoHideDelay: 3000,
-                });
+            const response = await this.GetSubscribeMemberByGroupById(User);
+            if (response.data.status == 'success') {                
+                this.memberInGroupList = response.data.data; 
                 
-            }
-        },
-        async getRejectLoan()
-        {
-            console.log("getRejectLoan");
-
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            const form = new FormData();
-
-            form.append("userid", userData.username);
-            form.append("token", userData.token);
-
-            form.append("member_id", this.pRowData.id);
-
-            const response = await this.GetRejectLoan(form);
-            if (response.data.status == "success") {                
-                this.rejectLoan = response.data.data;
             } else {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Get Request Loan`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: `${response.data.message}`,
-                    },
-                    autoHideDelay: 3000,
-                });
-                
-            }
-        },
-        async getApproveLoan()
-        {
-            console.log("getApproveLoan");
 
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            const form = new FormData();
-
-            form.append("userid", userData.username);
-            form.append("token", userData.token);
-
-            form.append("member_id", this.pRowData.id);
-
-            const response = await this.GetApproveLoan(form);
-            if (response.data.status == "success") {                
-                this.approveLoan = response.data.data;
-            } else {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Get Request Loan`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: `${response.data.message}`,
-                    },
-                    autoHideDelay: 3000,
-                });
-                
-            }
-        },
-        async getLoanPaymentByLoanId()
-        {
-            console.log("GetLoanPaymentByLoanId");
-
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            const form = new FormData();
-
-            form.append("userid", userData.username);
-            form.append("token", userData.token);
-
-            form.append("loanId", this.inspectApproveData.id);
-
-            const response = await this.GetLoanPaymentByLoanId(form);
-            if (response.data.status == "success") {              
-                this.rowsPayment = response.data.data;
-            } else {
-                this.rowsPayment = [];
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Get Request Loan`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: `${response.data.message}`,
-                    },
-                    autoHideDelay: 3000,
-                });
-                
-            }
-        },
-        async getShareLoanByLoanId()
-        {
-            console.log("getShareLoanByLoanId");
-
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            const form = new FormData();
-
-            form.append("userid", userData.username);
-            form.append("token", userData.token);
-
-            form.append("loanId", this.inspectApproveData.id);
-
-            const response = await this.GetShareLoanByLoanId(form);
-            if (response.data.status == "success") {              
-                this.rowsShareLoan = response.data.data;
-            } else {
-                this.rowsShareLoan = [];
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Get Request Share Loan`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: `${response.data.message}`,
-                    },
-                    autoHideDelay: 3000,
-                });
-                
             }
         },
         async getProductList() {
@@ -2173,6 +1664,31 @@ export default {
             const response = await this.GetActiveProductSetting(User);
             if (response.data.status == 'success') {                
                 this.productList = response.data.data; 
+            } else {
+
+            }
+        },
+        async getActiveGroupList() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const User = new FormData();
+
+            User.append("userid", userData.username);
+            User.append("token", userData.token);
+            User.append("page_name", this.$route.name);
+
+            const response = await this.GetActiveSubscriptionGroup(User);
+            if (response.data.status == 'success') {                
+                this.groupList = response.data.data; 
+                let tmpArray = [];                
+                this.groupList.forEach(element => {
+                        tmpArray.push({
+                            value: element.id,
+                            text: "["+element.subscription_name+"] "+ element.group_name
+                        });
+                    });             
+                this.optionSubScribeGroup = tmpArray;
+                this.selectedSubScribeGroupId = tmpArray[0].value;
+
             } else {
 
             }
@@ -2400,230 +1916,22 @@ export default {
             }
 
         },
-        async calculateLoanInterest() {
-
-            const item = this.interestTypeData.find(x=> x.id == this.interestTypeSelected);
-            if (!item) {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t(`Not found loan type`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                return;
-            }
-
-            if (parseFloat(this.loan_amount)<1) 
-            {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t(`Loan amount must more than 1`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                return;
-            }
-
-            if (parseFloat(this.interest)<0) 
-            {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t(`Interest must more than or equal 0`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                return;
-            }
-
-            if (parseInt(this.period_number)<1) 
-            {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t(`Calculate every xx must more than 0`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                return;
-            }
-            
-
-            let loan_longtime_number = parseFloat(this.period_number);
-            try {
-                loan_longtime_number = Math.ceil(parseFloat(this.loan_longtime_number)/parseFloat(this.period_number)) * parseFloat(this.period_number);
-                if (loan_longtime_number==NaN) {
-                    loan_longtime_number = parseFloat(this.period_number);
-                }  
-                this.loan_longtime_number = loan_longtime_number;
-
-            } catch (error) {
-                this.loan_longtime_number = loan_longtime_number;
-            }
-            
-
-            if (parseInt(this.loan_longtime_number)<=0) 
-            {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t(`Loan time must more than 0`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                return;
-            }
-
-            
-            
+        async getGroupOfMemberByMemberId() {
+            console.log("getGroupOfMemberByMemberId")
             const userData = JSON.parse(localStorage.getItem('userData'));
-            const form = new FormData();
+            const User = new FormData();
 
-            form.append("userid", userData.username);
-            form.append("token", userData.token);
+            User.append("userid", userData.username);
+            User.append("token", userData.token);
 
-            const item3 = this.interestPerOptions.find(x=> x.value == this.interestPerSelected);
-            form.append("loan_amount", parseFloat(this.loan_amount));
-            // if (loan_longtime_number <= parseFloat(this.interestPerSelected))
-            // {
-            //     form.append("interest", parseFloat(this.interest)/parseFloat(loan_longtime_number));
-            // }
-            // else
-            // {
-            //     form.append("interest", parseFloat(this.interest)/parseFloat(this.interestPerSelected));
-            // }
-            form.append("interest", parseFloat(this.interest)/parseFloat(this.interestPerSelected));            
-            form.append("interestper" , item3.text);
-            form.append("interestpernumber" , this.interestPerSelected);
-            form.append("loan_longtime_number", loan_longtime_number);
-            form.append("effective_rate", this.effective_rate);
-            form.append("period_id", item.period_id);
-            form.append("cal_every_number", parseInt(this.period_number));
-            form.append("loan_start_at", this.loan_start_at);
+            User.append("user_id", this.pRowData.id);            
+            User.append("page_name", this.$route.name);
 
-            const response = await this.CalculateLoanInterest(form);
-            if (response.data.status == 'success') {
-                const interestInfo = response.data.data; 
-                this.calculated_interest = true;
-                this.rows = interestInfo;
+            const response = await this.GetGroupOfMemberByMemberId(User);
+            if (response.data.status == 'success') {           
+                this.rowsGroupOfMember = response.data.data;
             } else {
-                this.rows = [];
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: `${response.data.message}`,
-                    },
-                    autoHideDelay: 3000,
-                });
-            }
-        },        
-        clearCalculate()
-        {
-            this.calculated_interest = false;
-        },
-        async requestApprove()
-        {
-            console.log("requestApprove");
 
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            const form = new FormData();
-
-            const item = this.interestTypeData.find(x=> x.id == this.interestTypeSelected);
-
-            form.append("userid", userData.username);
-            form.append("token", userData.token);
-
-            form.append("member_id", this.pRowData.id);
-            form.append("owner_admin_id", userData.username);
-            form.append("interest_name", item.interest_name);
-            
-            form.append("loan_amount", parseFloat(this.loan_amount));
-            
-            const item3 = this.interestPerOptions.find(x=> x.value == this.interestPerSelected);                 
-            // if (loan_longtime_number <= parseFloat(this.interestPerSelected))
-            // {
-            //     form.append("interest", parseFloat(this.interest)/parseFloat(loan_longtime_number));
-            // }
-            // else
-            // {
-            //     form.append("interest", parseFloat(this.interest)/parseFloat(this.interestPerSelected));
-            // }
-            form.append("interest", parseFloat(this.interest)/parseFloat(this.interestPerSelected));
-            form.append("interestper", item3.text);
-            form.append("interestpernumber" , this.interestPerSelected);
-            
-            form.append("loan_longtime_number", parseInt(this.loan_longtime_number));
-            form.append("effective_rate", this.effective_rate);
-            form.append("period_id", item.period_id);
-            form.append("cal_every_number", parseInt(this.period_number));
-            form.append("loan_start_at", this.loan_start_at);
-            form.append("collateral_type_id", item.collateral_type_id);
-
-            form.append("collateral_img1", this.collateral_img1);
-            form.append("collateral_img2", this.collateral_img2);
-            form.append("collateral_img3", this.collateral_img3);
-            form.append("collateral_img4", this.collateral_img4);
-                                                
-            const response = await this.RequestLoan(form);
-            if (response.data.status == "success") {
-                //
-
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Request Loan`,
-                        icon: 'EditIcon',
-                        variant: 'success',
-                        text: this.$t(`Request Succesful`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                
-                this.clearCalculate();
-                this.getRequestLoan();
-                this.getRejectLoan();
-                this.tabIndex = 4;
-
-            } else {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Request Loan`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t('Request UnSuccesful') +` ${response.data.message}`,
-                    },
-                    autoHideDelay: 3000,
-                });
-                
             }
         },
         resolveStatusVariant(inStatus) {            
@@ -2760,32 +2068,7 @@ export default {
         async confirmApprove(loanId)
         {
             console.log('confirmApprove');
-            if(this.selectedLoanId!=loanId)
-            {
-                this.selectedLoanId = loanId;
-                this.sharePersonList=[];
-                this.sharePercent = 100;
-                this.rejectNoteInput = "";
-
-                const tmpDataListId = this.sharePersonList.map(x => x.id);
-
-                const tmpAdminData = this.shareDatas;
-                let tmpArray = [];
-                    tmpAdminData.forEach(element => {
-                        if (!tmpDataListId.includes(element.adminName)) {
-                            
-                            tmpArray.push({
-                                value: element.adminName,
-                                text: element.fullName
-                            });
-
-                        }                    
-                    });             
-                this.shareOptions = tmpArray;
-                this.shareSelected = tmpArray[0].value;
-            }
-
-            this.showModalApprove=true;
+            this.showModalApprove=false;
             
         },
         async confirmDeleteEmail(emailId)
@@ -2817,6 +2100,84 @@ export default {
             })
             
             
+        },
+        async confirmReject(loanId)
+        {
+            this.showModalReject=true;
+        },
+        async confirmJoinGroup()
+        {
+            this.showModalJoinGroup=true;
+            this.groupChange();
+        },
+        async confirmDeleteMemberInGroup(rowData)
+        {   
+            await this.$bvModal.msgBoxConfirm(this.$t('Please confirm that you want to delete'), {
+                title: this.$t('Please Confirm'),
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'YES',
+                cancelTitle: 'NO',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+                .then(value => {
+
+                    if (value) {
+                    //const selectID = rowData.map(obj => obj.id);
+                    // console.log(selectID);
+                    this.deleteMemberFromGroup(rowData.id);
+
+                    }
+                })
+                .catch(err => {
+
+                })
+        },
+        async deleteMemberFromGroup(selectID)
+        {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            var headers = {
+                userid: userData.username,
+                token: userData.token,
+            }
+
+            var body = {        
+                listId: [selectID]
+            }
+
+            let response;
+            await axios.post("api/subscriptiongroup/deleteMemberFromGroupByID",body,
+            {
+                headers: {            
+                'Content-Type': 'application/json',
+                'userid': headers.userid,
+                'token': headers.token,
+                }
+            }).then(
+                resp => 
+                {
+                    response = resp;
+                }
+            );
+        
+            if (response.data.status == 'success') {
+                this.getGroupOfMemberByMemberId();
+            }
+            else {
+                this.$toast(
+                {
+                    component: ToastificationContent,
+                    props: {
+                    title: response.data.message,
+                    icon: 'EditIcon',
+                    variant: 'error',
+                    },
+                });
+            }
         },
         async deleteEmail(emailId)
         {
@@ -2863,7 +2224,46 @@ export default {
         },
         resetModalApprove()
         {
-            this.approveNoteInput = "";
+            
+        },
+        resetModalJoinGroup()
+        {
+            
+        },
+        async getHistoryOrder()
+        {
+            console.log("getHistoryOrder");
+
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const form = new FormData();
+
+            form.append("userid", userData.username);
+            form.append("token", userData.token);
+
+            form.append("member_id", this.pRowData.id);
+
+            const response = await this.GetHistorySubScribeOrderByMemberID(form);
+            if (response.data.status == 'success') {           
+                this.rowsOrderHistory = response.data.data;                
+                for (let index = 0; index < this.rowsOrderHistory.length; index++) {
+                    const element = this.rowsOrderHistory[index];
+                    if (element.end_date!=null) {
+                        let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
+                        diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
+                        this.rowsOrderHistory[index]['diffDay'] = diffDay;
+                    }
+                }
+            } else {
+                this.$toast(
+                {
+                    component: ToastificationContent,
+                    props: {
+                    title: response.data.message,
+                    icon: 'EditIcon',
+                    variant: 'error',
+                    },
+                });
+            }
         },
         async handleOkRequest()
         {   
@@ -2876,109 +2276,33 @@ export default {
             form.append("userid", userData.username);
             form.append("token", userData.token);
 
-            form.append("admin_id", userData.username);
-            form.append("request_note", note?note:'');
+            form.append("admin_id", userData.username);            
             form.append("product_id", this.selectedProductId);
+            form.append("email", this.selectedSubScribeEmail);
+            form.append("user_id", this.pRowData.id);
+            form.append("note", note?note:'');
 
+            const response = await this.CreateAndApproveSubScribeOrder(form);
+            if (response.data.status == 'success') {                       
+                this.getHistoryOrder();
+
+            } else {
+                this.$toast(
+                {
+                    component: ToastificationContent,
+                    props: {
+                    title: response.data.message,
+                    icon: 'EditIcon',
+                    variant: 'error',
+                    },
+                });
+            }
 
         },
         async handleOkApprove()
         {
-            
             const note = this.approveNoteInput;
             console.log("handleOkApprove");
-
-            const sumPercent = this.sharePersonList.reduce((accumulator, currentValue) => accumulator + currentValue.percent, 0);
-            if(sumPercent!=100)
-            {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Approve Loan`,
-                        icon: 'EditIcon',
-                        variant: 'danger',
-                        text: this.$t(`Sum of percent must be 100`),
-                    },
-                    autoHideDelay: 3000,
-                });
-
-                this.showInspectApprove = false;
-                return;
-            }
-            else
-            {
-                const userData = JSON.parse(localStorage.getItem('userData'));
-                const form = new FormData();
-
-                form.append("userid", userData.username);
-                form.append("token", userData.token);
-
-                form.append("id", this.selectedLoanId);
-                form.append("admin_id", userData.username);
-                form.append("approve_note", note?note:'');
-
-                form.append("sharePersonList", JSON.stringify(this.sharePersonList));
-                                                                
-                const response = await this.ApproveLoanById(form);
-                if (response.data.status == "success") {
-                    //
-
-                    this.$toast({
-                        component: ToastificationContent,
-                        position: 'top-right',
-                        props: {
-                            title: `Approve Loan`,
-                            icon: 'EditIcon',
-                            variant: 'success',
-                            text: this.$t(`Approve Succesful`),
-                        },
-                        autoHideDelay: 3000,
-                    });
-                                    
-                    this.getRequestLoan();
-                    this.getRejectLoan();
-                    this.getApproveLoan();
-                    this.tabIndex = 6;
-
-                    this.showInspectApprove = false;
-
-                } else {
-                    this.$toast({
-                        component: ToastificationContent,
-                        position: 'top-right',
-                        props: {
-                            title: `Approve Loan`,
-                            icon: 'TrashIcon',
-                            variant: 'danger',
-                            text: this.$t('Approve UnSuccesful') +` ${response.data.message}`,
-                        },
-                        autoHideDelay: 3000,
-                    });
-                    this.showInspectApprove = false;
-                }
-            }
-
-            
-        },
-        async confirmReject(loanId)
-        {
-            this.selectedLoanId = loanId;
-            console.log('confirmReject');
-            this.showModalReject=true;
-        },
-        resetModalReject()
-        {
-            
-        },
-        resetModalPaymentNote()
-        {
-            
-        },
-        async handleOkReject()
-        {
-            const note = this.rejectNoteInput;
-            console.log("requestApprove");
 
             const userData = JSON.parse(localStorage.getItem('userData'));
             const form = new FormData();
@@ -2986,11 +2310,11 @@ export default {
             form.append("userid", userData.username);
             form.append("token", userData.token);
 
-            form.append("id", this.selectedLoanId);
             form.append("admin_id", userData.username);
-            form.append("reject_note", note?note:'');
+            form.append("order_id", this.approveOrderId);
+            form.append("note", note?note:'');
                                                             
-            const response = await this.RejectLoanById(form);
+            const response = await this.ApproveSubScribeOrder(form);
             if (response.data.status == "success") {
                 //
 
@@ -2998,359 +2322,215 @@ export default {
                     component: ToastificationContent,
                     position: 'top-right',
                     props: {
-                        title: `Reject Loan`,
+                        title: `Approve Order`,
                         icon: 'EditIcon',
                         variant: 'success',
-                        text: this.$t(`Reject Succesful`),
+                        text: this.$t(`Approve Order Succesful`),
                     },
                     autoHideDelay: 3000,
                 });
-                
-                
-                this.getRequestLoan();
-                this.getRejectLoan();
-                this.getApproveLoan();
-                this.tabIndex = 5;
 
+                this.getHistoryOrder();
+                
+               
             } else {
                 this.$toast({
                     component: ToastificationContent,
                     position: 'top-right',
                     props: {
-                        title: `Reject Loan`,
+                        title: `Approve Order`,
                         icon: 'TrashIcon',
                         variant: 'danger',
-                        text: this.$t('Reject UnSuccesful') +` ${response.data.message}`,
+                        text: this.$t('Approve Order UnSuccesful') +` ${response.data.message}`,
+                    },
+                    autoHideDelay: 3000,
+                });
+                
+            }
+           
+            
+        },        
+        async handleOkCancel()
+        {
+            //CancelSubScribeOrder
+            const note = this.cancelNoteInput;
+            console.log("handleOkCancel");
+
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const form = new FormData();
+
+            form.append("userid", userData.username);
+            form.append("token", userData.token);
+
+            form.append("admin_id", userData.username);
+            form.append("order_id", this.cancelOrderId);
+            form.append("note", note?note:'');
+                                                            
+            const response = await this.CancelSubScribeOrder(form);
+            if (response.data.status == "success") {
+                //
+
+                this.$toast({
+                    component: ToastificationContent,
+                    position: 'top-right',
+                    props: {
+                        title: `Cancel Order`,
+                        icon: 'EditIcon',
+                        variant: 'success',
+                        text: this.$t(`Cancel Order Succesful`),
+                    },
+                    autoHideDelay: 3000,
+                });
+
+                this.getHistoryOrder();
+                
+               
+            } else {
+                this.$toast({
+                    component: ToastificationContent,
+                    position: 'top-right',
+                    props: {
+                        title: `Cancel Order`,
+                        icon: 'TrashIcon',
+                        variant: 'danger',
+                        text: this.$t('Cancel Order UnSuccesful') +` ${response.data.message}`,
                     },
                     autoHideDelay: 3000,
                 });
                 
             }
         },
-        async handleOkPaymentNote()
+        async handleOkReject()
         {
-            this.showModalPaymentNote = false;
+            const note = this.cancelNoteInput;
+            console.log("handleOkReject");
+
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const form = new FormData();
+
+            form.append("userid", userData.username);
+            form.append("token", userData.token);
+
+            form.append("admin_id", userData.username);
+            form.append("order_id", this.cancelOrderId);
+            form.append("note", note?note:'');
+                                                            
+            const response = await this.CancelSubScribeOrder(form);
+            if (response.data.status == "success") {
+                //
+
+                this.$toast({
+                    component: ToastificationContent,
+                    position: 'top-right',
+                    props: {
+                        title: `Cancel Order`,
+                        icon: 'EditIcon',
+                        variant: 'success',
+                        text: this.$t(`Cancel Order Succesful`),
+                    },
+                    autoHideDelay: 3000,
+                });
+
+                this.getHistoryOrder();
+                
+               
+            } else {
+                this.$toast({
+                    component: ToastificationContent,
+                    position: 'top-right',
+                    props: {
+                        title: `Cancel Order`,
+                        icon: 'TrashIcon',
+                        variant: 'danger',
+                        text: this.$t('Cancel Order UnSuccesful') +` ${response.data.message}`,
+                    },
+                    autoHideDelay: 3000,
+                });
+                
+            }
         },
-        async showPaymentNote(paymentData)
+        async handleOkNote()
+        {
+            this.showModalNote = false;
+        },
+        async handleOkJoinGroup()
         {
             
-            this.paymentNoteData = paymentData;
-            this.showModalPaymentNote = true;
-            this.paymentNotePage = 1;
-            this.paymentNoteChange(1);
+            console.log("handleOkJoinGroup");
+
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const form = new FormData();
+
+            form.append("userid", userData.username);
+            form.append("token", userData.token);
+
+            form.append("admin_id", userData.username);            
+            form.append("group_id", this.selectedSubScribeGroupId);
+            form.append("email", this.selectedSubScribeEmail);
+            form.append("user_id", this.pRowData.id);
+
+            const response = await this.AddMemberToGroup(form);
+            if (response.data.status == 'success') {                       
+                this.getGroupOfMemberByMemberId();
+
+            } else {
+                this.$toast(
+                {
+                    component: ToastificationContent,
+                    props: {
+                    title: response.data.message,
+                    icon: 'EditIcon',
+                    variant: 'error',
+                    },
+                });
+                this.showModalJoinGroup = true;
+            }
         },
-        async inspectApprove(loanData)
+        resetModalReject()
         {
-            this.inspectCanAction = true;
-
-            this.showInspectApprove = true;
-            this.inspectApproveData = loanData;
-
-            this.showLoanPayment = false;
-
-            const item = this.interestTypeData.find(x=> x.interest_name == loanData.interest_name);            
-            if (item) 
-            {
-                this.period_name2=this.$t(item.period_name);
-                this.period_unit2=this.$t(item.period_unit);
-                this.collateral_name2=this.$t(item.collateral_name);
-                this.period_number2=item.period_number;
-            }
-            else
-            {
-                this.period_name2="";
-                this.period_unit2="";
-                this.collateral_name2="";
-                this.period_number2=0.0;
-            }
-                    
-            this.loan_amount2=loanData.loan_amount;
-            this.interest2=loanData.interest;
-            this.interestper2=loanData.interestper;
-            this.loan_longtime_number2=loanData.loan_longtime_number;
-            this.effective_rate2=loanData.effective_rate;
-            this.loan_start_at2= loanData.loan_start_at;
-
-            this.calculateLoanInterest2();
-        },
-        async inspectApprovedData(loanData)
-        {
-            this.inspectCanAction = false;
-
-            this.showInspectApprove = true;
-            this.inspectApproveData = loanData;
-
-            this.showLoanPayment = true;
-
-            const item = this.interestTypeData.find(x=> x.interest_name == loanData.interest_name);            
-            if (item) 
-            {
-                this.period_name2=this.$t(item.period_name);
-                this.period_unit2=this.$t(item.period_unit);
-                this.collateral_name2=this.$t(item.collateral_name);
-                this.period_number2=item.period_number;
-            }
-            else
-            {
-                this.period_name2="";
-                this.period_unit2="";
-                this.collateral_name2="";
-                this.period_number2=0.0;
-            }
-                    
-            this.loan_amount2=loanData.loan_amount;
-            this.interest2=loanData.interest;
-            this.interestper2=loanData.interestper;
-            this.loan_longtime_number2=loanData.loan_longtime_number;
-            this.effective_rate2=loanData.effective_rate;
-            this.loan_start_at2= loanData.loan_start_at;
-
-            this.getLoanPaymentByLoanId();
-            this.getShareLoanByLoanId();
             
         },
-        async inspectData(loanData)
+        resetModalCancel()
         {
-            this.inspectCanAction = false;
-
-            this.showInspectApprove = true;
-            this.inspectApproveData = loanData;
-
-            this.showLoanPayment = false;
-
-            const item = this.interestTypeData.find(x=> x.interest_name == loanData.interest_name);            
-            if (item) 
-            {
-                this.period_name2=this.$t(item.period_name);
-                this.period_unit2=this.$t(item.period_unit);
-                this.collateral_name2=this.$t(item.collateral_name);
-                this.period_number2=item.period_number;
-            }
-            else
-            {
-                this.period_name2="";
-                this.period_unit2="";
-                this.collateral_name2="";
-                this.period_number2=0.0;
-            }
-                    
-            this.loan_amount2=loanData.loan_amount;
-            this.interest2=loanData.interest;
-            this.interestper2=loanData.interestper;
-            this.loan_longtime_number2=loanData.loan_longtime_number;
-            this.effective_rate2=loanData.effective_rate;
-            this.loan_start_at2= loanData.loan_start_at;
-
-            this.calculateLoanInterest2();
+            
         },
-       
+        resetModalNote()
+        {
+            
+        },
+        async inspectData(itemData)
+        {
+            this.showModalNote = true;
+            this.cancelNoteInput = itemData.note;
+        },
+        async inspectCancel(itemData)
+        {
+            this.showModalCancel = true;            
+            this.cancelNoteInput = itemData.note;
+            this.cancelOrderId = itemData.id;
+            
+        },
+        async inspectApprove(itemData)
+        {
+            this.showModalApprove=true;
+            this.approveNoteInput = itemData.note;
+            this.approveOrderId = itemData.id;
+        },
+        async inspectReject(itemData)
+        {
+            this.showModalReject=true;                   
+            this.cancelNoteInput = itemData.note;
+            this.cancelOrderId = itemData.id;
+        },
         closeInspectionApprove()
         {
             this.showInspectApprove = false;
-        },
-        async calculateLoanInterest2() {
-
-            const item = this.interestTypeData.find(x=> x.interest_name == this.inspectApproveData.interest_name);  
-            if (!item) {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t(`Not found loan type`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                return;
-            }
-
-            if (parseFloat(this.loan_amount2)<1) 
-            {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t(`Loan amount must more than 1`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                return;
-            }
-
-            if (parseFloat(this.interest2)<0) 
-            {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t(`Interest must more than or equal 0`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                return;
-            }
-
-            if (parseInt(this.period_number2)<0) 
-            {
-                this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                        title: `Calculate Loan Interest`,
-                        icon: 'TrashIcon',
-                        variant: 'danger',
-                        text: this.$t(`Calculate every xx must more than 0`),
-                    },
-                    autoHideDelay: 3000,
-                });
-                return;
-            }
-                const userData = JSON.parse(localStorage.getItem('userData'));
-                const form = new FormData();
-
-                form.append("userid", userData.username);
-                form.append("token", userData.token);
-
-                form.append("loan_amount", parseFloat(this.loan_amount2));
-
-                const item3 = this.interestPerOptions.find(x=> x.text == this.interestper2);                    
-                form.append("interest", parseFloat(this.interest2)/parseFloat(item3.value));
-
-                form.append("loan_longtime_number", parseInt(this.loan_longtime_number2));
-                form.append("effective_rate", this.effective_rate2);
-                form.append("period_id", item.period_id);
-                form.append("cal_every_number", parseInt(this.period_number2));
-                form.append("loan_start_at", this.loan_start_at2);
-
-                const response = await this.CalculateLoanInterest(form);
-                if (response.data.status == 'success') {
-                    const interestInfo = response.data.data;                 
-                    this.rowsCal = interestInfo;
-                } else {
-                    this.rowsCal = [];
-                    this.$toast({
-                        component: ToastificationContent,
-                        position: 'top-right',
-                        props: {
-                            title: `Calculate Loan Interest`,
-                            icon: 'TrashIcon',
-                            variant: 'danger',
-                            text: `${response.data.message}`,
-                        },
-                        autoHideDelay: 3000,
-                    });
-                }
-        },
+        },        
         tabChange()
         {
             this.showInspectApprove = false;
         },
-        paymentNoteChange(pageValue)
-        {
-            const tmpPaymentNoteData = this.paymentNoteData;
-            
-            this.paymentRefImg = tmpPaymentNoteData['ref_img'+pageValue]!=''?tmpPaymentNoteData['ref_img'+pageValue]:'/images/noimage.jpg';
-            this.paymentRefNote = tmpPaymentNoteData['note'+pageValue]!=''?tmpPaymentNoteData['note'+pageValue]:'';
-            this.paymentNoteAt = tmpPaymentNoteData['note'+pageValue+'_at']!=null?this.formatDateAssigned(tmpPaymentNoteData['note'+pageValue+'_at']):'';
-            this.paymentNoteBy = tmpPaymentNoteData['note'+pageValue+'_by']!=''?tmpPaymentNoteData['note'+pageValue+'_by']:'';
-        },
-        addSubscribeRequest()
-        {
-
-        },
-        addSharePerson()
-        {
-            const sumPercent = this.sharePersonList.reduce((accumulator, currentValue) => accumulator + currentValue.percent, 0);
-
-            const sharePercent = parseFloat(this.sharePercent);
-            if (sharePercent<=0) {
-                this.$toast({
-                        component: ToastificationContent,
-                        position: 'top-right',
-                        props: {
-                            title: `Warning`,
-                            icon: 'TrashIcon',
-                            variant: 'danger',
-                            text: this.$t(`Share percent must more than 0`),
-                        },
-                        autoHideDelay: 3000,
-                    });
-                return;
-            }
-
-            console.log(sumPercent+sharePercent);
-
-            if (sumPercent+sharePercent>100) {
-                this.$toast({
-                        component: ToastificationContent,
-                        position: 'top-right',
-                        props: {
-                            title: `Warning`,
-                            icon: 'TrashIcon',
-                            variant: 'danger',
-                            text: this.$t(`Sum of percent not more than 100`),
-                        },
-                        autoHideDelay: 3000,
-                    });
-                return;
-            }
-
-            const tmpData = 
-            {
-                id : this.shareSelected,
-                fullName : this.shareOptions.find(element => element.value == this.shareSelected).text,
-                percent : parseFloat(this.sharePercent),
-            };
-
-            this.sharePersonList.push(tmpData);
-
-            const tmpDataListId = this.sharePersonList.map(x => x.id);
-            
-            let tmpArray = this.shareOptions;
-            tmpArray = tmpArray.filter(x=> !tmpDataListId.includes(x.value));            
-
-            this.shareOptions = tmpArray;
-            this.shareSelected = tmpArray[0].value;
-
-            const remainPercent = 100 - sumPercent - sharePercent;
-            this.sharePercent = remainPercent.toString();
-
-        },
-        deleteSharePerson(person_id)
-        {
-            const newData = this.sharePersonList.filter(x=> x.id!=person_id);
-            this.sharePersonList = newData;
-
-            const tmpDataListId = this.sharePersonList.map(x => x.id);
-
-            const tmpAdminData = this.shareDatas;
-                let tmpArray = [];
-                tmpAdminData.forEach(element => {
-                    if (!tmpDataListId.includes(element.adminName)) {
-                        
-                        tmpArray.push({
-                            value: element.adminName,
-                            text: element.fullName
-                        });
-
-                    }                    
-            });
-
-            this.shareOptions = tmpArray;
-            this.shareSelected = tmpArray[0].value;
-
-            const sumPercent = this.sharePersonList.reduce((accumulator, currentValue) => accumulator + currentValue.percent, 0);
-            const remainPercent = 100 - sumPercent;
-            this.sharePercent = remainPercent.toString();
-        },
+       
     },
 }
 </script>

@@ -6,9 +6,17 @@
     :isModeEdit="isModeEdit"
       @refetch-data="search" @close-edit-form="closeEditForm" />
 
+    <group-sub-note :isNoteFormActive="isNoteFormActive" :pRowData="selectedDataRow" 
+    :isModeNote="isModeNote"
+      @refetch-data="search" @close-edit-form="closeEditForm" />
+
+    <group-member-edit :isMemberFormActive="isMemberFormActive" :pRowData="selectedDataRow" 
+    :isModeMemberEdit="isModeMemberEdit"
+      @refetch-data="search" @close-edit-form="closeEditForm" />
+
 
     <Transition name="fade" mode="out-in">
-      <b-card v-if="!(isEditFormActive)">
+      <b-card v-if="!(isEditFormActive)&&!(isNoteFormActive)&&!(isMemberFormActive)">
         <div class="m-2">
           
           <b-row>
@@ -50,7 +58,7 @@
       </b-card>
     </Transition>
     <Transition name="fade" mode="out-in">
-      <b-card :title="t('Group Subscription')" v-if="!(isEditFormActive)">
+      <b-card :title="t('Group Subscription')" v-if="!(isEditFormActive)&&!(isNoteFormActive)&&!(isMemberFormActive)">
         <!-- table -->
         <vue-good-table ref="my-table" :columns="columns" :rows="rows" :rtl="direction" :line-numbers="true"
           :search-options="{
@@ -93,6 +101,33 @@
                 </span>           
             </span>
 
+            <span v-if="props.column.field === 'expire_date2'">        
+                  <b-badge
+                      v-if="props.row.diffDay==null"
+                      pill
+                      :variant="`light-warning`"
+                      class="text-capitalize"
+                  >                                                                 
+                      {{ t('Not Subscribe') }}
+                  </b-badge>      
+                  <b-badge
+                      v-if="props.row.diffDay!=null && props.row.diffDay<=0"
+                      pill
+                      :variant="`light-danger`"
+                      class="text-capitalize"
+                  >                                                                 
+                      {{ t('Expired') }}
+                  </b-badge> 
+                  <b-badge
+                      v-if="props.row.diffDay!=null && props.row.diffDay>0"
+                      pill
+                      :variant="`light-success`"
+                      class="text-capitalize"
+                  >                                                                 
+                      {{ t('Remaining') }} {{props.row.diffDay}} {{t('Day')}}
+                  </b-badge> 
+          </span>
+
             
             
             <span v-if="props.column.field === 'action'">
@@ -101,9 +136,19 @@
                   <template v-slot:button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="text-body align-middle mr-25" />
                   </template>
-                  <b-dropdown-item @click="edititem(props.row)">
+                  <b-dropdown-item @click="editItem(props.row)">
                     <feather-icon icon="Edit2Icon" class="mr-50" />
-                    <span>{{t('Edit')}}</span>
+                    <span>{{t('Edit Information')}}</span>
+                  </b-dropdown-item>
+
+                  <b-dropdown-item @click="memberEditItem(props.row)">
+                    <feather-icon icon="Edit2Icon" class="mr-50" />
+                    <span>{{t('Member Edit')}}</span>
+                  </b-dropdown-item>
+
+                  <b-dropdown-item @click="subscribeEditItem(props.row)">
+                    <feather-icon icon="Edit2Icon" class="mr-50" />
+                    <span>{{t('Subscribe Note')}}</span>
                   </b-dropdown-item>
 
                   <b-dropdown-item @click="deleteitem(props.row)">
@@ -166,6 +211,8 @@ import axios from "axios";
 import { ref, onUnmounted } from '@vue/composition-api'
 
 import GroupSubEdit from './GroupSubEdit.vue';
+import GroupSubNote from './GroupSubNote.vue';
+import GroupMemberEdit from './GroupMemberEdit.vue';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 import { useUtils as useI18nUtils } from '@core/libs/i18n'
@@ -173,6 +220,8 @@ import { useUtils as useI18nUtils } from '@core/libs/i18n'
 export default {
   components: {
     GroupSubEdit,
+    GroupSubNote,
+    GroupMemberEdit,
     BRow,
     BCol,
     VueGoodTable,
@@ -219,6 +268,14 @@ export default {
           field: 'update_by',
         },
         {
+          label: t('Expired'),
+          field: 'expire_date2',
+        },
+        {
+          label: t('Member Count'),
+          field: 'CountMember',
+        },
+        {
           label: t('Action'),
           field: 'action',
           width: '5%',
@@ -253,8 +310,12 @@ export default {
       rows: [],
       searchTerm: '',            
       isEditFormActive: false,
+      isNoteFormActive: false,
+      isMemberFormActive: false,
       selectedDataRow: blankData,
       isModeEdit: false,
+      isModeNote: false,
+      isModeMemberEdit: false,
       pagePermission : {
                     can_view : true,
                     can_add: false,
@@ -365,6 +426,18 @@ export default {
       if (response.data.status == 'success') {  
         //console.log(response.data.data);
         this.rows = response.data.data;
+        for (let index = 0; index < this.rows.length; index++) {
+            const element = this.rows[index];
+            if (element.end_at!=null) {
+                let diffDay = new Date(element.end_at).getTime() - new Date().getTime();
+                diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
+                this.rows[index]['diffDay'] = diffDay;
+            }
+            else
+            {
+                this.rows[index]['diffDay'] = null;
+            }
+        }
       }
       else {
         this.$toast(
@@ -467,7 +540,7 @@ export default {
       
       this.selectedDataRow = EmptyRow;
     },
-    edititem(row) {
+    editItem(row) {
       // console.log(row);
       this.isEditFormActive = true;
       this.isSearchFormActive = false;
@@ -481,8 +554,24 @@ export default {
       this.selectedDataRow = row;
       // console.log(this.selectedDataRow);
     },
+    subscribeEditItem(row)
+    {
+        this.isNoteFormActive = true;
+        this.isSearchFormActive = false;
+        this.isNodeEdit = true;
+        this.selectedDataRow = row;
+    },
+    memberEditItem(row)
+    {
+        this.isMemberFormActive = true;
+        this.isSearchFormActive = false;
+        this.isModeMemberEdit = true;
+        this.selectedDataRow = row;
+    },
     closeEditForm() {
       this.isEditFormActive = false;
+      this.isNoteFormActive = false;
+      this.isMemberFormActive = false;
     },
     async deleteGroup(listId) {
       //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
