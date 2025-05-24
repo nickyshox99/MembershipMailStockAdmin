@@ -120,10 +120,11 @@ function FilterNav(tmpMenu)
 }
 
 const fmemberCredit = FilterNav(memberCredit);
-const fdashboard = FilterNav(dashboard);
+//const fdashboard = FilterNav(dashboard);
 const fapps = FilterNav(apps);
 const fsetting = FilterNav(setting);
 const fothers = FilterNav(others);
 
 // Array of sections
-export default [...fdashboard,...fapps,...fmemberCredit, ...fsetting, ...fothers]
+//export default [...fdashboard,...fapps,...fmemberCredit, ...fsetting, ...fothers]
+export default [...fapps,...fmemberCredit, ...fsetting, ...fothers]

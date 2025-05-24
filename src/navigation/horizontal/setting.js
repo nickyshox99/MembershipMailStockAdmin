@@ -39,22 +39,22 @@ export default [
       //   title: "General Setting",
       //   route: "apps-setting-general",
       // },
-      {
-        title: "Ux/Ui Setting",
-        route: "apps-setting-uxui",
-      },
+      // {
+      //   title: "Ux/Ui Setting",
+      //   route: "apps-setting-uxui",
+      // },
       // {
       //   title: "Banner Setting",
       //   route: "apps-setting-banner",
       // },
-      {
-        title: "Setting % Report",
-        route: "apps-setting-percentreport",
-      },
-      {
-        title: "Line Setting",
-        route: "apps-line-linesettingmain",
-      },
+      // {
+      //   title: "Setting % Report",
+      //   route: "apps-setting-percentreport",
+      // },
+      // {
+      //   title: "Line Setting",
+      //   route: "apps-line-linesettingmain",
+      // },
       // {
       //   title: "Friend Reccommend Setting",
       //   route: "apps-affilate-affilatesettingmain",

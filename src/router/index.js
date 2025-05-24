@@ -7,6 +7,7 @@ import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth
 import apps from './routes/apps'
 import dashboard from './routes/dashboard'
 import pages from './routes/pages'
+import customer from './routes/customer'
 
 
 import store from '@/store/index'
@@ -25,6 +26,7 @@ const router = new VueRouter({
     ...apps,
     ...dashboard,    
     ...pages,      
+    ...customer,
     {
       path: '*',
       redirect: 'error-404',
@@ -38,6 +40,10 @@ const router = new VueRouter({
   let canGo = false;
   // console.log("Is login");  
   // console.log(isLoggedIn);
+
+  if (to.name=="recommend-join-family"||to.name=="registere-mail") {
+    return next()
+  }
   
   if (isLoggedIn) 
   {
