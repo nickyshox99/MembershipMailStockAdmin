@@ -1,0 +1,912 @@
+<template>
+  <div>
+    <b-card no-body>
+      <div class="m-2">
+        <b-row>
+          <b-col
+            cols="2"
+            class="d-flex align-items-center justify-content-start mb-1"
+          >
+            <b-button variant="primary" @click="search">
+              <feather-icon icon="SearchIcon" />
+              {{ t("Load") }}
+            </b-button>
+          </b-col>
+
+          <b-col
+            cols="3"
+            md="3"
+            class="d-flex align-items-left justify-content-start mb-1"
+          >
+            <b-input-group class="input-group-merge">
+              <b-input-group-prepend is-text>
+                <feather-icon icon="SearchIcon" />
+              </b-input-group-prepend>
+              <b-form-input
+                id="icons-search"
+                v-model="searchTerm"
+                :placeholder="t('Search')"
+              />
+            </b-input-group>
+            &nbsp;
+          </b-col>
+
+          <b-col
+            cols="6"
+            md="3"
+            class="d-flex align-items-left justify-content-start mb-1"
+          >
+          </b-col>
+        </b-row>
+      </div>
+    </b-card>
+
+    <b-card :title="t('Wait Approve')">
+      <vue-good-table
+        ref="my-table-order-history"
+        :columns="columnsOrderHistory"
+        :rows="rowsOrderHistory"
+        :rtl="directionOrderHistory"
+        :line-numbers="true"
+        :search-options="{
+          enabled: false,
+        }"
+        :select-options="{
+          enabled: false,
+          selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
+          selectionInfoClass: 'custom-class',
+          selectionText: 'rows selected',
+          clearSelectionText: 'clear',
+          disableSelectInfo: true, // disable the select info panel on top
+          selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
+          searchFn: searchOnTable,
+        }"
+        :pagination-options="{
+          enabled: true,
+          perPage: pageLengthOrderHistory,
+        }"
+        theme="polar-bear"
+      >
+        <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field === 'subscription_img2'">
+            
+            <div style="font-size: 14px; color: gray">
+              <b-img
+              :src="props.row.subscription_img"
+              fluid
+              thumbnail
+              style="height: 30px"
+            />
+              {{ props.row.product_name }}
+            </div>
+          </span>
+
+          <span v-if="props.column.field === 'create_date2'">
+            {{
+              props.row.create_date != null
+                ? formatDateAssigned2(props.row.create_date)
+                : ""
+            }}
+          </span>
+
+          <span v-if="props.column.field === 'remain'">
+            <b-badge
+              v-if="props.row.diffDay <= 0"
+              pill
+              :variant="`light-warning`"
+              class="text-capitalize"
+            >
+              {{ t("Expired") }}
+            </b-badge>
+            <b-badge
+              v-if="props.row.diffDay > 0"
+              pill
+              :variant="`light-success`"
+              class="text-capitalize"
+            >
+              {{ t("Remaining") }} {{ props.row.diffDay }} {{ t("Day") }}
+            </b-badge>
+          </span>
+
+          <span v-if="props.column.field === 'approved'">
+            <b-badge
+              v-if="
+                props.row.canceled == 0 &&
+                props.row.approve_by != null &&
+                props.row.approve_by != ''
+              "
+              pill
+              :variant="`light-success`"
+              class="text-capitalize"
+            >
+              {{ t("Approved") }}
+              {{
+                props.row.approve_date != null
+                  ? formatDateAssigned2(props.row.approve_date)
+                  : ""
+              }}
+            </b-badge>
+            <b-badge
+              v-if="
+                props.row.canceled == 0 &&
+                (props.row.approve_by == '' || props.row.approve_by == null)
+              "
+              pill
+              :variant="`light-info`"
+              class="text-capitalize"
+            >
+              <feather-icon icon="ClockIcon" size="16" class="mr-0 mr-sm-50" />
+              รอพิจารณาอนุมัติ
+            </b-badge>
+            <b-badge
+              v-if="props.row.canceled == 1"
+              pill
+              :variant="`light-danger`"
+              class="text-capitalize"
+            >
+              {{ t("Canceled") }}
+            </b-badge>
+          </span>
+
+          <span>
+            {{ props.formattedRow[props.column.field] }}
+          </span>
+
+          <span v-if="props.column.field === 'action'">
+            <b-badge
+              v-if="
+                props.row.approve_by != '' &&
+                props.row.approve_by != null &&
+                props.row.canceled != 1
+              "
+              style="cursor: pointer; margin-right: 2px"
+              variant="danger"
+              @click="inspectCancel(props.row)"
+            >
+              <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Cancel") }}</span>
+            </b-badge>
+            <b-badge
+              v-if="props.row.canceled == 1"
+              style="cursor: pointer; margin-right: 2px"
+              variant="info"
+              @click="inspectData(props.row)"
+            >
+              <feather-icon icon="SearchIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Information") }}</span>
+            </b-badge>
+            <b-badge
+              v-if="props.row.approve_by == '' || props.row.approve_by == null"
+              style="cursor: pointer; margin-right: 2px"
+              variant="success"
+              @click="inspectApprove(props.row)"
+            >
+              <feather-icon icon="CheckIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Approve") }}</span>
+            </b-badge>
+            <b-badge
+              v-if="props.row.approve_by == '' || props.row.approve_by == null"
+              style="cursor: pointer; margin-right: 2px"
+              variant="warning"
+              @click="inspectReject(props.row)"
+            >
+              <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Reject") }}</span>
+            </b-badge>
+          </span>
+        </template>
+
+        <template slot="pagination-bottom" slot-scope="props">
+          <div class="d-flex justify-content-between flex-wrap">
+            <div class="d-flex align-items-center mb-0 mt-1">
+              <span class="text-nowrap">
+                {{ t("Showing") + " 1 " + t("to") }}
+              </span>
+              <b-form-select
+                v-model="pageLengthOrderHistory"
+                :options="['3', '5', '10', '20', '50', '100']"
+                class="mx-1"
+                @input="
+                  (value) => props.perPageChanged({ currentPerPage: value })
+                "
+              />
+              <span class="text-nowrap">
+                {{ t("of") }} {{ props.total }} {{ t("entries") }}
+              </span>
+            </div>
+            <div>
+              <b-pagination
+                :value="1"
+                :total-rows="props.total"
+                :per-page="pageLengthOrderHistory"
+                first-number
+                last-number
+                align="right"
+                prev-class="prev-item"
+                next-class="next-item"
+                class="mt-1 mb-0"
+                @input="(value) => props.pageChanged({ currentPage: value })"
+              >
+                <template #prev-text>
+                  <feather-icon icon="ChevronLeftIcon" size="18" />
+                </template>
+                <template #next-text>
+                  <feather-icon icon="ChevronRightIcon" size="18" />
+                </template>
+              </b-pagination>
+            </div>
+          </div>
+        </template>
+      </vue-good-table>
+    </b-card>
+
+    
+        <b-modal
+            id="modal-approve"
+            ref="modalApprove"
+            v-model="showModalApprove"
+            :title="t('Please confirm that you want to approve')"
+            @show="resetModalApprove"        
+            @hidden="resetModalApprove"
+            @ok="handleOkApprove"      
+            size="sm"  
+            :hideHeaderClose="false"            
+            ok-variant="success"
+            :okTitle="t('YES')"
+            buttonSize="sm"
+            :cancelTitle="t('NO')"
+            footerClass="p-2"
+        >
+            
+            <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        :label="t('Note')"
+                        label-for="approve-note-input"                    
+                        >
+                        
+                        <b-form-textarea
+                            id="approve-note-input"
+                            v-model="approveNoteInput"                
+                            rows="3"
+                            max-rows="6"
+                        ></b-form-textarea>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+        </b-modal>
+
+        <b-modal
+            id="modal-reject"
+            ref="modalReject"
+            v-model="showModalReject"
+            :title="t('Please confirm that you want to reject')"
+            @show="resetModalReject"        
+            @hidden="resetModalReject"
+            @ok="handleOkReject"      
+            size="sm"  
+            :hideHeaderClose="false"            
+            ok-variant="danger"
+            :okTitle="t('YES')"
+            buttonSize="sm"
+            :cancelTitle="t('NO')"
+            footerClass="p-2"
+        >
+        <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        :label="t('Note')"
+                        label-for="cancel-note-input"                    
+                        >
+                        
+                        <b-form-textarea
+                            id="cancel-note-input"
+                            v-model="cancelNoteInput"                
+                            rows="3"
+                            max-rows="6"
+                        ></b-form-textarea>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+        </b-modal>
+
+        <b-modal
+            id="modal-cancel"
+            ref="modalCancel"
+            v-model="showModalCancel"
+            :title="t('Please confirm that you want to cancel')"
+            @show="resetModalCancel"        
+            @hidden="resetModalCancel"
+            @ok="handleOkCancel"      
+            size="sm"  
+            :hideHeaderClose="false"            
+            ok-variant="success"
+            :okTitle="t('YES')"
+            buttonSize="sm"
+            :cancelTitle="t('NO')"
+            footerClass="p-2"
+        >
+            
+            <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        :label="t('Note')"
+                        label-for="cancel-note-input"                    
+                        >
+                        
+                        <b-form-textarea
+                            id="cancel-note-input"
+                            v-model="cancelNoteInput"                
+                            rows="3"
+                            max-rows="6"
+                        ></b-form-textarea>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+        </b-modal>
+
+        <b-modal
+            id="modal-note"
+            ref="modalNote"
+            v-model="showModalNote"
+            :title="t('Note')"
+            @show="resetModalNote"        
+            @hidden="resetModalNote"
+            @ok="handleOkNote"      
+            size="sm"  
+            :hideHeaderClose="false"            
+            ok-variant="success"
+            :okTitle="t('Ok')"
+            buttonSize="sm"
+            hide-footer
+        >
+            
+            <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        :label="t('Note')"
+                        label-for="cancel-note-input"                    
+                        >
+                        
+                        <b-form-textarea
+                            id="cancel-note-input"
+                            v-model="cancelNoteInput"                
+                            rows="3"
+                            max-rows="6"
+                        ></b-form-textarea>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+        </b-modal>
+
+
+  </div>
+
+</template>
+
+<script>
+import BCardCode from "@core/components/b-card-code/BCardCode.vue";
+import {
+  BAvatar,
+  BBadge,
+  BPagination,
+  BFormGroup,
+  BFormInput,
+  BFormSelect,
+  BDropdown,
+  BDropdownItem,
+  BRow,
+  BCol,
+  BButton,
+  BFormDatepicker,
+  BCard,
+  BInputGroup,
+  BInputGroupPrepend,
+  BModal,
+  BImg,
+  BFormTextarea,
+  BMedia,
+  BLink,
+} from "bootstrap-vue";
+import { VueGoodTable } from "vue-good-table";
+import store from "@/store/index";
+import { mapActions } from "vuex";
+
+import { useUtils as useI18nUtils } from "@core/libs/i18n";
+
+import { ref, onUnmounted } from "@vue/composition-api";
+
+import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import LoanInformation from "../loan/LoanInformation.vue";
+import LoanAssignStaff from "../loan/LoanAssignStaff.vue";
+import LoanKeyPayment from "../loan/LoanKeyPayment.vue";
+import LoanKeyFine from "../loan/LoanKeyFine.vue";
+import LoanForwardPayment from "../loan/LoanForwardPayment.vue";
+import LoanTotalPayment from "../loan/LoanTotalPayment.vue";
+
+export default {
+  components: {
+    BRow,
+    BCol,
+    VueGoodTable,
+    BAvatar,
+    BBadge,
+    BPagination,
+    BFormGroup,
+    BFormInput,
+    BFormSelect,
+    BDropdown,
+    BDropdownItem,
+    BButton,
+    BFormDatepicker,
+    BCard,
+    BInputGroup,
+    BInputGroupPrepend,
+    BCardCode,
+    BModal,
+    BImg,
+    BFormTextarea,
+    LoanInformation,
+    BMedia,
+    BLink,
+    LoanAssignStaff,
+    LoanKeyPayment,
+    LoanKeyFine,
+    LoanForwardPayment,
+    LoanTotalPayment,
+  },
+  setup() {
+    const { t } = useI18nUtils();
+
+    const columnsOrderHistory =  [
+            {
+            label: 'Username',
+            field: 'user_id',  
+            width: '10%',          
+            },
+            {
+            label: t('Email'),
+            field: 'email',  
+            width: '10%',          
+            },
+            {
+            label: t('Product'),
+            field: 'subscription_img2',  
+            width: '20%',          
+            },
+            {
+            label: t('Create Date'),
+            field: 'create_date2',
+            width: '10%',
+            },
+            {
+            label: t('Approve'),
+            field: 'approved',
+            width: '10%',
+            },
+           
+            {
+            label: t('Approve By'),
+            field: 'approve_by',
+            width: '10%',
+            },   
+            {
+                label: t('Action'),
+                field: 'action',                
+            },             
+        ];
+
+    return {
+      t,
+      columnsOrderHistory,
+    };
+  },
+  data() {
+    const now = new Date();
+    const fDate =
+      now.getFullYear() +
+      "-" +
+      ("0" + (now.getMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + now.getDate()).slice(-2);
+    const tDate =
+      now.getFullYear() +
+      "-" +
+      ("0" + (now.getMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + now.getDate()).slice(-2);
+
+    const blankData = {
+      credit: 0.0,
+      credit_bonus: 0.0,
+      date: null,
+      username: "",
+    };
+
+    return {
+      fromDate: fDate,
+      toDate: tDate,
+      rowsOrderHistory:[],
+      dirOrderHistory:false,
+      pageLengthOrderHistory:10,
+
+      searchTerm: "",      
+      deptorId: "",
+      paymentId: 0,
+      page_name: "",
+      oldstaft_id: "",
+      keyPaymentReadonly: false,
+      keyFineReadonly: false,
+      keyForwardReadonly: false,
+      
+      showModalNote:false,
+      showModalCancel:false,
+      showModalApprove:false,
+      showModalReject:false,
+      showInspectApprove: false,
+
+      cancelNoteInput:"",
+      cancelOrderId:0,
+      approveOrderId:0,
+      approveNoteInput:"",
+      
+      pagePermission:[],
+
+    };
+  },
+  computed: {
+    statusVariant() {
+      const statusColor = {
+        /* eslint-disable key-spacing */
+        Current: "light-primary",
+        Professional: "light-success",
+        Rejected: "light-danger",
+        Resigned: "light-warning",
+        Applied: "light-info",
+        /* eslint-enable key-spacing */
+      };
+
+      return (status) => statusColor[status];
+    },
+    direction() {
+      if (store.state.appConfig.isRTL) {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.dir = true;
+        return this.dir;
+      }
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.dir = false;
+      return this.dir;
+    },
+    directionOrderHistory() {
+        if (store.state.appConfig.isRTL) {
+            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+            this.dirOrderHistory = true
+            return this.dirOrderHistory
+        }
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.dirOrderHistory = false
+        return this.dirOrderHistory
+    },
+  },
+  async created() {
+    this.page_name = this.$route.name;
+
+    await this.getPagePermission();
+    await this.search();
+
+    console.log(this.page_name);
+  },
+  methods: {
+    
+    ...mapActions(["GetPagePermission"]),
+    ...mapActions(["GetHistorySubScribeOrderNotApprove"]),
+    ...mapActions(["ApproveSubScribeOrder"]),
+    ...mapActions(["CancelSubScribeOrder"]),
+    
+    formatDateAssigned(value) {
+      let formattedDate = new Date(value);
+      formattedDate = new Date(formattedDate.getTime() - 3600000); // 60 * 60 * 1000 * 1
+      return (
+        formattedDate.getFullYear() +
+        "-" +
+        ("0" + (formattedDate.getMonth() + 1)).slice(-2) +
+        "-" +
+        ("0" + formattedDate.getDate()).slice(-2) +
+        " " +
+        formattedDate.toLocaleTimeString("th-TH", { hour12: false })
+      );
+    },
+    formatDateAssigned2(value) {
+      let formattedDate = new Date(value);
+      formattedDate = new Date(formattedDate.getTime() - 3600000); // 60 * 60 * 1000 * 1
+      return (
+        formattedDate.getFullYear() +
+        "-" +
+        ("0" + (formattedDate.getMonth() + 1)).slice(-2) +
+        "-" +
+        ("0" + formattedDate.getDate()).slice(-2)
+      );
+    },
+    async search()
+      {
+          console.log("search");
+
+          const userData = JSON.parse(localStorage.getItem('userData'));
+          const form = new FormData();
+
+          form.append("userid", userData.username);
+          form.append("token", userData.token);
+
+          const response = await this.GetHistorySubScribeOrderNotApprove(form);
+          if (response.data.status == 'success') {           
+              this.rowsOrderHistory = response.data.data;                
+              for (let index = 0; index < this.rowsOrderHistory.length; index++) {
+                  const element = this.rowsOrderHistory[index];
+                  if (element.end_date!=null) {
+                      let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
+                      diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
+                      this.rowsOrderHistory[index]['diffDay'] = diffDay;
+                  }
+              }
+          } else {
+              this.$toast(
+              {
+                  component: ToastificationContent,
+                  props: {
+                  title: response.data.message,
+                  icon: 'EditIcon',
+                  variant: 'error',
+                  },
+              });
+          }
+      },
+    async getPagePermission() {
+      console.log("getPagePermission");
+
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const formData = new FormData();
+
+      formData.append("userid", userData.username);
+      formData.append("token", userData.token);
+
+      formData.append("admin_id", userData.username);
+      formData.append("page_name", this.$route.name);
+
+      const response = await this.GetPagePermission(formData);
+      if (response.data.status == "success") {
+        this.pagePermission = response.data.data;
+      } else {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: response.data.message,
+            icon: "EditIcon",
+            variant: "error",
+          },
+        });
+      }
+    },
+    async handleOkApprove()
+    {
+        const note = this.approveNoteInput;
+        console.log("handleOkApprove");
+
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);
+
+        form.append("admin_id", userData.username);
+        form.append("order_id", this.approveOrderId);
+        form.append("note", note?note:'');
+                                                        
+        const response = await this.ApproveSubScribeOrder(form);
+        if (response.data.status == "success") {
+            //
+
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Approve Order`,
+                    icon: 'EditIcon',
+                    variant: 'success',
+                    text: this.$t(`Approve Order Succesful`),
+                },
+                autoHideDelay: 3000,
+            });
+
+            this.getHistoryOrder();
+            
+            
+        } else {
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Approve Order`,
+                    icon: 'TrashIcon',
+                    variant: 'danger',
+                    text: this.$t('Approve Order UnSuccesful') +` ${response.data.message}`,
+                },
+                autoHideDelay: 3000,
+            });
+            
+        }
+        
+        
+    },        
+    async handleOkCancel()
+    {
+        //CancelSubScribeOrder
+        const note = this.cancelNoteInput;
+        console.log("handleOkCancel");
+
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);
+
+        form.append("admin_id", userData.username);
+        form.append("order_id", this.cancelOrderId);
+        form.append("note", note?note:'');
+                                                        
+        const response = await this.CancelSubScribeOrder(form);
+        if (response.data.status == "success") {
+            //
+
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Cancel Order`,
+                    icon: 'EditIcon',
+                    variant: 'success',
+                    text: this.$t(`Cancel Order Succesful`),
+                },
+                autoHideDelay: 3000,
+            });
+
+            this.getHistoryOrder();
+            
+            
+        } else {
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Cancel Order`,
+                    icon: 'TrashIcon',
+                    variant: 'danger',
+                    text: this.$t('Cancel Order UnSuccesful') +` ${response.data.message}`,
+                },
+                autoHideDelay: 3000,
+            });
+            
+        }
+    },
+    async handleOkReject()
+    {
+        const note = this.cancelNoteInput;
+        console.log("handleOkReject");
+
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);
+
+        form.append("admin_id", userData.username);
+        form.append("order_id", this.cancelOrderId);
+        form.append("note", note?note:'');
+                                                        
+        const response = await this.CancelSubScribeOrder(form);
+        if (response.data.status == "success") {
+            //
+
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Cancel Order`,
+                    icon: 'EditIcon',
+                    variant: 'success',
+                    text: this.$t(`Cancel Order Succesful`),
+                },
+                autoHideDelay: 3000,
+            });
+
+            this.getHistoryOrder();
+            
+            
+        } else {
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Cancel Order`,
+                    icon: 'TrashIcon',
+                    variant: 'danger',
+                    text: this.$t('Cancel Order UnSuccesful') +` ${response.data.message}`,
+                },
+                autoHideDelay: 3000,
+            });
+            
+        }
+    },
+    async handleOkNote()
+    {
+        this.showModalNote = false;
+    },    
+    resetModalReject()
+    {
+        
+    },
+    resetModalCancel()
+    {
+        
+    },
+    resetModalNote()
+    {
+        
+    },
+    resetModalApprove()
+    {
+          
+    },
+    async inspectData(itemData)
+    {
+        this.showModalNote = true;
+        this.cancelNoteInput = itemData.note;
+    },
+    async inspectCancel(itemData)
+    {
+        this.showModalCancel = true;            
+        this.cancelNoteInput = itemData.note;
+        this.cancelOrderId = itemData.id;
+        
+    },
+    async inspectApprove(itemData)
+    {
+        this.showModalApprove=true;
+        this.approveNoteInput = itemData.note;
+        this.approveOrderId = itemData.id;
+    },
+    async inspectReject(itemData)
+    {
+        this.showModalReject=true;                   
+        this.cancelNoteInput = itemData.note;
+        this.cancelOrderId = itemData.id;
+    },
+    closeInspectionApprove()
+    {
+        this.showInspectApprove = false;
+    },
+    searchOnTable(row, col, cellValue, searchTerm) {
+      if (searchTerm.length < 3) {
+        return true;
+      }
+
+      let found = false;
+
+      Object.keys(row).forEach((key) => {
+        if (row[key]) {
+          if (row[key].toString().indexOf(searchTerm) > -1) {
+            found = true;
+            return true;
+          }
+        }
+      });
+
+      return found;
+    },
+  },
+};
+</script>
+
+<style lang="scss">
+@import "@core/scss/vue/libs/vue-good-table.scss";
+</style>

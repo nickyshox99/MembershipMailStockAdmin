@@ -1,16 +1,24 @@
 export default [
   {
-    path: '/recommendjoinfamily',
+    path: '/RecommendJoinFamily',
     name: 'recommend-join-family',
-    component: () => import('@/views/pages/customer/recommendjoinfamily.vue'),
+    component: () => import('@/views/pages/customer/RecommendJoinFamily.vue'),
     meta: {
       layout: 'full',            
     },
   },
   {
-    path: '/registeremail',
+    path: '/RegisterEmail',
     name: 'registere-mail',
-    component: () => import('@/views/pages/customer/registeremail.vue'),
+    component: () => import('@/views/pages/customer/RegisterEmail.vue'),
+    meta: {
+      layout: 'full',            
+    },
+  },
+  {
+    path: '/BuyProduct',
+    name: 'buy-product',
+    component: () => import('@/views/pages/customer/BuyProduct.vue'),
     meta: {
       layout: 'full',            
     },

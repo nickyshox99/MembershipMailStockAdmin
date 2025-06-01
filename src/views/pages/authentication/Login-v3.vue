@@ -88,13 +88,13 @@
                   </validation-provider>
                 </b-form-group>
 
-                <!-- forgot password -->
-                <b-form-group>
+                
+                <!-- <b-form-group>
                   <div class="d-flex justify-content-between">
                     <label for="google-auth">รหัสกูเกิ้ล</label>
-                    <!-- <b-link :to="{name:'auth-forgot-password-v3'}">
+                     <b-link :to="{name:'auth-forgot-password-v3'}">
                       <small>Forgot Password?</small>
-                    </b-link> -->
+                    </b-link>
                   </div>
                   <validation-provider
                     #default="{ errors }"
@@ -117,7 +117,7 @@
                     </b-input-group>
                     <small class="text-danger">{{ errors[0] }}</small>
                   </validation-provider>
-                </b-form-group>
+                </b-form-group> -->
 
                 <!-- checkbox -->
                 <!-- <b-form-group style="margin-bottom: 3rem;">

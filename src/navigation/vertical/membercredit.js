@@ -2,12 +2,16 @@ export default [
 
   {
     header: "Management",
-    submenu : ["apps-members-depwit","apps-loan-onduedate","apps-loan-overduedate","apps-loan-closed","apps-loan-all"],
+    submenu : ["apps-members-depwit","apps-loan-onduedate","apps-loan-overduedate","apps-loan-closed","apps-loan-all","order-wait-approve"],
   },
   {
     title: "MemberShip List",
     icon: "CreditCardIcon",
     children: [
+      {
+        title: "Wait Approve",
+        route: "order-wait-approve",
+      },
       {
         title: "On Due Date",
         route: "apps-loan-onduedate",
@@ -36,7 +40,7 @@ export default [
         title: "List All",
         route: "apps-report-loanall",
       },
-
+      
       {
         title: "Paid Success",
         route: "apps-report-paidsuccess",

@@ -10,119 +10,119 @@ const getters = {
 
 const actions = {  
 
-  async GetAgent({commit}, user) {
+//   async GetAgent({commit}, user) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
-    var headers = {
-        userid: user.get("userid"),
-        token: user.get("token"),
-    }
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     var headers = {
+//         userid: user.get("userid"),
+//         token: user.get("token"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.get("api/admin/getagent",
-    {
-        headers: {            
-            'Content-Type': 'application/json',
-            'userid': headers.userid,
-            'token': headers.token,
-        }        
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.get("api/admin/getagent",
+//     {
+//         headers: {            
+//             'Content-Type': 'application/json',
+//             'userid': headers.userid,
+//             'token': headers.token,
+//         }        
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },    
-  async GetAdminBank({commit}, search) {
+//   },    
+//   async GetAdminBank({commit}, search) {
         
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
-    var body = {        
-        searchWord: search.get("searchWord"),
-    }
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     var body = {        
+//         searchWord: search.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/adminbank/getadminbank",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;            
-        }
-    );
+//     let response;
+//     await axios.post("api/adminbank/getadminbank",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;            
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetAdminTrueWallet({commit}, search) {
+//   },
+//   async GetAdminTrueWallet({commit}, search) {
         
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
-    var body = {        
-        searchWord: search.get("searchWord"),
-    }
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     var body = {        
+//         searchWord: search.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/admintruewallet/getadmintruewallet",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/admintruewallet/getadmintruewallet",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
         
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
+//   },
   async GetBankInfo({commit}, search) {
         
     var headers = {
@@ -161,82 +161,82 @@ const actions = {
     }
     return response;
   },
-  async GetBankBreakInfo({commit}, search) {
+//   async GetBankBreakInfo({commit}, search) {
         
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
-    var body = {
-        // userid: search.get("userid"),
-        // token: search.get("token"),
-        searchWord: search.get("searchWord"),
-    }
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     var body = {
+//         // userid: search.get("userid"),
+//         // token: search.get("token"),
+//         searchWord: search.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/adminbank/getbankbreakinfo",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/adminbank/getbankbreakinfo",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
-    if (response.data.status=="success") 
-    {
+//     // console.log(response);
+//     if (response.data.status=="success") 
+//     {
       
-    }
-    return response;
-  },
-  async GetPromotion({commit}, search) {
+//     }
+//     return response;
+//   },
+//   async GetPromotion({commit}, search) {
         
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
-    var body = {
-        // userid: search.get("userid"),
-        // token: search.get("token"),
-        searchWord: search.get("searchWord"),
-    }
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     var body = {
+//         // userid: search.get("userid"),
+//         // token: search.get("token"),
+//         searchWord: search.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/promotion/getpromotion",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/promotion/getpromotion",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
-    if (response.data.status=="success") 
-    {
+//     // console.log(response);
+//     if (response.data.status=="success") 
+//     {
       
-    }
-    return response;
-  },
+//     }
+//     return response;
+//   },
   async GetStaffPage({commit}, search) {
         
     var headers = {
@@ -353,44 +353,44 @@ const actions = {
     }
     return response;
   },
-  async GetPopup({commit}, search) {
+//   async GetPopup({commit}, search) {
         
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
-    var body = {
-        // userid: search.get("userid"),
-        // token: search.get("token"),
-        searchWord: search.get("searchWord"),
-    }
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     var body = {
+//         // userid: search.get("userid"),
+//         // token: search.get("token"),
+//         searchWord: search.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/popup/getpopup",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/popup/getpopup",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
-    if (response.data.status=="success") 
-    {
+//     // console.log(response);
+//     if (response.data.status=="success") 
+//     {
       
-    }
-    return response;
-  },
+//     }
+//     return response;
+//   },
   async GetAnnouncement({commit}, search) {
         
     var headers = {
@@ -467,553 +467,553 @@ const actions = {
     }
     return response;
   },  
-  async GetReportSMS({commit}, search) {
+//   async GetReportSMS({commit}, search) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    var body = {
-        userid: search.get("userid"),
-        dateFrom: search.get("dateFrom"),
-        dateTo: search.get("dateTo"),
-        agent: search.get("agent"),
-        searchWord: search.get("searchWord"),
-    }
+//     var body = {
+//         userid: search.get("userid"),
+//         dateFrom: search.get("dateFrom"),
+//         dateTo: search.get("dateTo"),
+//         agent: search.get("agent"),
+//         searchWord: search.get("searchWord"),
+//     }
 
-    console.log(body);
+//     console.log(body);
 
-    let response;
-    await axios.post("api/report/getReportSMS",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/getReportSMS",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportBankTransaction({commit}, search) {
+//   },
+//   async GetReportBankTransaction({commit}, search) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    var body = {
-        bank_acc_no: search.get("bank_acc_no"),
-        bank_id: search.get("bank_id"),
-        startDate: search.get("startDate"),
-        endDate: search.get("endDate"),        
-        pageSelected: search.get("pageSelected"),
-        nextPageId: search.get("nextPageId"),
-    }
+//     var body = {
+//         bank_acc_no: search.get("bank_acc_no"),
+//         bank_id: search.get("bank_id"),
+//         startDate: search.get("startDate"),
+//         endDate: search.get("endDate"),        
+//         pageSelected: search.get("pageSelected"),
+//         nextPageId: search.get("nextPageId"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    if (body.bank_id==5) 
-    {
-        await axios.post("api/scb/getTransactionByBankID",body,
-        {
-            headers: {            
-            'Content-Type': 'application/json',
-            'userid': headers.userid,
-            'token': headers.token,
-            }
-        }).then(
-            resp => 
-            {
-                response = resp;
-            }
-        );
+//     let response;
+//     if (body.bank_id==5) 
+//     {
+//         await axios.post("api/scb/getTransactionByBankID",body,
+//         {
+//             headers: {            
+//             'Content-Type': 'application/json',
+//             'userid': headers.userid,
+//             'token': headers.token,
+//             }
+//         }).then(
+//             resp => 
+//             {
+//                 response = resp;
+//             }
+//         );
     
-    }else if (body.bank_id==1) 
-    {
-        await axios.post("api/kbank/getTransactionByBankID",body,
-        {
-            headers: {            
-            'Content-Type': 'application/json',
-            'userid': headers.userid,
-            'token': headers.token,
-            }
-        }).then(
-            resp => 
-            {
-                response = resp;
-            }
-        );
+//     }else if (body.bank_id==1) 
+//     {
+//         await axios.post("api/kbank/getTransactionByBankID",body,
+//         {
+//             headers: {            
+//             'Content-Type': 'application/json',
+//             'userid': headers.userid,
+//             'token': headers.token,
+//             }
+//         }).then(
+//             resp => 
+//             {
+//                 response = resp;
+//             }
+//         );
     
-    }
+//     }
    
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportDeposit({commit}, search) {
+//   },
+//   async GetReportDeposit({commit}, search) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    var body = {
-        userid: search.get("userid"),
-        dateFrom: search.get("dateFrom"),
-        dateTo: search.get("dateTo"),
-        agent: search.get("agent"),
-        searchWord: search.get("searchWord"),
-    }
+//     var body = {
+//         userid: search.get("userid"),
+//         dateFrom: search.get("dateFrom"),
+//         dateTo: search.get("dateTo"),
+//         agent: search.get("agent"),
+//         searchWord: search.get("searchWord"),
+//     }
 
-    console.log(body);
+//     console.log(body);
 
-    let response;
-    await axios.post("api/report/getReportDesposit",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/getReportDesposit",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportWithdraw({commit}, search) {
+//   },
+//   async GetReportWithdraw({commit}, search) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    var body = {
-        userid: search.get("userid"),
-        dateFrom: search.get("dateFrom"),
-        dateTo: search.get("dateTo"),
-        agent: search.get("agent"),
-        searchWord: search.get("searchWord"),
-    }
+//     var body = {
+//         userid: search.get("userid"),
+//         dateFrom: search.get("dateFrom"),
+//         dateTo: search.get("dateTo"),
+//         agent: search.get("agent"),
+//         searchWord: search.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/report/getReportWithdraw",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/getReportWithdraw",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportTransferOut({commit}, search) {
+//   },
+//   async GetReportTransferOut({commit}, search) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    var body = {
-        userid: search.get("userid"),
-        dateFrom: search.get("dateFrom"),
-        dateTo: search.get("dateTo"),
-        agent: search.get("agent"),
-        searchWord: search.get("searchWord"),
-    }
+//     var body = {
+//         userid: search.get("userid"),
+//         dateFrom: search.get("dateFrom"),
+//         dateTo: search.get("dateTo"),
+//         agent: search.get("agent"),
+//         searchWord: search.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/report/getReportTransferOut",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/getReportTransferOut",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportAff({commit}, search) {
+//   },
+//   async GetReportAff({commit}, search) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: search.get("userid"),
-        token: search.get("token"),
-    }
+//     var headers = {
+//         userid: search.get("userid"),
+//         token: search.get("token"),
+//     }
 
-    var body = {
-        userid: search.get("userid"),
-        dateFrom: search.get("dateFrom"),
-        dateTo: search.get("dateTo"),
-        agent: search.get("agent"),
-        searchWord: search.get("searchWord"),
-    }
+//     var body = {
+//         userid: search.get("userid"),
+//         dateFrom: search.get("dateFrom"),
+//         dateTo: search.get("dateTo"),
+//         agent: search.get("agent"),
+//         searchWord: search.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/report/getReportAff",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/getReportAff",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportAffDeposit({commit}, inputData) {
+//   },
+//   async GetReportAffDeposit({commit}, inputData) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: inputData.get("userid"),
-        token: inputData.get("token"),
-    }
+//     var headers = {
+//         userid: inputData.get("userid"),
+//         token: inputData.get("token"),
+//     }
 
-    var body = {
-        userid: inputData.get("userid"),
-        dateFrom: inputData.get("dateFrom"),
-        dateTo: inputData.get("dateTo"),
-        agent: inputData.get("agent"),
-        searchWord: inputData.get("searchWord"),
-    }
+//     var body = {
+//         userid: inputData.get("userid"),
+//         dateFrom: inputData.get("dateFrom"),
+//         dateTo: inputData.get("dateTo"),
+//         agent: inputData.get("agent"),
+//         searchWord: inputData.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/report/getReportAffDeposit",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/getReportAffDeposit",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportRefund({commit}, inputData) {
+//   },
+//   async GetReportRefund({commit}, inputData) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: inputData.get("userid"),
-        token: inputData.get("token"),
-    }
+//     var headers = {
+//         userid: inputData.get("userid"),
+//         token: inputData.get("token"),
+//     }
 
-    var body = {
-        userid: inputData.get("userid"),
-        dateFrom: inputData.get("dateFrom"),
-        dateTo: inputData.get("dateTo"),
-        agent: inputData.get("agent"),
-        searchWord: inputData.get("searchWord"),
-    }
+//     var body = {
+//         userid: inputData.get("userid"),
+//         dateFrom: inputData.get("dateFrom"),
+//         dateTo: inputData.get("dateTo"),
+//         agent: inputData.get("agent"),
+//         searchWord: inputData.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/report/GetReportRefund",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/GetReportRefund",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportSummaryMember({commit}, inputData) {
+//   },
+//   async GetReportSummaryMember({commit}, inputData) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: inputData.get("userid"),
-        token: inputData.get("token"),
-    }
+//     var headers = {
+//         userid: inputData.get("userid"),
+//         token: inputData.get("token"),
+//     }
 
-    var body = {
-        userid: inputData.get("userid"),
-        dateFrom: inputData.get("dateFrom"),
-        dateTo: inputData.get("dateTo"),
-        agent: inputData.get("agent"),
-        searchWord: inputData.get("searchWord"),
-    }
+//     var body = {
+//         userid: inputData.get("userid"),
+//         dateFrom: inputData.get("dateFrom"),
+//         dateTo: inputData.get("dateTo"),
+//         agent: inputData.get("agent"),
+//         searchWord: inputData.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/report/GetReportSummaryMember",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/GetReportSummaryMember",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportBetlog({commit}, inputData) {
+//   },
+//   async GetReportBetlog({commit}, inputData) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: inputData.get("userid"),
-        token: inputData.get("token"),
-    }
+//     var headers = {
+//         userid: inputData.get("userid"),
+//         token: inputData.get("token"),
+//     }
 
-    var body = {
-        userid: inputData.get("userid"),
-        dateFrom: inputData.get("dateFrom"),
-        dateTo: inputData.get("dateTo"),
-        agent: inputData.get("agent"),
-        searchWord: inputData.get("searchWord"),
-    }
+//     var body = {
+//         userid: inputData.get("userid"),
+//         dateFrom: inputData.get("dateFrom"),
+//         dateTo: inputData.get("dateTo"),
+//         agent: inputData.get("agent"),
+//         searchWord: inputData.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/report/getReportBetlog",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/getReportBetlog",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportBetlog2({commit}, inputData) {
+//   },
+//   async GetReportBetlog2({commit}, inputData) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: inputData.get("adminid"),
-        token: inputData.get("token"),
-    }
+//     var headers = {
+//         userid: inputData.get("adminid"),
+//         token: inputData.get("token"),
+//     }
 
-    var body = {
-        userid: inputData.get("userid"),
-        dateFrom: inputData.get("dateFrom"),
-        dateTo: inputData.get("dateTo"),
-        agent: inputData.get("agent"),
-        searchWord: inputData.get("searchWord"),
-    }
+//     var body = {
+//         userid: inputData.get("userid"),
+//         dateFrom: inputData.get("dateFrom"),
+//         dateTo: inputData.get("dateTo"),
+//         agent: inputData.get("agent"),
+//         searchWord: inputData.get("searchWord"),
+//     }
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/report/getReportBetlog2",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/report/getReportBetlog2",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
-  async GetReportBetlog4({commit}, inputData) {
+//   },
+//   async GetReportBetlog4({commit}, inputData) {
         
-    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
-    var headers = {
-        userid: inputData.get("adminid"),
-        token: inputData.get("token"),
-    }
+//     var headers = {
+//         userid: inputData.get("adminid"),
+//         token: inputData.get("token"),
+//     }
     
-    var body = {        
-        id: inputData.get("userid"),        
-        username: inputData.get("userid"),
-        start: inputData.get("dateFrom"),
-        end: inputData.get("dateTo"),
-    }
+//     var body = {        
+//         id: inputData.get("userid"),        
+//         username: inputData.get("userid"),
+//         start: inputData.get("dateFrom"),
+//         end: inputData.get("dateTo"),
+//     }
 
 
-    // console.log(body);
+//     // console.log(body);
 
-    let response;
-    await axios.post("api/member/getCreditHistoryByMemberId",body,
-    {
-        headers: {            
-        'Content-Type': 'application/json',
-        'userid': headers.userid,
-        'token': headers.token,
-        }
-    }).then(
-        resp => 
-        {
-            response = resp;
-        }
-    );
+//     let response;
+//     await axios.post("api/member/getCreditHistoryByMemberId",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
 
-    // console.log(response);
+//     // console.log(response);
 
-    if (response.data.status=="success") 
-    {
+//     if (response.data.status=="success") 
+//     {
       
-    }
+//     }
 
-    return response;
+//     return response;
 
-  },
+//   },
   async GetDashboardData({commit}, inputData) {
         
     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
@@ -1378,7 +1378,7 @@ const actions = {
     return response;
 
   },
-  async GetAgentBalance({commit}, inputData) {
+  async RegisterMemberWithEmail({commit}, inputData) {
         
     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
 
@@ -1388,12 +1388,14 @@ const actions = {
     }
 
     var body = {        
+        email: inputData.get("email"),
+        line_id: inputData.get("line_id"),
     }
 
     // console.log(body);
 
     let response;
-    await axios.post("api/agent/getremaincredit",body,
+    await axios.post("api/member/RegisterMemberWithEmail",body,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -1416,7 +1418,46 @@ const actions = {
 
     return response;
 
-  },  
+  },
+//   async GetAgentBalance({commit}, inputData) {
+        
+//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+
+//     var headers = {
+//         userid: inputData.get("userid"),
+//         token: inputData.get("token"),
+//     }
+
+//     var body = {        
+//     }
+
+//     // console.log(body);
+
+//     let response;
+//     await axios.post("api/agent/getremaincredit",body,
+//     {
+//         headers: {            
+//         'Content-Type': 'application/json',
+//         'userid': headers.userid,
+//         'token': headers.token,
+//         }
+//     }).then(
+//         resp => 
+//         {
+//             response = resp;
+//         }
+//     );
+
+//     // console.log(response);
+
+//     if (response.data.status=="success") 
+//     {
+      
+//     }
+
+//     return response;
+
+//   },  
   async UploadFile({commit}, inputData) {
         
     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
@@ -1669,6 +1710,44 @@ const actions = {
     }
     return response;
   },
+  async GetHistorySubScribeOrderNotApprove({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),        
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/GetHistorySubScribeOrderNotApprove",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async CancelSubScribeOrder({commit}, inputData) {
         
     var headers = {
@@ -1764,6 +1843,84 @@ const actions = {
 
     let response;
     await axios.post("api/member/getMemberEmail",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetLineProfileByLineSourceId({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        line_source_id: inputData.get("line_source_id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/member/getLineProfileByLineSourceId",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetEmailByLineSourceId({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        line_source_id: inputData.get("line_source_id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/member/getEmailByLineSourceId",body,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -2114,6 +2271,46 @@ const actions = {
 
     let response;
     await axios.post("api/subscriptiongroup/getSubscribePaymentById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async CreateSubScribeOrder({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {        
+        username : null,
+        page_name: null,
+        user_id: inputData.get("user_id"),
+        email: inputData.get("email"),
+        product_id: inputData.get("product_id"),
+        note: inputData.get("note"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/CreateSubScribeOrder",body,
     {
         headers: {            
         'Content-Type': 'application/json',

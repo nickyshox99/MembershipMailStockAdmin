@@ -471,15 +471,15 @@
                                                     </span>
 
                                                     <span v-if="props.column.field === 'create_date2'">              
-                                                        {{formatDateAssigned2(props.row.create_date)}}
+                                                        {{ (props.row.create_date != null)?formatDateAssigned2(props.row.create_date):"" }}
                                                     </span>
 
                                                     <span v-if="props.column.field === 'start_date2'">              
-                                                        {{formatDateAssigned2(props.row.start_date)}}
+                                                        {{(props.row.start_date != null)?formatDateAssigned2(props.row.start_date):"" }}
                                                     </span>
 
                                                     <span v-if="props.column.field === 'end_date2'">              
-                                                        {{formatDateAssigned2(props.row.end_date)}}
+                                                        {{(props.row.end_date != null)?formatDateAssigned2(props.row.end_date):"" }}
                                                     </span>
 
                                                     <span v-if="props.column.field === 'remain'">              
@@ -503,7 +503,7 @@
 
                                                     <span v-if="props.column.field === 'approved'">              
                                                             <b-badge
-                                                                v-if="props.row.canceled==0 && props.row.approve_by !=''"
+                                                                v-if="props.row.canceled==0 && props.row.approve_by != null &&props.row.approve_by !=''"
                                                                 pill
                                                                 :variant="`light-success`"
                                                                 class="text-capitalize"
@@ -512,7 +512,7 @@
                                                                 {{ ((props.row.approve_date != null) ? formatDateAssigned2(props.row.approve_date) : '') }}
                                                             </b-badge> 
                                                             <b-badge
-                                                                v-if="props.row.canceled==0 && props.row.approve_by ==''"
+                                                                v-if="props.row.canceled==0 && (props.row.approve_by =='' || props.row.approve_by == null)"
                                                                 pill
                                                                 :variant="`light-info`"
                                                                 class="text-capitalize"
@@ -535,7 +535,7 @@
                                                     </span>
 
                                                     <span v-if="props.column.field === 'action'">  
-                                                        <b-badge v-if="props.row.approve_by!=''&&props.row.canceled!=1" style="cursor: pointer; margin-right:2px" variant="danger" @click="inspectCancel(props.row)">
+                                                        <b-badge v-if="(props.row.approve_by!=''&&props.row.approve_by!=null)&&props.row.canceled!=1" style="cursor: pointer; margin-right:2px" variant="danger" @click="inspectCancel(props.row)">
                                                             <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
                                                             <span class="d-none d-sm-inline">{{t('Cancel')}}</span>
                                                         </b-badge>  
@@ -543,11 +543,11 @@
                                                             <feather-icon icon="SearchIcon" size="16" class="mr-0 mr-sm-50" />
                                                             <span class="d-none d-sm-inline">{{t('Information')}}</span>
                                                         </b-badge>                                                
-                                                        <b-badge v-if="props.row.approve_by==''" style="cursor: pointer; margin-right:2px" variant="success" @click="inspectApprove(props.row)">
+                                                        <b-badge v-if="(props.row.approve_by==''|| props.row.approve_by==null)" style="cursor: pointer; margin-right:2px" variant="success" @click="inspectApprove(props.row)">
                                                             <feather-icon icon="CheckIcon" size="16" class="mr-0 mr-sm-50" />
                                                             <span class="d-none d-sm-inline">{{t('Approve')}}</span>
                                                         </b-badge>
-                                                        <b-badge v-if="props.row.approve_by==''" style="cursor: pointer; margin-right:2px" variant="warning" @click="inspectReject(props.row)">
+                                                        <b-badge v-if="(props.row.approve_by==''|| props.row.approve_by==null)" style="cursor: pointer; margin-right:2px" variant="warning" @click="inspectReject(props.row)">
                                                             <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
                                                             <span class="d-none d-sm-inline">{{t('Reject')}}</span>
                                                         </b-badge>
@@ -1333,6 +1333,7 @@ export default {
             approveOrderId : 0,
 
             memberInGroupList:[],
+            pagePermission:[],
             
         }
     },

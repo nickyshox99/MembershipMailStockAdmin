@@ -20,20 +20,30 @@
                 class="auth-login-form mt-2 "
                 @submit.prevent
               >
-                <b-form-group                  
-                  label="Line Id"
-                  label-for="lineid"
-                  style="color: white;"
-                >
+              <b-form-group class="text-center">
+                <b-avatar
+                  :src="avatarImgUrl"
+                  size="6rem"
+                  variant="primary"
+                  class="mb-2"
+                ></b-avatar>
+              </b-form-group>
+<!-- 
+              <b-form-group                  
+                label="Line Id"
+                label-for="lineid"
+                style="color: white;"
+              >
+                
+                  <b-form-input
+                    id="lineid"
+                    v-model="lineId"                      
+                    name="lineid"
+                    readonly
+                  />
                   
-                    <b-form-input
-                      id="lineid"
-                      v-model="lineId"                      
-                      name="lineid"
-                      readonly
-                    />
-                    
-                </b-form-group>
+              </b-form-group> -->
+
                 <b-form-group                  
                   label="Email"
                   label-for="email"
@@ -72,7 +82,7 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton,BCard
+  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton,BCard,BAvatar
 } from 'bootstrap-vue'
 import { required, email } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
@@ -104,8 +114,19 @@ export default {
     ValidationProvider,
     ValidationObserver,
     BCard,
+    BAvatar,
   },
   mixins: [togglePasswordVisibility],
+  setup(props, {
+        emit
+    }) {
+
+        const { t } = useI18nUtils();
+
+        return {            
+            t,
+        }
+    }, 
   data() {
     return {
       status: '',
@@ -117,6 +138,7 @@ export default {
       required,
       email:'',
       lineId:'',
+      avatarImgUrl: require('@/assets/images/avatars/4.png'),
     }
   },
   computed: {
@@ -133,15 +155,102 @@ export default {
     },
   },
   async created() {
-    const params = new URLSearchParams(window.location.search)
-    this.lineId = params.get('lineid') || ''
+    // const params = new URLSearchParams(window.location.search)
+    // this.lineId = params.get('lineid') || ''
   },
   methods: {    
+    ...mapActions(["GetLineProfileByLineSourceId"]),
+    ...mapActions(["RegisterMemberWithEmail"]),
     async validationForm() {
 
     },
-    async registerEmail(){
+    async getSourceProfile(){
+      console.log('getSourceProfile');
+
+      //const userData = JSON.parse(localStorage.getItem('userData'));
+      const formData = new FormData();
+
+      //get query string
+      const params = new URLSearchParams(window.location.search);
+      const sourceUserId = params.get('sourceUserId') || '';
+    
+      formData.append("userid", "-");
+      formData.append("token", "-");
+
+      formData.append("lineSourceId", sourceUserId);
+      formData.append("page_name", this.$route.name);
       
+      const response = await this.GetLineProfileByLineSourceId(formData);
+      if (response.data.status=='success') 
+      {         
+          if (response.data.data.length > 0) {
+            this.lineId = response.data.data[0].lineid;
+            this.email = response.data.data[0].email;
+            if (this.avatarImgUrl = response.data.data[0].avatarImgUrl!="") {
+              this.avatarImgUrl = response.data.data[0].avatarImgUrl;
+            }
+          } else {
+            this.lineId = '';
+            this.email = '';
+          }
+      }
+      else
+      {
+          this.$toast(
+            {
+              component: ToastificationContent,
+              props: {
+                title: response.data.message,
+                icon: 'EditIcon',
+                variant: 'error',
+              },
+            });
+      }
+    },
+    async registerEmail(){
+      console.log('registerEmail');
+
+      //const userData = JSON.parse(localStorage.getItem('userData'));
+      const formData = new FormData();
+
+      //get query string
+      const params = new URLSearchParams(window.location.search);
+      const sourceUserId = params.get('sourceUserId') || '';
+    
+      formData.append("userid", "-");
+      formData.append("token", "-");
+
+      formData.append("line_id", sourceUserId);
+      formData.append("email", this.email);
+      formData.append("page_name", this.$route.name);
+      
+      const response = await this.RegisterMemberWithEmail(formData);
+      if (response.data.status=='success') 
+      {         
+          this.$toast(
+            {
+              component: ToastificationContent,
+              props: {
+                title: response.data.message,
+                icon: 'CheckIcon',
+                variant: 'success',
+              },
+            });
+
+          this.$router.push({ name: 'buy-product', query: { sourceUserId: sourceUserId } });
+      }
+      else
+      {
+          this.$toast(
+            {
+              component: ToastificationContent,
+              props: {
+                title: response.data.message,
+                icon: 'EditIcon',
+                variant: 'error',
+              },
+            });
+      }
     }
   },
 }

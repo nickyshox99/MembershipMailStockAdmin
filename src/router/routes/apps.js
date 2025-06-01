@@ -21,6 +21,7 @@ export default [
     name: 'apps-report-loanall',
     component: () => import('@/views/apps/report/ReportLoanAll.vue'),
   },
+  
 
   {
     path: '/apps/report/paidsuccess/',
@@ -112,6 +113,13 @@ export default [
     name: 'apps-group-sub',
     component: () => import('@/views/apps/members/GroupSub.vue'),
   },
+
+  {
+    path: '/apps/orders/orderwaitapprove',
+    name: 'order-wait-approve',
+    component: () => import('@/views/apps/orders/OrderWaitApprove.vue'),
+  },
+
   {
     path: '/apps/loan/onduedate',
     name: 'apps-loan-onduedate',
@@ -143,12 +151,7 @@ export default [
     component: () => import('@/views/apps/bank/AdminBank.vue'),
   },
 
-  {
-    path: '/apps/bank/',
-    name: 'apps-bank-transaction',
-    component: () => import('@/views/apps/report/ReportBankTransaction.vue'),
-  },
-
+  
   {
     path: '/apps/bank/',
     name: 'apps-truewallet-admin',

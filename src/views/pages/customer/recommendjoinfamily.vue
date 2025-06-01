@@ -14,33 +14,46 @@
           </b-link>
 
           <b-card-title class="mb-1 ">            
-            ขั้นตอนที่ 1
+            ขั้นตอนที่ 1            
           </b-card-title>
           <b-card-text class="mb-2 ">
-            ....
+            ทำการใส่ G-mail ที่ใช้ในการสมัคร 
           </b-card-text>
 
           <b-card-title class="mb-1 ">            
             ขั้นตอนที่ 2
           </b-card-title>
           <b-card-text class="mb-2 ">
-            ....
+            ทำการเลือก Package ที่ต้องการใช้งาน
           </b-card-text>
 
           <b-card-title class="mb-1 ">            
             ขั้นตอนที่ 3
           </b-card-title>
           <b-card-text class="mb-2 ">
-            ....
+            กดยืนยันอีเมลล์และ Package ที่ต้องการใช้งาน
           </b-card-text>
 
           <b-card-title class="mb-1 ">            
             ขั้นตอนที่ 4
           </b-card-title>
           <b-card-text class="mb-2 ">
-            ....
+            รอรับ Invite Email เพื่อเข้ากลุ่ม 
+          </b-card-text>
+
+          <b-card-title class="mb-1 ">            
+            ขั้นตอนที่ 5
+          </b-card-title>
+          <b-card-text class="mb-2 ">
+            ทำการเข้ากลุ่มครอบครัว
           </b-card-text>
     
+          <b-card-title class="mb-1 ">            
+            ขั้นตอนที่ 6
+          </b-card-title>
+          <b-card-text class="mb-2 ">
+            ชำระเงินพร้อมส่งสลิปยืนยันการชำระเงินทางไลน์
+          </b-card-text>
           
         </b-card>
         
