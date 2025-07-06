@@ -602,6 +602,7 @@ export default {
         
             if (response.data.status == 'success') {
                 this.getSubscribeMemberByGroupById();
+                this.$emit("refetch-data");
             }
             else {
                 this.$toast(

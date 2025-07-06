@@ -660,7 +660,7 @@
 
                                                     <span v-if="props.column.field === 'group_name2'">       
                                                         <b-img :src="props.row.subscription_img" fluid thumbnail style="height: 50px;" />                                                        
-                                                        <div style="font-size: 14px;color:gray">{{props.row.subscription_name}}</div>
+                                                        <div style="font-size: 14px;color:gray">{{props.row.group_name}}</div>
                                                     </span>
 
                                                     <span v-if="props.column.field === 'update_date2'">              
@@ -2478,6 +2478,7 @@ export default {
             form.append("group_id", this.selectedSubScribeGroupId);
             form.append("email", this.selectedSubScribeEmail);
             form.append("user_id", this.pRowData.id);
+            
 
             const response = await this.AddMemberToGroup(form);
             if (response.data.status == 'success') {                       

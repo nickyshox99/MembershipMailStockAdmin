@@ -90,13 +90,20 @@
             }}
           </span>
 
-          <span v-if="props.column.field === 'slip_file_at2'">
+          <span v-if="props.column.field === 'sent_message_at2'">
             {{
-              props.row.create_date != null
-                ? formatDateAssigned2(props.row.slip_file_at)
+              props.row.sent_message_at != null
+                ? formatDateAssigned(props.row.sent_message_at)
+                : ""
+            }}
+            {{
+              props.row.sent_message_by != null&&props.row.sent_message_by!=''
+                ? props.row.sent_message_by
                 : ""
             }}
           </span>
+
+          
           <span v-if="props.column.field === 'slip'" >
             <b-img v-if="props.row.slip_file_url!=''" 
               @click="showImage(props.row)"
@@ -111,9 +118,10 @@
                   ? formatDateAssigned(props.row.slip_file_at)
                   : ""
               }}
+              
             </div>
           </span>
-
+          
           <span v-if="props.column.field === 'approved'">
             <b-badge
               v-if="
@@ -176,6 +184,15 @@
               <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Incorrect Slip") }}</span>
             </b-badge>
+            <b-badge
+              v-if="props.row.wait_check_payment==1"
+              style="cursor: pointer; margin-right: 2px"
+              variant="info"
+              @click="sendLineMessage(props.row)"
+            >
+              <feather-icon icon="MailIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Send Payment") }}</span>
+            </b-badge>
           </span>
         </template>
 
@@ -227,11 +244,9 @@
           ขั้นตอนนี้ถ้ากดปุ่ม 
       </b-col>
       <b-col style="color:red;">
-          "ใช้กลุ่มเดิม" ระบบจะทำการแจ้งยอดชำระไปทางไลน์ไปให้ลูกค้าชำระทันที
+          "ส่งข้อความเรียกเก็บเงิน" ระบบจะทำการแจ้งยอดชำระไปทางไลน์ไปให้ลูกค้าชำระหลังจากกดปุ่ม
       </b-col>
-      <b-col  style="color:red;">
-          "ส่งคำเชิญเข้ากลุ่มแล้ว" ระบบจะทำการรอ Email การตอบรับคำเชิญ และทำการแจ้งยอดชำระไปทางไลน์อัตโนมัติ <br/>
-      </b-col>
+      
 
     </b-card>
 
@@ -506,6 +521,16 @@ export default {
             width: '10%',
             },
             {
+            label: t('Sent Message Date'),
+            field: 'sent_message_at2',
+            width: '10%',
+            },
+            {
+            label: t('Sent By'),
+            field: 'sent_message_by',
+            width: '10%',
+            },
+            {
             label: t('Slip'),
             field: 'slip',
             width: '10%',
@@ -630,6 +655,8 @@ export default {
     ...mapActions(["GetPagePermission"]),
     ...mapActions(["GetHistorySubScribeOrderWaitCheckPayment"]),
     ...mapActions(["VerifySlipOrder"]),
+    ...mapActions(["SentPaymentMessageOrder"]),
+    
     
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
@@ -668,14 +695,14 @@ export default {
           const response = await this.GetHistorySubScribeOrderWaitCheckPayment(form);
           if (response.data.status == 'success') {           
               this.rowsOrderHistory = response.data.data;                
-              for (let index = 0; index < this.rowsOrderHistory.length; index++) {
-                  const element = this.rowsOrderHistory[index];
-                  if (element.end_date!=null) {
-                      let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
-                      diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
-                      this.rowsOrderHistory[index]['diffDay'] = diffDay;
-                  }
-              }
+              // for (let index = 0; index < this.rowsOrderHistory.length; index++) {
+              //     const element = this.rowsOrderHistory[index];
+              //     if (element.end_date!=null) {
+              //         let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
+              //         diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
+              //         this.rowsOrderHistory[index]['diffDay'] = diffDay;
+              //     }
+              // }
           } else {
               this.$toast(
               {
@@ -952,6 +979,55 @@ export default {
         this.showModalImage= false;
         this.inspectReject(this.selectImageData);
     },
+    async sendLineMessage(item)
+    {
+        const note = this.cancelNoteInput;
+        console.log("handleOkReject");
+
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);
+
+        form.append("admin_id", userData.username);
+        form.append("order_id", item.id);
+        
+                                                        
+        const response = await this.SentPaymentMessageOrder(form);
+        if (response.data.status == "success") {
+            //
+
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Verify Payment`,
+                    icon: 'EditIcon',
+                    variant: 'success',
+                    text: this.$t(`Send Message Succesful`),
+                },
+                autoHideDelay: 3000,
+            });
+
+            this.search();
+            
+            
+        } else {
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Verify Payment`,
+                    icon: 'TrashIcon',
+                    variant: 'danger',
+                    text: this.$t('Send Message UnSuccesful') +` ${response.data.message}`,
+                },
+                autoHideDelay: 3000,
+            });
+            
+        }
+    }
   },
 };
 </script>

@@ -679,5 +679,14 @@
   "Slip":"Slip",
   "Checked Payment":"Checked Payment",
   "Off":"Off",
-  "Verify By":"Verify By"
+  "Verify By":"Verify By",
+  "Send Payment":"Send Payment",
+  "Sent Message Date":"Sent Message Date",
+  "Sent By":"Sent By",
+  "Send Message Offer":"Send Message Offer",
+  "Order Near Expire":"Order Near Expire",
+  "Days Left":"Days Left",
+  "Latest Sent Message":"Latest Sent Message",
+  "Send Message Succesful":"Send Message Succesful"
+
 }

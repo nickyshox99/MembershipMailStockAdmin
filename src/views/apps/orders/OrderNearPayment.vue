@@ -41,7 +41,7 @@
       </div>
     </b-card>
 
-    <b-card :title="t('Checked Payment')">
+    <b-card :title="t('Order Near Expire')">
       
       <vue-good-table
         ref="my-table-order-history"
@@ -82,13 +82,69 @@
             </div>
           </span>
 
-          <span v-if="props.column.field === 'create_date2'">
+          <span v-if="props.column.field === 'start_date2'">
             {{
-              props.row.create_date != null
-                ? formatDateAssigned2(props.row.create_date)
+              props.row.start_date != null
+                ? formatDateAssigned2(props.row.start_date)
                 : ""
             }}
           </span>
+          <span v-if="props.column.field === 'end_date2'">
+            {{
+              props.row.end_date != null
+                ? formatDateAssigned2(props.row.end_date)
+                : ""
+            }}
+          </span>
+          
+          
+          <span v-if="props.column.field === 'days_left2'">
+            <b-badge
+              v-if="
+                props.row.days_left <=7 && props.row.days_left >3
+              "
+              pill
+              :variant="`light-success`"
+              class="text-capitalize"
+            >
+              {{ props.row.days_left }} วัน
+            </b-badge>
+            <b-badge
+              v-if="
+                props.row.days_left <=3
+              "
+              pill
+              :variant="`light-danger`"
+              class="text-capitalize"
+            >
+              {{ props.row.days_left }} วัน
+            </b-badge>
+            <b-badge
+              v-if="
+                props.row.days_left <=0
+              "
+              pill
+              :variant="`light-danger`"
+              class="text-capitalize"
+            >
+              {{ t('Expired') }}
+            </b-badge>
+          </span>
+
+          <span v-if="props.column.field === 'latest_offer_message_at2'">
+          {{
+            props.row.latest_offer_message_at != null
+              ? formatDateAssigned(props.row.latest_offer_message_at)
+              : ""
+          }}
+          {{ 
+          props.row.offer_by != null && props.row.offer_by != ""
+              ? "("+props.row.offer_by+")"
+              : ""
+           }}
+        </span>
+
+          
 
           <span v-if="props.column.field === 'slip_file_at2'">
             {{
@@ -174,6 +230,16 @@
               <feather-icon icon="SearchIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Information") }}</span>
             </b-badge>
+
+            <b-badge
+              style="cursor: pointer; margin-right: 2px"
+              variant="info"
+              @click="sendLineMessageOffer(props.row)"
+            >
+              <feather-icon icon="MailIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Send Message Offer") }}</span>
+            </b-badge>
+
           </span>
         </template>
 
@@ -221,7 +287,7 @@
       </vue-good-table>
 
       <br/>
-     
+   
 
     </b-card>
 
@@ -525,25 +591,25 @@ export default {
             width: '20%',          
             },
             {
-            label: t('Create Date'),
-            field: 'create_date2',
+            label: t('Start Date'),
+            field: 'start_date2',
             width: '10%',
             },
             {
-            label: t('Slip'),
-            field: 'slip',
+            label: t('End Date'),
+            field: 'end_date2',
             width: '10%',
-            },   
+            },     
             {
-            label: t('Verify'),
-            field: 'approved',
+            label: t('Days Left'),
+            field: 'days_left2',
             width: '10%',
-            },   
+            },         
             {
-            label: t('Verify By'),
-            field: 'check_slip_by',
+            label: t('Latest Sent Message'),
+            field: 'latest_offer_message_at2',
             width: '10%',
-            }, 
+            },    
             {
                 label: t('Action'),
                 field: 'action',                
@@ -657,8 +723,10 @@ export default {
   methods: {
     
     ...mapActions(["GetPagePermission"]),
-    ...mapActions(["GetHistorySubScribeOrderCheckedPayment"]),
+    ...mapActions(["GetOrderNearExpire"]),
     ...mapActions(["VerifySlipOrder"]),
+    ...mapActions(["SentPaymentMessageOrder"]),
+     
     
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
@@ -694,7 +762,7 @@ export default {
           form.append("userid", userData.username);
           form.append("token", userData.token);
 
-          const response = await this.GetHistorySubScribeOrderCheckedPayment(form);
+          const response = await this.GetOrderNearExpire(form);
           if (response.data.status == 'success') {           
               this.rowsOrderHistory = response.data.data;                
               // for (let index = 0; index < this.rowsOrderHistory.length; index++) {
@@ -981,6 +1049,54 @@ export default {
         this.showModalImage= false;
         this.inspectReject(this.selectImageData);
     },
+    async sendLineMessageOffer(item)
+    {
+        const note = this.cancelNoteInput;
+        console.log("handleOkReject");
+
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);
+
+        form.append("admin_id", userData.username);
+        form.append("order_id", item.id);
+                                                        
+        const response = await this.SentPaymentMessageOrder(form);
+        if (response.data.status == "success") {
+            //
+
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Send Message`,
+                    icon: 'EditIcon',
+                    variant: 'success',
+                    text: this.$t(`Send Message Succesful`),
+                },
+                autoHideDelay: 3000,
+            });
+
+            this.search();
+            
+            
+        } else {
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Send Message`,
+                    icon: 'TrashIcon',
+                    variant: 'danger',
+                    text: this.$t('Send Message UnSuccesful') +` ${response.data.message}`,
+                },
+                autoHideDelay: 3000,
+            });
+            
+        }
+    }
   },
 };
 </script>

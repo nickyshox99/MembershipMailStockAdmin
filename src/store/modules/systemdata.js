@@ -2230,6 +2230,80 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async GetOrderNearExpire({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/GetOrderNearExpire",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  
+  async SentPaymentMessageOrder({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/SentPaymentMessageOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetMemberEmail({commit}, inputData) {
         
     var headers = {

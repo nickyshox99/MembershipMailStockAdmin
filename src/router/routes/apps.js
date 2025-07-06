@@ -139,6 +139,13 @@ export default [
   },
 
   {
+    path: '/apps/orders/ordernearexpire',
+    name: 'order-nearexpire',
+    component: () => import('@/views/apps/orders/OrderNearPayment.vue'),
+  },
+
+
+  {
     path: '/apps/loan/onduedate',
     name: 'apps-loan-onduedate',
     component: () => import('@/views/apps/loan/LoanOnDue.vue'),

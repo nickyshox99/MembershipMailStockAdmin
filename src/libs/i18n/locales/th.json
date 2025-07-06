@@ -680,5 +680,13 @@
   "Slip":"สลิป",
   "Checked Payment":"ตรวจสอบแล้ว",
   "Off":"ปิด",
-  "Verify By":"ตรวจสอบโดย"
+  "Verify By":"ตรวจสอบโดย",
+  "Send Payment":"ส่งข้อความเรียกเก็บเงิน",
+  "Sent Message Date":"ส่งข้อความเมื่อ",
+  "Sent By":"ส่งโดย",
+  "Send Message Offer":"ส่งข้อความเสนอ",
+  "Order Near Expire":"ลูกค้าใกล้หมดเวลา",
+  "Days Left":"จำนวนวันที่เหลือ",
+  "Latest Sent Message":"ส่งข้อความล่าสุดเมื่อ",
+  "Send Message Succesful":"ส่งข้อความสำเร็จ"
 }

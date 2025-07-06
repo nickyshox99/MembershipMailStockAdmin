@@ -89,24 +89,7 @@
             }}
           </span>
 
-          <span v-if="props.column.field === 'remain'">
-            <b-badge
-              v-if="props.row.diffDay <= 0"
-              pill
-              :variant="`light-warning`"
-              class="text-capitalize"
-            >
-              {{ t("Expired") }}
-            </b-badge>
-            <b-badge
-              v-if="props.row.diffDay > 0"
-              pill
-              :variant="`light-success`"
-              class="text-capitalize"
-            >
-              {{ t("Remaining") }} {{ props.row.diffDay }} {{ t("Day") }}
-            </b-badge>
-          </span>
+         
 
           <span v-if="props.column.field === 'approved'">
             <b-badge
@@ -637,14 +620,14 @@ export default {
           const response = await this.GetHistorySubScribeOrderNotApprove(form);
           if (response.data.status == 'success') {           
               this.rowsOrderHistory = response.data.data;                
-              for (let index = 0; index < this.rowsOrderHistory.length; index++) {
-                  const element = this.rowsOrderHistory[index];
-                  if (element.end_date!=null) {
-                      let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
-                      diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
-                      this.rowsOrderHistory[index]['diffDay'] = diffDay;
-                  }
-              }
+              // for (let index = 0; index < this.rowsOrderHistory.length; index++) {
+              //     const element = this.rowsOrderHistory[index];
+              //     if (element.end_date!=null) {
+              //         let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
+              //         diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
+              //         this.rowsOrderHistory[index]['diffDay'] = diffDay;
+              //     }
+              // }
           } else {
               this.$toast(
               {

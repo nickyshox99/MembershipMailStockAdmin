@@ -446,6 +446,9 @@ export default {
                 this.rows[index]['diffDay'] = null;
             }
         }
+
+        
+        this.sortedRows = this.sortRows(this.rows, this.currentSort);
       }
       else {
         this.$toast(
