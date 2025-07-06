@@ -35,6 +35,33 @@
                 </b-form-group>
               </b-col>
 
+              <b-col md="12">
+                <b-form-group
+                  :label="t('Head Email')"
+                  label-for="head_email"
+                >
+                  <b-form-input
+                    id="head_email"
+                    placeholder=""
+                    v-model="pRowData.head_email"
+                  />
+                </b-form-group>
+              </b-col>
+
+              <b-col md="12">
+                <b-form-group
+                  :label="t('Password')"
+                  label-for="password"
+                >
+                  <b-form-input
+                    type="password"
+                    id="password"
+                    placeholder=""
+                    v-model="pRowData.password"
+                  />
+                </b-form-group>
+              </b-col>
+
 
               <b-col md="12">
                 <b-form-group
@@ -62,6 +89,23 @@
                     readonly
                   />                  
                 </b-form-group>
+              </b-col>
+
+              <b-col md="12">
+                  <b-form-group              
+                    :label="t('Active')"
+                    label-for="family-active"
+                  >
+                  <b-form-checkbox
+                      id="family-active"
+                      name="family-active"                
+                      v-model="familyActive"
+                      value="1"
+                      unchecked-value="0"
+                    >
+                      {{t('On')}}
+                    </b-form-checkbox>
+                  </b-form-group>
               </b-col>
 
               <b-col>
@@ -185,6 +229,7 @@ export default {
     statusActive: 0,
     titleCard: "",
     period_number: 1,
+    familyActive:1,
   },
   props: {
     isEditFormActive: {
@@ -203,7 +248,7 @@ export default {
     pRowData: function (newVal, oldVal) {
       this.statusActive = newVal.status;
       this.subscribeTypeSelected = newVal.subscription_type_id; 
-      
+      this.familyActive = newVal.status;
     },
     isModeEdit: function (newVal, oldVal) {
       if (newVal == true) {
@@ -308,9 +353,8 @@ export default {
       body.page_name = this.$route.name;
       //body.status = this.statusActive ? this.statusActive : 1;
       body.subscription_type_id = this.subscribeTypeSelected?this.subscribeTypeSelected:0;
+      body.status = this.familyActive;
       
-      //console.log(body);
-
       let response;
       await axios
         .post("api/subscriptiongroup/updatebyid", body, {

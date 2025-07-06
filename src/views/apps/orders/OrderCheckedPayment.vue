@@ -41,7 +41,8 @@
       </div>
     </b-card>
 
-    <b-card :title="t('Wait Approve')">
+    <b-card :title="t('Checked Payment')">
+      
       <vue-good-table
         ref="my-table-order-history"
         :columns="columnsOrderHistory"
@@ -89,63 +90,74 @@
             }}
           </span>
 
-          <span v-if="props.column.field === 'remain'">
-            <b-badge
-              v-if="props.row.diffDay <= 0"
-              pill
-              :variant="`light-warning`"
-              class="text-capitalize"
-            >
-              {{ t("Expired") }}
-            </b-badge>
-            <b-badge
-              v-if="props.row.diffDay > 0"
-              pill
-              :variant="`light-success`"
-              class="text-capitalize"
-            >
-              {{ t("Remaining") }} {{ props.row.diffDay }} {{ t("Day") }}
-            </b-badge>
+          <span v-if="props.column.field === 'slip_file_at2'">
+            {{
+              props.row.create_date != null
+                ? formatDateAssigned2(props.row.slip_file_at)
+                : ""
+            }}
+          </span>
+          <span v-if="props.column.field === 'slip'" >
+            <b-img v-if="props.row.slip_file_url!=''" 
+              @click="showImage(props.row)"
+              :src="props.row.slip_file_url"
+              fluid
+              thumbnail
+              style="cursor: pointer; height: 100px"
+            />
+            <div style="font-size: 14px;">
+              {{
+                props.row.slip_file_at != null
+                  ? formatDateAssigned(props.row.slip_file_at)
+                  : ""
+              }}
+            </div>
+            
           </span>
 
           <span v-if="props.column.field === 'approved'">
             <b-badge
               v-if="
-                props.row.canceled == 0 &&
-                props.row.approve_by != null &&
-                props.row.approve_by != ''
+                props.row.slip_correct == 1 
               "
               pill
               :variant="`light-success`"
               class="text-capitalize"
             >
-              {{ t("Approved") }}
+              {{ t("Correct Slip") }}
               {{
-                props.row.approve_date != null
-                  ? formatDateAssigned2(props.row.approve_date)
+                props.row.slip_file_at != null
+                  ? formatDateAssigned(props.row.slip_file_at)
                   : ""
               }}
             </b-badge>
             <b-badge
               v-if="
-                props.row.canceled == 0 &&
-                (props.row.approve_by == '' || props.row.approve_by == null)
+                props.row.slip_correct == 0 
+              "
+              pill
+              :variant="`light-danger`"
+              class="text-capitalize"
+            >
+              {{ t("Incorrect Slip") }}
+              {{
+                props.row.slip_file_at != null
+                  ? formatDateAssigned(props.row.slip_file_at)
+                  : ""
+              }}
+            </b-badge>
+            <b-badge
+              v-if="
+                props.row.wait_check_payment == 1
               "
               pill
               :variant="`light-info`"
               class="text-capitalize"
             >
               <feather-icon icon="ClockIcon" size="16" class="mr-0 mr-sm-50" />
-              รอพิจารณาอนุมัติ
+              {{ t('Wait Admin Verify') }}
             </b-badge>
-            <b-badge
-              v-if="props.row.canceled == 1"
-              pill
-              :variant="`light-danger`"
-              class="text-capitalize"
-            >
-              {{ t("Canceled") }}
-            </b-badge>
+            
           </span>
 
           <span>
@@ -154,44 +166,13 @@
 
           <span v-if="props.column.field === 'action'">
             <b-badge
-              v-if="
-                props.row.approve_by != '' &&
-                props.row.approve_by != null &&
-                props.row.canceled != 1
-              "
-              style="cursor: pointer; margin-right: 2px"
-              variant="danger"
-              @click="inspectCancel(props.row)"
-            >
-              <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
-              <span class="d-none d-sm-inline">{{ t("Cancel") }}</span>
-            </b-badge>
-            <b-badge
-              v-if="props.row.canceled == 1"
+              v-if="props.row.slip_correct==0||props.row.slip_correct==1"
               style="cursor: pointer; margin-right: 2px"
               variant="info"
               @click="inspectData(props.row)"
             >
               <feather-icon icon="SearchIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Information") }}</span>
-            </b-badge>
-            <b-badge
-              v-if="props.row.approve_by == '' || props.row.approve_by == null"
-              style="cursor: pointer; margin-right: 2px"
-              variant="success"
-              @click="inspectApprove(props.row)"
-            >
-              <feather-icon icon="CheckIcon" size="16" class="mr-0 mr-sm-50" />
-              <span class="d-none d-sm-inline">{{ t("Approve") }}</span>
-            </b-badge>
-            <b-badge
-              v-if="props.row.approve_by == '' || props.row.approve_by == null"
-              style="cursor: pointer; margin-right: 2px"
-              variant="warning"
-              @click="inspectReject(props.row)"
-            >
-              <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
-              <span class="d-none d-sm-inline">{{ t("Reject") }}</span>
             </b-badge>
           </span>
         </template>
@@ -238,6 +219,18 @@
           </div>
         </template>
       </vue-good-table>
+
+      <br/>
+      <b-col style="color:red;" >
+          ขั้นตอนนี้ถ้ากดปุ่ม 
+      </b-col>
+      <b-col style="color:red;">
+          "ใช้กลุ่มเดิม" ระบบจะทำการแจ้งยอดชำระไปทางไลน์ไปให้ลูกค้าชำระทันที
+      </b-col>
+      <b-col  style="color:red;">
+          "ส่งคำเชิญเข้ากลุ่มแล้ว" ระบบจะทำการรอ Email การตอบรับคำเชิญ และทำการแจ้งยอดชำระไปทางไลน์อัตโนมัติ <br/>
+      </b-col>
+
     </b-card>
 
     
@@ -379,6 +372,75 @@
             </b-row>
         </b-modal>
 
+        <b-modal
+            id="modal-image"
+            ref="modalImage"
+            v-model="showModalImage"
+            :title="t('Slip')"
+            @show="resetModalImage"        
+            @hidden="resetModalImage"
+            @ok="handleOkImage"      
+            @cancel="handleCancelImage"
+            size="md"  
+            :hideHeaderClose="false"            
+            ok-variant="success"
+            :okTitle="t('Correct Slip')"
+            buttonSize="sm"
+            :cancelTitle="t('Incorrect Slip')"
+            cancel-variant="danger"
+            hide-footer
+        >
+            <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        label-for="cancel-note-input"                    
+                        >
+                        <img :src="imageModal"
+                          style="min-width: 300px;max-width: 300px; max-height: 600px;"
+                        />
+                        
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                    <b-badge
+                      v-if="
+                        selectImageData.slip_correct == 1 
+                      "
+                      pill
+                      :variant="`light-success`"
+                      class="text-capitalize"
+                    >
+                      {{ t("Correct Slip") }}
+                      {{
+                        selectImageData.slip_file_at != null
+                          ? formatDateAssigned2(selectImageData.slip_file_at)
+                          : ""
+                      }}
+                    </b-badge>
+                    <b-badge
+                      v-if="
+                        selectImageData.slip_correct == 0 
+                      "
+                      pill
+                      :variant="`light-danger`"
+                      class="text-capitalize"
+                    >
+                      {{ t("Incorrect Slip") }}
+                      {{
+                        selectImageData.slip_file_at != null
+                          ? formatDateAssigned(selectImageData.slip_file_at)
+                          : ""
+                      }}
+                      {{
+                        selectImageData.check_slip_by 
+                      }}
+                    </b-badge>
+                </b-col>
+            </b-row>
+
+        </b-modal>
 
   </div>
 
@@ -423,6 +485,7 @@ import LoanKeyPayment from "../loan/LoanKeyPayment.vue";
 import LoanKeyFine from "../loan/LoanKeyFine.vue";
 import LoanForwardPayment from "../loan/LoanForwardPayment.vue";
 import LoanTotalPayment from "../loan/LoanTotalPayment.vue";
+import { imageOverlay } from "leaflet";
 
 export default {
   components: {
@@ -460,11 +523,6 @@ export default {
 
     const columnsOrderHistory =  [
             {
-            label: 'Username',
-            field: 'user_id',  
-            width: '10%',          
-            },
-            {
             label: t('Email'),
             field: 'email',  
             width: '10%',          
@@ -480,12 +538,20 @@ export default {
             width: '10%',
             },
             {
-            label: t('Approve'),
+            label: t('Slip'),
+            field: 'slip',
+            width: '10%',
+            },   
+            {
+            label: t('Verify'),
             field: 'approved',
             width: '10%',
-            },
-           
-           
+            },   
+            {
+            label: t('Verify By'),
+            field: 'check_slip_by',
+            width: '10%',
+            }, 
             {
                 label: t('Action'),
                 field: 'action',                
@@ -547,6 +613,9 @@ export default {
       approveNoteInput:"",
       
       pagePermission:[],
+      showModalImage:false,
+      imageModal : "",
+      selectImageData : {},
 
     };
   },
@@ -596,9 +665,8 @@ export default {
   methods: {
     
     ...mapActions(["GetPagePermission"]),
-    ...mapActions(["GetHistorySubScribeOrderNotApprove"]),
-    ...mapActions(["ApproveSubScribeOrder"]),
-    ...mapActions(["CancelSubScribeOrder"]),
+    ...mapActions(["GetHistorySubScribeOrderCheckedPayment"]),
+    ...mapActions(["VerifySlipOrder"]),
     
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
@@ -634,16 +702,16 @@ export default {
           form.append("userid", userData.username);
           form.append("token", userData.token);
 
-          const response = await this.GetHistorySubScribeOrderNotApprove(form);
+          const response = await this.GetHistorySubScribeOrderCheckedPayment(form);
           if (response.data.status == 'success') {           
               this.rowsOrderHistory = response.data.data;                
               for (let index = 0; index < this.rowsOrderHistory.length; index++) {
                   const element = this.rowsOrderHistory[index];
-                  if (element.end_date!=null) {
-                      let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
-                      diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
-                      this.rowsOrderHistory[index]['diffDay'] = diffDay;
-                  }
+                  // if (element.end_date!=null) {
+                  //     let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
+                  //     diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
+                  //     this.rowsOrderHistory[index]['diffDay'] = diffDay;
+                  // }
               }
           } else {
               this.$toast(
@@ -697,8 +765,9 @@ export default {
         form.append("admin_id", userData.username);
         form.append("order_id", this.approveOrderId);
         form.append("note", note?note:'');
+        form.append("slip_correct", 1);
                                                         
-        const response = await this.ApproveSubScribeOrder(form);
+        const response = await this.VerifySlipOrder(form);
         if (response.data.status == "success") {
             //
 
@@ -706,10 +775,10 @@ export default {
                 component: ToastificationContent,
                 position: 'top-right',
                 props: {
-                    title: `Approve Order`,
+                    title: `Verify Payment`,
                     icon: 'EditIcon',
                     variant: 'success',
-                    text: this.$t(`Approve Order Succesful`),
+                    text: this.$t(`Update Order Succesful`),
                 },
                 autoHideDelay: 3000,
             });
@@ -722,10 +791,10 @@ export default {
                 component: ToastificationContent,
                 position: 'top-right',
                 props: {
-                    title: `Approve Order`,
+                    title: `Verify Payment`,
                     icon: 'TrashIcon',
                     variant: 'danger',
-                    text: this.$t('Approve Order UnSuccesful') +` ${response.data.message}`,
+                    text: this.$t('Update Order UnSuccesful') +` ${response.data.message}`,
                 },
                 autoHideDelay: 3000,
             });
@@ -798,8 +867,9 @@ export default {
         form.append("admin_id", userData.username);
         form.append("order_id", this.cancelOrderId);
         form.append("note", note?note:'');
+        form.append("slip_correct", 1);
                                                         
-        const response = await this.CancelSubScribeOrder(form);
+        const response = await this.VerifySlipOrder(form);
         if (response.data.status == "success") {
             //
 
@@ -807,10 +877,10 @@ export default {
                 component: ToastificationContent,
                 position: 'top-right',
                 props: {
-                    title: `Cancel Order`,
+                    title: `Verify Payment`,
                     icon: 'EditIcon',
                     variant: 'success',
-                    text: this.$t(`Cancel Order Succesful`),
+                    text: this.$t(`Update Order Succesful`),
                 },
                 autoHideDelay: 3000,
             });
@@ -823,10 +893,10 @@ export default {
                 component: ToastificationContent,
                 position: 'top-right',
                 props: {
-                    title: `Cancel Order`,
+                    title: `Verify Payment`,
                     icon: 'TrashIcon',
                     variant: 'danger',
-                    text: this.$t('Cancel Order UnSuccesful') +` ${response.data.message}`,
+                    text: this.$t('Update Order UnSuccesful') +` ${response.data.message}`,
                 },
                 autoHideDelay: 3000,
             });
@@ -898,6 +968,26 @@ export default {
       });
 
       return found;
+    },
+    showImage(item)
+    {
+      this.selectImageData = item;
+      this.imageModal = item.slip_file_url;
+      this.showModalImage= true;
+    },
+    resetModalImage()
+    {
+      this.showModalImage= false;
+    },
+    handleOkImage()
+    {
+        this.showModalImage= false;
+        this.inspectApprove(this.selectImageData);
+    },
+    handleCancelImage()
+    {
+        this.showModalImage= false;
+        this.inspectReject(this.selectImageData);
     },
   },
 };

@@ -41,7 +41,8 @@
       </div>
     </b-card>
 
-    <b-card :title="t('Wait Approve')">
+    <b-card :title="t('Wait Family Invitation')">
+      
       <vue-good-table
         ref="my-table-order-history"
         :columns="columnsOrderHistory"
@@ -88,6 +89,33 @@
                 : ""
             }}
           </span>
+
+          <span v-if="props.column.field === 'group_name2'">
+
+            <b-badge
+              style="cursor: pointer;"
+              @click="()=>{confirmJoinGroup(props.row.group_id,props.row.email,props.row.user_id)}"
+              v-if="props.row.group_name && props.row.group_name.length > 0"
+              pill
+              :variant="`light-success`"
+              class="text-capitalize"
+            >
+              {{ props.row.group_name }}
+            </b-badge>
+
+            <b-badge
+              style="cursor: pointer;"
+              v-if="!props.row.group_name"              
+              @click="()=>{confirmJoinGroup(props.row.group_id,props.row.email,props.row.user_id)}"
+              pill
+              :variant="`light-warning`"
+              class="text-capitalize"
+            >
+              {{ t('No Group') }}
+            </b-badge>
+
+          </span>
+          
 
           <span v-if="props.column.field === 'remain'">
             <b-badge
@@ -155,8 +183,8 @@
           <span v-if="props.column.field === 'action'">
             <b-badge
               v-if="
-                props.row.approve_by != '' &&
-                props.row.approve_by != null &&
+                props.row.sent_email_by != '' &&
+                props.row.sent_email_by != null &&
                 props.row.canceled != 1
               "
               style="cursor: pointer; margin-right: 2px"
@@ -176,22 +204,22 @@
               <span class="d-none d-sm-inline">{{ t("Information") }}</span>
             </b-badge>
             <b-badge
-              v-if="props.row.approve_by == '' || props.row.approve_by == null"
+              v-if="props.row.sent_email_by == '' || props.row.sent_email_by == null"
               style="cursor: pointer; margin-right: 2px"
               variant="success"
               @click="inspectApprove(props.row)"
             >
               <feather-icon icon="CheckIcon" size="16" class="mr-0 mr-sm-50" />
-              <span class="d-none d-sm-inline">{{ t("Approve") }}</span>
+              <span class="d-none d-sm-inline">{{ t("Sent Invite") }}</span>
             </b-badge>
             <b-badge
-              v-if="props.row.approve_by == '' || props.row.approve_by == null"
+              v-if="props.row.sent_email_by == '' || props.row.sent_email_by == null"
               style="cursor: pointer; margin-right: 2px"
               variant="warning"
-              @click="inspectReject(props.row)"
+              @click="inspectSkip(props.row)"
             >
-              <feather-icon icon="XIcon" size="16" class="mr-0 mr-sm-50" />
-              <span class="d-none d-sm-inline">{{ t("Reject") }}</span>
+              <feather-icon icon="CheckIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Use Old Group") }}</span>
             </b-badge>
           </span>
         </template>
@@ -238,6 +266,18 @@
           </div>
         </template>
       </vue-good-table>
+
+      <br/>
+      <b-col style="color:red;" >
+          ขั้นตอนนี้ถ้ากดปุ่ม 
+      </b-col>
+      <b-col style="color:red;">
+          "ใช้กลุ่มเดิม" ระบบจะทำการแจ้งยอดชำระไปทางไลน์ไปให้ลูกค้าชำระทันที
+      </b-col>
+      <b-col  style="color:red;">
+          "ส่งคำเชิญเข้ากลุ่มแล้ว" ระบบจะทำการรอ Email การตอบรับคำเชิญ และทำการแจ้งยอดชำระไปทางไลน์อัตโนมัติ <br/>
+      </b-col>
+
     </b-card>
 
     
@@ -245,7 +285,7 @@
             id="modal-approve"
             ref="modalApprove"
             v-model="showModalApprove"
-            :title="t('Please confirm that you want to approve')"
+            :title="t('Please confirm')"
             @show="resetModalApprove"        
             @hidden="resetModalApprove"
             @ok="handleOkApprove"      
@@ -280,13 +320,13 @@
             id="modal-reject"
             ref="modalReject"
             v-model="showModalReject"
-            :title="t('Please confirm that you want to reject')"
+            :title="t('Please confirm')"
             @show="resetModalReject"        
             @hidden="resetModalReject"
             @ok="handleOkReject"      
             size="sm"  
             :hideHeaderClose="false"            
-            ok-variant="danger"
+            ok-variant="warning"
             :okTitle="t('YES')"
             buttonSize="sm"
             :cancelTitle="t('NO')"
@@ -301,7 +341,7 @@
                         
                         <b-form-textarea
                             id="cancel-note-input"
-                            v-model="cancelNoteInput"                
+                            v-model="skipNoteInput"                
                             rows="3"
                             max-rows="6"
                         ></b-form-textarea>
@@ -336,7 +376,7 @@
                         
                         <b-form-textarea
                             id="cancel-note-input"
-                            v-model="cancelNoteInput"                
+                            v-model="skipNoteInput"                
                             rows="3"
                             max-rows="6"
                         ></b-form-textarea>
@@ -370,7 +410,7 @@
                         
                         <b-form-textarea
                             id="cancel-note-input"
-                            v-model="cancelNoteInput"                
+                            v-model="skipNoteInput"                
                             rows="3"
                             max-rows="6"
                         ></b-form-textarea>
@@ -379,6 +419,63 @@
             </b-row>
         </b-modal>
 
+        <b-modal
+            id="modal-join-group"
+            ref="modalJoinGroup"
+            v-model="showModalJoinGroup"
+            :title="t('Join Group')"
+            @show="resetModalJoinGroup"        
+            @hidden="resetModalJoinGroup"
+            @ok="handleOkJoinGroup"      
+            size="md"  
+            :hideHeaderClose="false"            
+            ok-variant="success"
+            :okTitle="t('YES')"
+            buttonSize="md"
+            :cancelTitle="t('NO')"
+            footerClass="p-2"
+        >
+                
+            <b-row>                
+                <b-col md="12">
+                    <b-form-group :label="t('Select Group')" label-for="group-selected">
+                        <b-input-group class="input-group-merge">
+                            <b-input-group-prepend is-text>
+                                <feather-icon icon="UsersIcon" />
+                            </b-input-group-prepend>
+                            <b-form-select v-model="selectedSubScribeGroupId" :options="optionSubScribeGroup" @change="groupChange()"></b-form-select>
+                        </b-input-group>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                   <hr/>
+                </b-col>
+            </b-row>
+           
+            <b-row>
+                <b-col md="12">
+                    <span>{{ t('Amount') }}: <b-badge pill :variant="`light-success`" class="text-capitalize">{{memberInGroupList.length}}</b-badge> {{ t('Member') }}</span>
+                </b-col>                
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                   <hr/>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                    <b-form-group :label="t('Member in group')" label-for="member-in-group">
+                        <b-row v-for="item in memberInGroupList" :key="item.email" style="padding-left: 30px;" >
+                            <b-col>
+                                <span style="padding-left: 10px;color:grey;cursor: pointer;"> {{ item.email }} </span>
+                            </b-col>
+                        </b-row>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+        </b-modal>
 
   </div>
 
@@ -460,11 +557,6 @@ export default {
 
     const columnsOrderHistory =  [
             {
-            label: 'Username',
-            field: 'user_id',  
-            width: '10%',          
-            },
-            {
             label: t('Email'),
             field: 'email',  
             width: '10%',          
@@ -480,12 +572,21 @@ export default {
             width: '10%',
             },
             {
-            label: t('Approve'),
-            field: 'approved',
+            label: t('Old Group Name'),
+            field: 'group_name2',
+            width: '10%',
+            },
+            {
+            label: t('Invite Date'),
+            field: 'sent_invite_at',
             width: '10%',
             },
            
-           
+            {
+            label: t('Invite By'),
+            field: 'sent_email_by',
+            width: '10%',
+            },   
             {
                 label: t('Action'),
                 field: 'action',                
@@ -541,13 +642,29 @@ export default {
       showModalReject:false,
       showInspectApprove: false,
 
-      cancelNoteInput:"",
-      cancelOrderId:0,
+      skipNoteInput:"",
+      skipOrderId:0,
       approveOrderId:0,
       approveNoteInput:"",
       
       pagePermission:[],
+      showModalJoinGroup:false,
 
+      selectedSubScribeGroupId : 0,
+      selectedSubScribeEmail : '',
+      selected_user_id : '',
+
+      memberInGroupList:[],
+      groupList:[],
+
+      selectedSubScribeGroupId:0,
+      optionSubScribeGroup : [{
+          value: 0,
+          text: 'Select Group'
+      },],
+
+      
+      
     };
   },
   computed: {
@@ -591,14 +708,21 @@ export default {
     await this.getPagePermission();
     await this.search();
 
+    await Promise.all([
+            this.getActiveGroupList(),
+        ]);             
+
     console.log(this.page_name);
   },
   methods: {
     
     ...mapActions(["GetPagePermission"]),
-    ...mapActions(["GetHistorySubScribeOrderNotApprove"]),
-    ...mapActions(["ApproveSubScribeOrder"]),
-    ...mapActions(["CancelSubScribeOrder"]),
+    ...mapActions(["GetHistorySubScribeOrderWaitInvitation"]),
+    ...mapActions(["SentFamliyInviteOrder"]),
+    ...mapActions(["SkipFamliyInviteOrder"]),
+    ...mapActions(["GetActiveSubscriptionGroup"]),
+    ...mapActions(["GetSubscribeMemberByGroupById"]),
+    ...mapActions(["AddMemberToGroup"]),
     
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
@@ -634,7 +758,7 @@ export default {
           form.append("userid", userData.username);
           form.append("token", userData.token);
 
-          const response = await this.GetHistorySubScribeOrderNotApprove(form);
+          const response = await this.GetHistorySubScribeOrderWaitInvitation(form);
           if (response.data.status == 'success') {           
               this.rowsOrderHistory = response.data.data;                
               for (let index = 0; index < this.rowsOrderHistory.length; index++) {
@@ -698,7 +822,7 @@ export default {
         form.append("order_id", this.approveOrderId);
         form.append("note", note?note:'');
                                                         
-        const response = await this.ApproveSubScribeOrder(form);
+        const response = await this.SentFamliyInviteOrder(form);
         if (response.data.status == "success") {
             //
 
@@ -714,7 +838,7 @@ export default {
                 autoHideDelay: 3000,
             });
 
-            this.search();
+            this.search()
             
             
         } else {
@@ -737,7 +861,7 @@ export default {
     async handleOkCancel()
     {
         //CancelSubScribeOrder
-        const note = this.cancelNoteInput;
+        const note = this.skipNoteInput;
         console.log("handleOkCancel");
 
         const userData = JSON.parse(localStorage.getItem('userData'));
@@ -747,10 +871,10 @@ export default {
         form.append("token", userData.token);
 
         form.append("admin_id", userData.username);
-        form.append("order_id", this.cancelOrderId);
+        form.append("order_id", this.skipOrderId);
         form.append("note", note?note:'');
                                                         
-        const response = await this.CancelSubScribeOrder(form);
+        const response = await this.SkipFamliyInviteOrder(form);
         if (response.data.status == "success") {
             //
 
@@ -766,7 +890,7 @@ export default {
                 autoHideDelay: 3000,
             });
 
-            this.search();
+            this.search()
             
             
         } else {
@@ -786,7 +910,7 @@ export default {
     },
     async handleOkReject()
     {
-        const note = this.cancelNoteInput;
+        const note = this.skipNoteInput;
         console.log("handleOkReject");
 
         const userData = JSON.parse(localStorage.getItem('userData'));
@@ -796,10 +920,10 @@ export default {
         form.append("token", userData.token);
 
         form.append("admin_id", userData.username);
-        form.append("order_id", this.cancelOrderId);
+        form.append("order_id", this.skipOrderId);
         form.append("note", note?note:'');
                                                         
-        const response = await this.CancelSubScribeOrder(form);
+        const response = await this.SkipFamliyInviteOrder(form);
         if (response.data.status == "success") {
             //
 
@@ -807,15 +931,15 @@ export default {
                 component: ToastificationContent,
                 position: 'top-right',
                 props: {
-                    title: `Cancel Order`,
+                    title: `Skip Invitation`,
                     icon: 'EditIcon',
                     variant: 'success',
-                    text: this.$t(`Cancel Order Succesful`),
+                    text: this.$t(`Skip Invitation Succesful`),
                 },
                 autoHideDelay: 3000,
             });
 
-            this.search();
+            this.search()
             
             
         } else {
@@ -856,13 +980,13 @@ export default {
     async inspectData(itemData)
     {
         this.showModalNote = true;
-        this.cancelNoteInput = itemData.note;
+        this.skipNoteInput = itemData.note;
     },
     async inspectCancel(itemData)
     {
         this.showModalCancel = true;            
-        this.cancelNoteInput = itemData.note;
-        this.cancelOrderId = itemData.id;
+        this.skipNoteInput = itemData.note;
+        this.skipOrderId = itemData.id;
         
     },
     async inspectApprove(itemData)
@@ -871,11 +995,11 @@ export default {
         this.approveNoteInput = itemData.note;
         this.approveOrderId = itemData.id;
     },
-    async inspectReject(itemData)
+    async inspectSkip(itemData)
     {
         this.showModalReject=true;                   
-        this.cancelNoteInput = itemData.note;
-        this.cancelOrderId = itemData.id;
+        this.skipNoteInput = itemData.note;
+        this.skipOrderId = itemData.id;
     },
     closeInspectionApprove()
     {
@@ -898,6 +1022,97 @@ export default {
       });
 
       return found;
+    },
+    resetModalJoinGroup()
+    {
+        
+    },
+    async handleOkJoinGroup()
+    {
+        
+
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);
+
+        form.append("admin_id", userData.username);            
+        form.append("group_id", this.selectedSubScribeGroupId);
+        form.append("email", this.selectedSubScribeEmail);
+        form.append("user_id", this.selected_user_id);
+
+        const response = await this.AddMemberToGroup(form);
+        if (response.data.status == 'success') {                       
+            this.search();
+            this.groupChange();
+
+        } else {
+            this.$toast(
+            {
+                component: ToastificationContent,
+                props: {
+                title: response.data.message,
+                icon: 'EditIcon',
+                variant: 'error',
+                },
+            });
+            this.showModalJoinGroup = true;
+        }
+    },
+    async getActiveGroupList() {
+          const userData = JSON.parse(localStorage.getItem('userData'));
+          const User = new FormData();
+
+          User.append("userid", userData.username);
+          User.append("token", userData.token);
+          User.append("page_name", this.$route.name);
+
+          const response = await this.GetActiveSubscriptionGroup(User);
+          if (response.data.status == 'success') {                
+              this.groupList = response.data.data; 
+              let tmpArray = [];                
+              this.groupList.forEach(element => {
+                      tmpArray.push({
+                          value: element.id,
+                          text: "["+element.subscription_name+"] "+ element.group_name
+                      });
+                  });             
+              this.optionSubScribeGroup = tmpArray;
+              this.selectedSubScribeGroupId = tmpArray[0].value;
+
+          } else {
+
+          }
+      },
+    
+    async groupChange()
+        {
+            console.log("groupChange")
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const User = new FormData();
+
+            User.append("userid", userData.username);
+            User.append("token", userData.token);
+            User.append("page_name", this.$route.name);
+            User.append("id", this.selectedSubScribeGroupId);
+
+            const response = await this.GetSubscribeMemberByGroupById(User);
+            if (response.data.status == 'success') {                
+                this.memberInGroupList = response.data.data; 
+                
+            } else {
+
+            }
+        },
+    async confirmJoinGroup(selectedSubScribeGroupId,selectedSubScribeEmail,selected_user_id)
+    {
+      console.log("confirmJoinGroup");
+        this.selectedSubScribeGroupId =selectedSubScribeGroupId;
+        this.selectedSubScribeEmail = selectedSubScribeEmail;
+        this.selected_user_id =selected_user_id;
+          this.showModalJoinGroup=true;
+          this.groupChange();
     },
   },
 };

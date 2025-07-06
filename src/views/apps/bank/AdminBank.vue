@@ -10,47 +10,25 @@
       <b-card v-if="!(isEditFormActive)">
         <div class="m-2">
 
-          <!-- Table Top -->
           <b-row>
-            <!-- <b-col
-              cols="2"
-              md="2"
-              class="d-flex align-items-center justify-content-start"
-            > 
-              <b-form-datepicker id="fromDate" v-model="fromDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" locale="th"></b-form-datepicker>          
-            </b-col>
-        
-            <b-col
-              cols="2"
-              md="2"
-              class="d-flex align-items-center justify-content-start"
-            > 
-              <b-form-datepicker id="toDate" v-model="toDate" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" locale="th" ></b-form-datepicker>          
-            </b-col> -->
-
-
-            <!-- Search -->
-            
-
-            <!--b-col cols="2" md="2" class="d-flex align-items-center justify-content-start">
-              <b-form-select v-model="AgentSelected" :options="AgentOptions"></b-form-select>
-            </b-col-->
-
             <b-col cols="4" md="3" class="d-flex align-items-center justify-content-start">
               <b-button variant="primary" @click="search">
               <feather-icon
                 icon="SearchIcon"              
               />            
+              {{t('Load')}}
               </b-button>
 
                &nbsp;
               <b-button variant="success" @click="addnew">
                 <feather-icon icon="PlusCircleIcon" />
+                {{t('Add')}}
                  </b-button>
 
               &nbsp;
               <b-button variant="danger" @click="confirmDelete">
                 <feather-icon icon="TrashIcon" />
+                {{t('Delete')}}
                  </b-button>
 
             </b-col>
@@ -103,11 +81,11 @@
             <!-- </span> -->
 
             <!-- Column: Status -->
-            <!-- <span v-else-if="props.column.field === 'status'">
-              <b-badge :variant="statusVariant(props.row.status)">
-                {{ props.row.status }}
+            <span v-else-if="props.column.field === 'status2'">
+              <b-badge :variant="statusVariant(props.row.status==1?'Success':'Warning')">
+                {{ t(props.row.status==1?'On':'Off')}}
               </b-badge>
-            </span> -->
+            </span>
 
             <!-- Column: Action -->
             <span v-if="props.column.field === 'action'">
@@ -116,16 +94,7 @@
                   <template v-slot:button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="text-body align-middle mr-25" />
                   </template>
-                  <!-- <b-dropdown-item
-                    @click="viewitem(props.row)"
-                  >
-                    <feather-icon
-                      icon="Link2Icon"
-                      class="mr-50"
-                    />
-                    <span >View</span>
-                  </b-dropdown-item> -->
-
+                  
                   <b-dropdown-item @click="edititem(props.row)">
                     <feather-icon icon="Edit2Icon" class="mr-50" />
                     <span>{{t('Edit')}}</span>
@@ -232,10 +201,7 @@ export default {
           label: t('Bank Name'),
           field: 'bank_name2',
         },
-        {
-          label: t('Type'),
-          field: 'bank_type',
-        },
+        
         {
           label: t('Bank Account Name'),
           field: 'bank_acc_name',
@@ -245,21 +211,8 @@ export default {
           field: 'bank_acc_number',
         },
         {
-          label: t('Work Type'),
-          field: 'work_type',
-        },
-        {
-          label: t('Show Type'),
-          field: 'show_type',
-        },
-        {
           label: t('Status'),
-          field: 'status',
-        },
-        {
-          label: t('Balance'),
-          field: 'balance',
-          type : 'decimal',
+          field: 'status2',
         },
         {
           label: t('Action'),
@@ -308,13 +261,9 @@ export default {
   computed: {
     statusVariant() {
       const statusColor = {
-        /* eslint-disable key-spacing */
-        Current: 'light-primary',
-        Professional: 'light-success',
-        Rejected: 'light-danger',
-        Resigned: 'light-warning',
-        Applied: 'light-info',
-        /* eslint-enable key-spacing */
+        Success: 'light-success',        
+        Warning: 'light-warning',
+        Info: 'light-info',
       }
 
       return status => statusColor[status]
@@ -332,21 +281,13 @@ export default {
   },
   async created() {
     this.$http.get('/good-table/basic').then(res => { this.rows = res.data });
-    await this.getAgent();
     await this.search();
     this.isModeEdit = true;
   },
   methods: {
-    ...mapActions(["GetAgent"]),
     ...mapActions(["GetAdminBank"]),
     async search() {
       console.log('search');
-
-      // console.log(this.fromDate);
-      // console.log(this.toDate);
-      // console.log(this.AgentSelected);       
-      // console.log(this.searchTerm);
-      // console.log(this.pageLength);
 
       const userData = JSON.parse(localStorage.getItem('userData'));
       const formData = new FormData();
@@ -356,7 +297,7 @@ export default {
 
       // User.append("dateFrom", this.fromDate);
       // User.append("dateTo", this.toDate);
-      formData.append("agent", this.AgentSelected);
+      formData.append("agent", 0);
       formData.append("searchWord", this.searchTerm);
       formData.append("pageLength", this.pageLength);
 
@@ -385,27 +326,6 @@ export default {
           });
       }
 
-
-    },
-    async getAgent() {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      const User = new FormData();
-
-      User.append("userid", userData.username);
-      User.append("token", userData.token);
-
-      const response = await this.GetAgent(User);
-      if (response.data.status == 'success') {
-        const agent = response.data.data;
-        let tmpArray = [];
-        agent.forEach(element => {
-          tmpArray.push({ value: element.agent, text: element.agent });
-        });
-        this.AgentOptions = tmpArray;
-        this.AgentSelected = tmpArray[0].text;
-      } else {
-
-      }
 
     },
     formatDateAssigned(value) {

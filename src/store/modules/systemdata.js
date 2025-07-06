@@ -45,45 +45,84 @@ const actions = {
 //     return response;
 
 //   },    
-//   async GetAdminBank({commit}, search) {
+async GetAdminBank({commit}, search) {
         
-//     var headers = {
-//         userid: search.get("userid"),
-//         token: search.get("token"),
-//     }
+    var headers = {
+        userid: search.get("userid"),
+        token: search.get("token"),
+    }
 
-//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
-//     var body = {        
-//         searchWord: search.get("searchWord"),
-//     }
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {        
+        searchWord: search.get("searchWord"),
+    }
 
-//     // console.log(body);
+    // console.log(body);
 
-//     let response;
-//     await axios.post("api/adminbank/getadminbank",body,
-//     {
-//         headers: {            
-//         'Content-Type': 'application/json',
-//         'userid': headers.userid,
-//         'token': headers.token,
-//         }
-//     }).then(
-//         resp => 
-//         {
-//             response = resp;            
-//         }
-//     );
+    let response;
+    await axios.post("api/adminbank/getadminbank",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;            
+        }
+    );
 
-//     // console.log(response);
+    // console.log(response);
 
-//     if (response.data.status=="success") 
-//     {
+    if (response.data.status=="success") 
+    {
       
-//     }
+    }
 
-//     return response;
+    return response;
 
-//   },
+},
+async GetActiveAdminBank({commit}, search) {
+        
+    var headers = {
+        userid: "",
+        token: "",
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {        
+        searchWord: "",
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/adminbank/getactiveadminbank",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;            
+        }
+    );
+
+    // console.log(response);
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+
+},
 //   async GetAdminTrueWallet({commit}, search) {
         
 //     var headers = {
@@ -161,44 +200,7 @@ const actions = {
     }
     return response;
   },
-//   async GetBankBreakInfo({commit}, search) {
-        
-//     var headers = {
-//         userid: search.get("userid"),
-//         token: search.get("token"),
-//     }
-
-//     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
-//     var body = {
-//         // userid: search.get("userid"),
-//         // token: search.get("token"),
-//         searchWord: search.get("searchWord"),
-//     }
-
-//     // console.log(body);
-
-//     let response;
-//     await axios.post("api/adminbank/getbankbreakinfo",body,
-//     {
-//         headers: {            
-//         'Content-Type': 'application/json',
-//         'userid': headers.userid,
-//         'token': headers.token,
-//         }
-//     }).then(
-//         resp => 
-//         {
-//             response = resp;
-//         }
-//     );
-
-//     // console.log(response);
-//     if (response.data.status=="success") 
-//     {
-      
-//     }
-//     return response;
-//   },
+  
 //   async GetPromotion({commit}, search) {
         
 //     var headers = {
@@ -1595,6 +1597,100 @@ const actions = {
     return response;
 
   },
+  async CustomerUploadFileAndDeleteOldFile({commit}, inputData) {
+        
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    // var body = {
+    //     tofilename : search.get("tofilename"),
+    //     file : search.get("file"),
+    // }
+
+    const formData = new FormData();
+    formData.append('order_id', inputData.get("order_id"));
+    formData.append('email', inputData.get("email"));
+    formData.append('tofilename', inputData.get("tofilename"));
+    formData.append('file', inputData.get("file"));
+    formData.append('oldFilePath', inputData.get("oldFilePath"));
+
+    // console.log(search.get("file"));
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/file/customerUploadFileAndDeleteOldFile",formData,
+    {
+        headers: {            
+        'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+
+  },
+  async CustomerDeleteOldFile({commit}, inputData) {
+        
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        oldFilePath : inputData.get("oldFilePath"), 
+        order_id : inputData.get("order_id"), 
+        email : inputData.get("email"), 
+    }
+
+    // console.log(search.get("file"));
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/file/customerdeleteFile",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+
+  },
   async GetUserPromotion({commit},inputData) {
         
     var headers = {
@@ -1748,6 +1844,161 @@ const actions = {
     }
     return response;
   },
+  async GetHistorySubScribeOrderWaitInvitation({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),        
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/GetHistorySubScribeOrderWaitInvitation",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetHistorySubScribeOrderWaitCheckPayment({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),        
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/GetHistorySubScribeOrderWaitCheckPayment",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetHistorySubScribeOrderCheckedPayment({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),        
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/GetHistorySubScribeOrderCheckedPayment",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetSubScribeOrderById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),        
+        id: inputData.get("id"),
+        email: inputData.get("email"),
+        page_name: inputData.get("page_name"),
+
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/GetSubScribeOrderById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async CancelSubScribeOrder({commit}, inputData) {
         
     var headers = {
@@ -1804,6 +2055,161 @@ const actions = {
 
     let response;
     await axios.post("api/product/ApproveSubScribeOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async SentFamliyInviteOrder({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        note :  inputData.get("note"),       
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/SentFamliyInviteOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async SkipFamliyInviteOrder({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        note :  inputData.get("note"),       
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/SkipFamliyInviteOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async PaymentOrderWithSlip({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        //username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        email: inputData.get("email"),       
+        slip_file_url: inputData.get("slip_file_url"),
+        //note :  inputData.get("note"),       
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/PaymentOrderWithSlip",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async VerifySlipOrder({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        slip_correct: inputData.get("slip_correct"),    
+        note :  inputData.get("note"),       
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/VerifySlipOrder",body,
     {
         headers: {            
         'Content-Type': 'application/json',

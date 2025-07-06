@@ -41,7 +41,7 @@ const router = new VueRouter({
   // console.log("Is login");  
   // console.log(isLoggedIn);
 
-  if (to.name=="recommend-join-family"||to.name=="registere-mail"||to.name=="buy-product" ) {
+  if (to.name=="recommend-join-family"||to.name=="registere-mail"||to.name=="buy-product"||to.name=="confirm-payment" ) {
     return next()
   }
   
@@ -118,7 +118,7 @@ const router = new VueRouter({
     // console.log(isLoggedIn);
     if (!isLoggedIn)
     {
-      return next({ name: 'auth-login' });
+      return next({ name: 'misc-not-authorized' });
     } 
     else
     {      

@@ -89,24 +89,24 @@ export default [
   //   ],
   // },
    
-  // {
-  //   title: "Bank Setting",
-  //   icon: "CreditCardIcon",
-  //   children: [
-  //     {
-  //       title: "Bank Setting",
-  //       route: "apps-bank-admin",
-  //     },
-  //     {
-  //       title: "Bank Transaction",
-  //       route: "apps-bank-transaction",
-  //     },
-  //     {
-  //       title: "True Wallet Setting",
-  //       route: "apps-truewallet-admin",
-  //     },
-  //   ],
-  // },
+  {
+    title: "Bank Setting",
+    icon: "CreditCardIcon",
+    children: [
+      {
+        title: "Bank Setting",
+        route: "apps-bank-admin",
+      },
+      // {
+      //   title: "Bank Transaction",
+      //   route: "apps-bank-transaction",
+      // },
+      // {
+      //   title: "True Wallet Setting",
+      //   route: "apps-truewallet-admin",
+      // },
+    ],
+  },
   {
     title: "Staff Setting",
     icon: "UsersIcon",

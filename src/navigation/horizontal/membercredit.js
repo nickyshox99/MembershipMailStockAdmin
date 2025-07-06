@@ -2,7 +2,7 @@ export default [
 
   {
     header: "Management",
-    submenu : ["apps-members-depwit","apps-loan-onduedate","apps-loan-overduedate","apps-loan-closed","apps-loan-all","order-wait-approve"],
+    submenu : ["apps-members-depwit","apps-loan-onduedate","apps-loan-overduedate","apps-loan-closed","apps-loan-all","order-wait-approve","order-wait-invite","order-wait-payment","order-checked-payment"],
   },
   {
     title: "MemberShip List",
@@ -11,6 +11,18 @@ export default [
       {
         title: "Wait Approve",
         route: "order-wait-approve",
+      },
+      {
+        title: "Wait Family Invite",
+        route: "order-wait-invite",
+      },
+      {
+        title: "Wait Payment",
+        route: "order-wait-payment",
+      },
+      {
+        title: "Checked Payment",
+        route: "order-checked-payment",
       },
       {
         title: "On Due Date",

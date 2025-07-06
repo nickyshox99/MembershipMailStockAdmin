@@ -23,4 +23,12 @@ export default [
       layout: 'full',            
     },
   },
+  {
+    path: '/ConfirmPayment',
+    name: 'confirm-payment',
+    component: () => import('@/views/pages/customer/ConfirmPayment.vue'),
+    meta: {
+      layout: 'full',            
+    },
+  },
 ]

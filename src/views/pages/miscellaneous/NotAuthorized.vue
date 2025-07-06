@@ -13,15 +13,15 @@
           You are not authorized! 🔐
         </h2>
         <p class="mb-2">
-          You don’t have permission to access this page. Go Home!!
+          You don’t have permission to access this page.
         </p>
-        <b-button
+        <!-- <b-button
           variant="primary"
           class="mb-1 btn-sm-block"
           @click="gotoDefault()"
-        >Go to Home</b-button>
+        >Go to Home</b-button> -->
         &nbsp;
-        <b-button
+        <!-- <b-button
           variant="primary"
           class="mb-1 btn-sm-block"
           @click="loginRoute()"
@@ -30,7 +30,7 @@
           fluid
           :src="imgUrl"
           alt="Home"
-        />
+        /> -->
 
         
        

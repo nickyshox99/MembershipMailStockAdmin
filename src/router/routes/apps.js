@@ -121,6 +121,24 @@ export default [
   },
 
   {
+    path: '/apps/orders/orderwaitinvite',
+    name: 'order-wait-invite',
+    component: () => import('@/views/apps/orders/OrderWaitInvitation.vue'),
+  },
+
+  {
+    path: '/apps/orders/orderwaitpayment',
+    name: 'order-wait-payment',
+    component: () => import('@/views/apps/orders/OrderWaitPayment.vue'),
+  },
+
+  {
+    path: '/apps/orders/ordercheckedpayment',
+    name: 'order-checked-payment',
+    component: () => import('@/views/apps/orders/OrderCheckedPayment.vue'),
+  },
+
+  {
     path: '/apps/loan/onduedate',
     name: 'apps-loan-onduedate',
     component: () => import('@/views/apps/loan/LoanOnDue.vue'),

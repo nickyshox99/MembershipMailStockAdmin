@@ -59,8 +59,9 @@
     </Transition>
     <Transition name="fade" mode="out-in">
       <b-card :title="t('Group Subscription')" v-if="!(isEditFormActive)&&!(isNoteFormActive)&&!(isMemberFormActive)">
-        <!-- table -->
-        <vue-good-table ref="my-table" :columns="columns" :rows="rows" :rtl="direction" :line-numbers="true"
+        <vue-good-table ref="my-table" :columns="columns" :rows="sortedRows" :rtl="direction" :line-numbers="true"
+          :sort-options="{ enabled: true }"
+          @on-sort-change="handleSortChange"
           :search-options="{
           enabled: false,
           externalQuery: searchTerm
@@ -126,10 +127,8 @@
                   >                                                                 
                       {{ t('Remaining') }} {{props.row.diffDay}} {{t('Day')}}
                   </b-badge> 
-          </span>
+            </span>
 
-            
-            
             <span v-if="props.column.field === 'action'">
               <span>
                 <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
@@ -269,11 +268,17 @@ export default {
         },
         {
           label: t('Expired'),
-          field: 'expire_date2',
+          field: 'expire_date2',          
         },
         {
           label: t('Member Count'),
           field: 'CountMember',
+          sortable: true,
+          sortFn: (a, b, order) => {
+          const valA = a;
+          const valB = b;
+          return order === 'asc' ? valA - valB : valB - valA;
+          }
         },
         {
           label: t('Action'),
@@ -324,6 +329,8 @@ export default {
                     can_approve : false,
                     can_viewall : false,
       },
+      sortedRows: [],
+      currentSort: { field: '', type: '' }
     }
   },
   computed: {
@@ -370,6 +377,7 @@ export default {
     await this.getPagePermission();
 
     await this.search();
+    this.sortedRows = this.rows;
     this.isModeEdit = true;
 
 
@@ -642,9 +650,39 @@ export default {
         this.search();
       }
 
-
-
     },
+    handleSortChange(params) {      
+      this.currentSort = params; 
+      this.sortedRows = this.sortRows(this.rows, params);
+    },
+    sortRows(rows, {field, type}) {
+      // เขียน logic sort เอง เช่นเดียวกับ sortFn
+      return [...rows].sort((a, b) => {
+        // custom sort logic ตาม field และ type
+        if(field === 'expire_date2') {
+          // ตัวอย่างใช้ diffDay + expire_date
+          const getGroupPriority = (diffDay, reverse = false) => {
+            if(diffDay == null) return reverse ? 1 : 3;
+            if(diffDay <= 0) return reverse ? 3 : 1;
+            return 2;
+          };
+          const reverse = type === 'desc';
+          const priorityA = getGroupPriority(a.diffDay, reverse);
+          const priorityB = getGroupPriority(b.diffDay, reverse);
+          if(priorityA !== priorityB) return priorityA - priorityB;
+          const dateA = a.expire_date ? new Date(a.expire_date).getTime() : 0;
+          const dateB = b.expire_date ? new Date(b.expire_date).getTime() : 0;
+          return type === 'asc' ? dateA - dateB : dateB - dateA;
+        }
+        // sort field อื่น ๆ ตามปกติ
+        if(typeof a[field] === 'string') {
+          return type === 'asc'
+            ? a[field].localeCompare(b[field])
+            : b[field].localeCompare(a[field]);
+        }
+        return type === 'asc' ? a[field] - b[field] : b[field] - a[field];
+      });
+    }
   },
 }
 </script>

@@ -7,5 +7,7 @@ module.exports = {
   //BASE_API_URL: 'http://178.128.80.191:9502/',
   //BASE_API_URL: 'http://bstsoft.duckdns.org:10600/',
   BASE_API_URL: 'http://localhost:10600/',  
+  //BASE_API_URL: 'http://100.88.111.74:10600',  
+  
 }
 

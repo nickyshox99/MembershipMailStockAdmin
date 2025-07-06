@@ -437,9 +437,14 @@
                                         <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="success" class="mr-1" v-if="isModeEdit" @click="confirmRequest" >
                                         <feather-icon icon="EditIcon" />
                                         {{t('Add Subscription')}}
-                                    </b-button>
+                                        </b-button>
+                                        <b-button @click="close" v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="reset" variant="outline-secondary">
+                                            <feather-icon icon="DeleteIcon" />
+                                            {{t('Close')}}
+                                        </b-button>
                                     </b-col>
-                                </b-row>                               
+                                </b-row>        
+                                                       
                                 
                                 <b-row>
                                     <b-col md="12">
@@ -621,7 +626,11 @@
                                         <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="success" class="mr-1" v-if="isModeEdit" @click="confirmJoinGroup" >
                                         <feather-icon icon="UsersIcon" />
                                         {{t('Join Group')}}
-                                    </b-button>
+                                        </b-button>
+                                        <b-button @click="close" v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="reset" variant="outline-secondary">
+                                            <feather-icon icon="DeleteIcon" />
+                                            {{t('Close')}}
+                                        </b-button>
                                     </b-col>
                                 </b-row>                               
                                 
@@ -651,7 +660,7 @@
 
                                                     <span v-if="props.column.field === 'group_name2'">       
                                                         <b-img :src="props.row.subscription_img" fluid thumbnail style="height: 50px;" />                                                        
-                                                        <div style="font-size: 14px;color:gray">{{props.row.group_name}}</div>
+                                                        <div style="font-size: 14px;color:gray">{{props.row.subscription_name}}</div>
                                                     </span>
 
                                                     <span v-if="props.column.field === 'update_date2'">              

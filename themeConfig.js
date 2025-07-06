@@ -10,7 +10,7 @@ export const $themeBreakpoints = {}
 export const $themeConfig = {
   app: {
     
-    appName: 'Loan Admin', // Will update name in navigation menu (Branding)
+    appName: 'MemberShip', // Will update name in navigation menu (Branding)
     // eslint-disable-next-line global-require
     appLogoImage: require('@/assets/images/logo/logo1.png'), // Will update logo in navigation menu (Branding)
   },

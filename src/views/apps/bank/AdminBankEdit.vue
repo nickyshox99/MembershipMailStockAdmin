@@ -19,7 +19,7 @@
               <b-form-select v-model="bankSelected" :options="bankOptions"></b-form-select>
             </b-form-group>
           </b-col>
-          <b-col md="6">
+          <b-col md="6" v-if="false">
             <b-form-group              
               :label="t('Deposit/Withdraw')"
               label-for="deposit-withdraw"
@@ -52,9 +52,7 @@
             </b-form-group>
           </b-col>
 
-          
-
-          <b-col md="6">
+          <b-col md="6" v-if="false">
             <b-form-group              
               :label="t('Work Type')"
               label-for="work-type"
@@ -63,7 +61,7 @@
             </b-form-group>
           </b-col>
 
-          <b-col md="6">
+          <b-col md="6" v-if="false">
             <b-form-group              
               :label="t('Show Type')"
               label-for="show-only-bank"
@@ -74,7 +72,7 @@
 
          
 
-          <b-col md="6">
+          <b-col md="6" v-if="false">
             <b-form-group
               label="Device ID"
               label-for="device-id"
@@ -87,7 +85,7 @@
             </b-form-group>
           </b-col>
 
-          <b-col md="6">
+          <b-col md="6" v-if="false">
             <b-form-group              
               :label="t('PIN')"
               label-for="pin"
@@ -100,7 +98,7 @@
             </b-form-group>
           </b-col>
 
-          <b-col md="12">
+          <b-col md="12" v-if="false">
             <b-form-group
               label="Node URL"
               label-for="node-url"
@@ -114,7 +112,7 @@
           </b-col>
 
 
-          <b-col md="1">
+          <b-col md="1" v-if="false">
             <b-form-group              
               :label="t('Break Cash')"
               label-for="break-cash-enable"
@@ -132,7 +130,7 @@
             </b-form-group>
           </b-col>
 
-          <b-col md="1">
+          <b-col md="1" v-if="false">
             <b-form-group              
               :label="t('Deposit Decimal')"
               label-for="deposit-decimal"
@@ -183,7 +181,7 @@
         </b-col>
          
 
-        <b-col md="6" v-if="showBreakBank" >
+        <b-col md="6" v-if="showBreakBank"  >
             <b-form-group              
               :label="t('Account For Break')"
               label-for="bank-selected3"
@@ -248,7 +246,7 @@
         </b-row>
       </b-form>
 
-      <b-form @submit.prevent v-if="isModeEdit">
+      <b-form @submit.prevent v-if="false">
         <b-row>
           <b-col md="12">
             &nbsp;
@@ -278,7 +276,7 @@
           </b-col>
 
         </b-row>
-        <b-row>
+        <b-row >
           
           <b-col md="6">
             <b-form-group
@@ -308,7 +306,7 @@
           
         </b-row>
 
-        <b-row>
+        <b-row >
           <b-col>
            
             <b-button
@@ -496,8 +494,7 @@
     },
     async created() {        
         await this.getBankInfo();
-        await this.getBankBreakInfo();
-
+        
         this.depWitOptions = [
             { value: 'DEPOSIT', text: 'DEPOSIT' },        
             { value: 'WITHDRAW', text: 'WITHDRAW' },        
@@ -684,7 +681,7 @@
                     },
                     autoHideDelay: 3000,
                 });
-                this.search();
+                this.$emit('refetch-data');
           }
         
         },
