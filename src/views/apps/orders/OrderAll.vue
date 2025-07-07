@@ -41,7 +41,7 @@
       </div>
     </b-card>
 
-    <b-card :title="t('Order Near Expire')">
+    <b-card :title="t('All')">
       
       <vue-good-table
         ref="my-table-order-history"
@@ -82,69 +82,38 @@
             </div>
           </span>
 
-          <span v-if="props.column.field === 'start_date2'">
+          <span v-if="props.column.field === 'create_date2'">
             {{
-              props.row.start_date != null
-                ? formatDateAssigned2(props.row.start_date)
+              props.row.create_date != null
+                ? formatDateAssigned2(props.row.create_date)
                 : ""
             }}
           </span>
-          <span v-if="props.column.field === 'end_date2'">
-            {{
-              props.row.end_date != null
-                ? formatDateAssigned2(props.row.end_date)
-                : ""
-            }}
-          </span>
-          
-          
-          <span v-if="props.column.field === 'days_left2'">
+          <span v-if="props.column.field === 'group_name2'">
+
             <b-badge
-              v-if="
-                props.row.days_left <=7 && props.row.days_left >3
-              "
+              style="cursor: pointer;"
+              @click="()=>{confirmJoinGroup(props.row.group_id,props.row.email,props.row.user_id)}"
+              v-if="props.row.group_name && props.row.group_name.length > 0"
               pill
               :variant="`light-success`"
               class="text-capitalize"
             >
-              {{ props.row.days_left }} วัน
+              {{ props.row.group_name }}
             </b-badge>
+
             <b-badge
-              v-if="
-                props.row.days_left <=3
-              "
+              style="cursor: pointer;"
+              v-if="!props.row.group_name"              
+              @click="()=>{confirmJoinGroup(props.row.group_id,props.row.email,props.row.user_id)}"
               pill
-              :variant="`light-danger`"
+              :variant="`light-warning`"
               class="text-capitalize"
             >
-              {{ props.row.days_left }} วัน
+              {{ t('No Group') }}
             </b-badge>
-            <b-badge
-              v-if="
-                props.row.days_left <=0
-              "
-              pill
-              :variant="`light-danger`"
-              class="text-capitalize"
-            >
-              {{ t('Expired') }}
-            </b-badge>
+
           </span>
-
-          <span v-if="props.column.field === 'latest_offer_message_at2'">
-          {{
-            props.row.latest_offer_message_at != null
-              ? formatDateAssigned(props.row.latest_offer_message_at)
-              : ""
-          }}
-          {{ 
-          props.row.offer_by != null && props.row.offer_by != ""
-              ? "("+props.row.offer_by+")"
-              : ""
-           }}
-        </span>
-
-          
 
           <span v-if="props.column.field === 'slip_file_at2'">
             {{
@@ -222,7 +191,6 @@
 
           <span v-if="props.column.field === 'action'">
             <b-badge
-              v-if="props.row.slip_correct==0||props.row.slip_correct==1"
               style="cursor: pointer; margin-right: 2px"
               variant="info"
               @click="inspectData(props.row)"
@@ -230,16 +198,6 @@
               <feather-icon icon="SearchIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Information") }}</span>
             </b-badge>
-
-            <b-badge
-              style="cursor: pointer; margin-right: 2px"
-              variant="info"
-              @click="sendLineMessageOffer(props.row)"
-            >
-              <feather-icon icon="MailIcon" size="16" class="mr-0 mr-sm-50" />
-              <span class="d-none d-sm-inline">{{ t("Send Message Offer") }}</span>
-            </b-badge>
-
           </span>
         </template>
 
@@ -287,7 +245,7 @@
       </vue-good-table>
 
       <br/>
-   
+     
 
     </b-card>
 
@@ -500,6 +458,66 @@
 
         </b-modal>
 
+        
+        <b-modal
+            id="modal-join-group"
+            ref="modalJoinGroup"
+            v-model="showModalJoinGroup"
+            :title="t('Join Group')"
+            @show="resetModalJoinGroup"        
+            @hidden="resetModalJoinGroup"
+            @ok="handleOkJoinGroup"      
+            size="md"  
+            :hideHeaderClose="false"            
+            ok-variant="success"
+            :okTitle="t('YES')"
+            buttonSize="md"
+            :cancelTitle="t('NO')"
+            footerClass="p-2"
+        >
+                
+            <b-row>                
+                <b-col md="12">
+                    <b-form-group :label="t('Select Group')" label-for="group-selected">
+                        <b-input-group class="input-group-merge">
+                            <b-input-group-prepend is-text>
+                                <feather-icon icon="UsersIcon" />
+                            </b-input-group-prepend>
+                            <b-form-select v-model="selectedSubScribeGroupId" :options="optionSubScribeGroup" @change="groupChange()"></b-form-select>
+                        </b-input-group>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                   <hr/>
+                </b-col>
+            </b-row>
+           
+            <b-row>
+                <b-col md="12">
+                    <span>{{ t('Amount') }}: <b-badge pill :variant="`light-success`" class="text-capitalize">{{memberInGroupList.length}}</b-badge> {{ t('Member') }}</span>
+                </b-col>                
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                   <hr/>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col md="12">
+                    <b-form-group :label="t('Member in group')" label-for="member-in-group">
+                        <b-row v-for="item in memberInGroupList" :key="item.email" style="padding-left: 30px;" >
+                            <b-col>
+                                <span style="padding-left: 10px;color:grey;cursor: pointer;"> {{ item.email }} </span>
+                            </b-col>
+                        </b-row>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+        </b-modal>
+
+
   </div>
 
 </template>
@@ -591,25 +609,30 @@ export default {
             width: '20%',          
             },
             {
-            label: t('Start Date'),
-            field: 'start_date2',
+            label: t('Create Date'),
+            field: 'create_date2',
             width: '10%',
             },
             {
-            label: t('End Date'),
-            field: 'end_date2',
+            label: t('Group Name'),
+            field: 'group_name2',
             width: '10%',
-            },     
+            },
             {
-            label: t('Days Left'),
-            field: 'days_left2',
+            label: t('Slip'),
+            field: 'slip',
             width: '10%',
-            },         
+            },   
             {
-            label: t('Latest Sent Message'),
-            field: 'latest_offer_message_at2',
-            width: '20%',
-            },    
+            label: t('Verify'),
+            field: 'approved',
+            width: '10%',
+            },   
+            {
+            label: t('Verify By'),
+            field: 'check_slip_by',
+            width: '10%',
+            }, 
             {
                 label: t('Action'),
                 field: 'action',                
@@ -675,6 +698,21 @@ export default {
       imageModal : "",
       selectImageData : {},
 
+      showModalJoinGroup:false,
+
+      selectedSubScribeGroupId : 0,
+      selectedSubScribeEmail : '',
+      selected_user_id : '',
+
+      memberInGroupList:[],
+      groupList:[],
+
+      selectedSubScribeGroupId:0,
+      optionSubScribeGroup : [{
+          value: 0,
+          text: 'Select Group'
+      },],
+
     };
   },
   computed: {
@@ -716,18 +754,22 @@ export default {
     this.page_name = this.$route.name;
 
     await this.getPagePermission();
-    await this.search();
+    
+    await Promise.all([
+          this.search(),
+          this.getActiveGroupList(),
+      ]); 
 
     console.log(this.page_name);
   },
   methods: {
     
     ...mapActions(["GetPagePermission"]),
-    ...mapActions(["GetOrderNearExpire"]),
+    ...mapActions(["GetHistorySubScribeOrderAll"]),
+    ...mapActions(["GetActiveSubscriptionGroup"]),
     ...mapActions(["VerifySlipOrder"]),
-    ...mapActions(["SentPaymentMessageOrder"]),
-     
-    
+    ...mapActions(["GetSubscribeMemberByGroupById"]),
+    ...mapActions(["AddMemberToGroup"]),
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
       formattedDate = new Date(formattedDate.getTime() - 3600000); // 60 * 60 * 1000 * 1
@@ -762,7 +804,7 @@ export default {
           form.append("userid", userData.username);
           form.append("token", userData.token);
 
-          const response = await this.GetOrderNearExpire(form);
+          const response = await this.GetHistorySubScribeOrderAll(form);
           if (response.data.status == 'success') {           
               this.rowsOrderHistory = response.data.data;                
               // for (let index = 0; index < this.rowsOrderHistory.length; index++) {
@@ -1049,10 +1091,13 @@ export default {
         this.showModalImage= false;
         this.inspectReject(this.selectImageData);
     },
-    async sendLineMessageOffer(item)
+    resetModalJoinGroup()
     {
-        const note = this.cancelNoteInput;
-        console.log("handleOkReject");
+        
+    },
+    async handleOkJoinGroup()
+    {
+        
 
         const userData = JSON.parse(localStorage.getItem('userData'));
         const form = new FormData();
@@ -1060,44 +1105,82 @@ export default {
         form.append("userid", userData.username);
         form.append("token", userData.token);
 
-        form.append("admin_id", userData.username);
-        form.append("order_id", item.id);
-        form.append("days_left", item.days_left);
-                                                        
-        const response = await this.SentPaymentMessageOrder(form);
-        if (response.data.status == "success") {
-            //
-
-            this.$toast({
-                component: ToastificationContent,
-                position: 'top-right',
-                props: {
-                    title: `Send Message`,
-                    icon: 'EditIcon',
-                    variant: 'success',
-                    text: this.$t(`Send Message Succesful`),
-                },
-                autoHideDelay: 3000,
-            });
-
+        form.append("admin_id", userData.username);            
+        form.append("group_id", this.selectedSubScribeGroupId);
+        form.append("email", this.selectedSubScribeEmail);
+        form.append("user_id", this.selected_user_id);
+        
+        const response = await this.AddMemberToGroup(form);
+        if (response.data.status == 'success') {                       
             this.search();
-            
-            
+            this.groupChange();
+
         } else {
-            this.$toast({
+            this.$toast(
+            {
                 component: ToastificationContent,
-                position: 'top-right',
                 props: {
-                    title: `Send Message`,
-                    icon: 'TrashIcon',
-                    variant: 'danger',
-                    text: this.$t('Send Message UnSuccesful') +` ${response.data.message}`,
+                title: response.data.message,
+                icon: 'EditIcon',
+                variant: 'error',
                 },
-                autoHideDelay: 3000,
             });
-            
+            this.showModalJoinGroup = true;
         }
-    }
+    },
+    async getActiveGroupList() {
+          const userData = JSON.parse(localStorage.getItem('userData'));
+          const User = new FormData();
+
+          User.append("userid", userData.username);
+          User.append("token", userData.token);
+          User.append("page_name", this.$route.name);
+
+          const response = await this.GetActiveSubscriptionGroup(User);
+          if (response.data.status == 'success') {                
+              this.groupList = response.data.data; 
+              let tmpArray = [];                
+              this.groupList.forEach(element => {
+                      tmpArray.push({
+                          value: element.id,
+                          text: "["+element.subscription_name+"] "+ element.group_name
+                      });
+                  });             
+              this.optionSubScribeGroup = tmpArray;
+              this.selectedSubScribeGroupId = tmpArray[0].value;
+
+          } else {
+
+          }
+      },
+    async groupChange()
+        {
+            console.log("groupChange")
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const User = new FormData();
+
+            User.append("userid", userData.username);
+            User.append("token", userData.token);
+            User.append("page_name", this.$route.name);
+            User.append("id", this.selectedSubScribeGroupId);
+
+            const response = await this.GetSubscribeMemberByGroupById(User);
+            if (response.data.status == 'success') {                
+                this.memberInGroupList = response.data.data; 
+                
+            } else {
+
+            }
+        },
+    async confirmJoinGroup(selectedSubScribeGroupId,selectedSubScribeEmail,selected_user_id)
+    {
+      console.log("confirmJoinGroup");
+        this.selectedSubScribeGroupId =selectedSubScribeGroupId;
+        this.selectedSubScribeEmail = selectedSubScribeEmail;
+        this.selected_user_id =selected_user_id;
+        this.showModalJoinGroup=true;
+        this.groupChange();
+    },
   },
 };
 </script>

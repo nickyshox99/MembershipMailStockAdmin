@@ -1392,6 +1392,8 @@ async GetActiveAdminBank({commit}, search) {
     var body = {        
         email: inputData.get("email"),
         line_id: inputData.get("line_id"),
+        display_name: inputData.get("display_name"),
+        line_displayurl : inputData.get("line_displayurl"),
     }
 
     // console.log(body);
@@ -1999,6 +2001,44 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async GetHistorySubScribeOrderAll({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),        
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/GetHistorySubScribeOrderAll",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async CancelSubScribeOrder({commit}, inputData) {
         
     var headers = {
@@ -2266,7 +2306,42 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
-  
+  async GetOrderExpired({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/GetOrderExpired",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async SentPaymentMessageOrder({commit}, inputData) {
         
     var headers = {
@@ -2278,6 +2353,7 @@ async GetActiveAdminBank({commit}, search) {
     var body = {
         username: inputData.get("userid"),        
         order_id: inputData.get("order_id"),       
+        days_left: inputData.get("days_left"),       
     }
 
     // console.log(body);
@@ -2356,6 +2432,7 @@ async GetActiveAdminBank({commit}, search) {
         // token: search.get("token"),
         line_source_id: inputData.get("line_source_id"),
         page_name: inputData.get("page_name"),
+        
     }
 
     // console.log(body);

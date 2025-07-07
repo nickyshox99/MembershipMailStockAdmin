@@ -16,7 +16,7 @@
                         <div>
                             <b-media class="mb-2">
                                 <template #aside>
-                                    <b-avatar ref="previewEl" :src="pRowData.img_url" :text="pRowData.fullname" size="90px" rounded />
+                                    <b-avatar ref="previewEl" :src="pRowData.line_displayurl" :text="pRowData.fullname" size="90px" rounded />
                                 </template>
                                 <h4 class="mb-1">
                                     {{ pRowData.fullname }}
@@ -184,7 +184,7 @@
                         <div>
                             <b-media class="mb-2">
                                 <template #aside>
-                                    <b-avatar ref="previewEl" :src="pRowData.img_url" :text="pRowData.fullname" size="90px" rounded />
+                                    <b-avatar ref="previewEl" :src="pRowData.line_displayurl" :text="pRowData.fullname" size="90px" rounded />
                                 </template>
                                 <h4 class="mb-1">
                                     {{ pRowData.fullname }}
@@ -293,7 +293,7 @@
                         <div>
                             <b-media class="mb-2">
                                 <template #aside>
-                                    <b-avatar ref="previewEl" :src="pRowData.img_url" :text="pRowData.fullname" size="90px" rounded />
+                                    <b-avatar ref="previewEl" :src="pRowData.line_displayurl" :text="pRowData.fullname" size="90px" rounded />
                                 </template>
                                 <h4 class="mb-1">
                                     {{ pRowData.fullname }}
@@ -357,7 +357,7 @@
                         <div>
                             <b-media class="mb-2">
                                 <template #aside>
-                                    <b-avatar ref="previewEl" :src="pRowData.img_url" :text="pRowData.fullname" size="90px" rounded />
+                                    <b-avatar ref="previewEl" :src="pRowData.line_displayurl" :text="pRowData.fullname" size="90px" rounded />
                                 </template>
                                 <h4 class="mb-1">
                                     {{ pRowData.fullname }}
@@ -411,7 +411,7 @@
                         <div>
                             <b-media class="mb-2">
                                 <template #aside>
-                                    <b-avatar ref="previewEl" :src="pRowData.img_url" :text="pRowData.fullname" size="90px" rounded />
+                                    <b-avatar ref="previewEl" :src="pRowData.line_displayurl" :text="pRowData.fullname" size="90px" rounded />
                                 </template>
                                 <h4 class="mb-1">
                                     {{ pRowData.fullname }}
@@ -600,7 +600,7 @@
                         <div>
                             <b-media class="mb-2">
                                 <template #aside>
-                                    <b-avatar ref="previewEl" :src="pRowData.img_url" :text="pRowData.fullname" size="90px" rounded />
+                                    <b-avatar ref="previewEl" :src="pRowData.line_displayurl" :text="pRowData.fullname" size="90px" rounded />
                                 </template>
                                 <h4 class="mb-1">
                                     {{ pRowData.fullname }}

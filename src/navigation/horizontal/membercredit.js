@@ -2,7 +2,7 @@ export default [
 
   {
     header: "Management",
-    submenu : ["apps-members-depwit","order-nearexpire","apps-loan-overduedate","apps-loan-closed","apps-loan-all","order-wait-approve","order-wait-invite","order-wait-payment","order-checked-payment"],
+    submenu : ["apps-members-depwit","order-nearexpire","order-all","order-wait-approve","order-wait-invite","order-wait-payment","order-checked-payment","order-expired"],
   },
   {
     title: "MemberShip List",
@@ -30,11 +30,11 @@ export default [
       },      
       {
         title: "Over Due",
-        route: "apps-loan-overduedate",
+        route: "order-expired",
       }, 
       {
         title: "All",
-        route: "apps-loan-all",
+        route: "order-all",
       },
     ],
     

@@ -59,6 +59,10 @@
                     
                 </b-form-group>
 
+                <b-form-group>
+                  <span style="color:red;"> {{ errorMessage }} </span>
+                </b-form-group>
+
                  <b-button
                   type="submit"
                   variant="primary"
@@ -94,6 +98,7 @@ import { mapActions } from "vuex";
 import useJwt from '@/auth/jwt/useJwt'
 
 import { AbilityBuilder } from '@casl/ability';
+import { useUtils as useI18nUtils } from '@core/libs/i18n'
 
 export default {
   components: {
@@ -139,6 +144,8 @@ export default {
       email:'',
       lineId:'',
       avatarImgUrl: require('@/assets/images/avatars/4.png'),
+      displayName:'',
+      errorMessage:'',
     }
   },
   computed: {
@@ -155,8 +162,9 @@ export default {
     },
   },
   async created() {
-    // const params = new URLSearchParams(window.location.search)
-    // this.lineId = params.get('lineid') || ''
+    //const params = new URLSearchParams(window.location.search)
+    //this.lineId = params.get('lineid') || ''
+    this.getSourceProfile();
   },
   methods: {    
     ...mapActions(["GetLineProfileByLineSourceId"]),
@@ -173,11 +181,11 @@ export default {
       //get query string
       const params = new URLSearchParams(window.location.search);
       const sourceUserId = params.get('sourceUserId') || '';
-    
+          
       formData.append("userid", "-");
       formData.append("token", "-");
 
-      formData.append("lineSourceId", sourceUserId);
+      formData.append("line_source_id", sourceUserId);
       formData.append("page_name", this.$route.name);
       
       const response = await this.GetLineProfileByLineSourceId(formData);
@@ -186,9 +194,10 @@ export default {
           if (response.data.data.length > 0) {
             this.lineId = response.data.data[0].lineid;
             this.email = response.data.data[0].email;
-            if (this.avatarImgUrl = response.data.data[0].avatarImgUrl!="") {
-              this.avatarImgUrl = response.data.data[0].avatarImgUrl;
+            if (this.avatarImgUrl = response.data.data[0].picture_url!="") {
+              this.avatarImgUrl = response.data.data[0].picture_url;
             }
+            this.displayName = response.data.data[0].display_name||"";
           } else {
             this.lineId = '';
             this.email = '';
@@ -210,6 +219,8 @@ export default {
     async registerEmail(){
       console.log('registerEmail');
 
+      this.errorMessage="";
+
       //const userData = JSON.parse(localStorage.getItem('userData'));
       const formData = new FormData();
 
@@ -222,7 +233,11 @@ export default {
 
       formData.append("line_id", sourceUserId);
       formData.append("email", this.email);
+      formData.append("display_name", this.displayName);
       formData.append("page_name", this.$route.name);
+      formData.append("line_displayurl", this.avatarImgUrl);
+      
+      
       
       const response = await this.RegisterMemberWithEmail(formData);
       if (response.data.status=='success') 
@@ -237,7 +252,7 @@ export default {
               },
             });
 
-          this.$router.push({ name: 'buy-product', query: { sourceUserId: sourceUserId } });
+          this.$router.push({ name: 'buy-product', query: { sourceUserId: sourceUserId,email:this.email } });
       }
       else
       {
@@ -250,6 +265,8 @@ export default {
                 variant: 'error',
               },
             });
+
+            this.errorMessage=response.data.message;
       }
     }
   },

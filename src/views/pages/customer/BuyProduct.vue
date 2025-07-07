@@ -73,7 +73,7 @@
           <b-card-title class="mb-1 " v-if="showCompleteDialog">       
             <b-row>
               <b-col cols="12" >
-                การสั่งซื้อสินค้าเสร็จสิ้นแล้ว กรุณารออีเมลล์เพื่อเข้ากลุ่ม
+                การสั่งซื้อสินค้าเสร็จสิ้นแล้ว ถ้าเป็นสมาชิกใหม่กรุณารออีเมลล์เชิญเข้ากลุ่ม
               </b-col> 
             </b-row>  
           </b-card-title>
@@ -230,6 +230,7 @@ export default {
       },
       showCompleteDialog: false,
       userid:'',
+      email:'',
     }
   },
   computed: {
@@ -248,6 +249,7 @@ export default {
   async created() {
     const params = new URLSearchParams(window.location.search);
     this.sourceUserId = params.get('sourceUserId') || '';
+    this.email = params.get('email') || '';
     await this.getSourceProfile();
 
     if (this.lineId == '') 
@@ -294,13 +296,11 @@ export default {
             //console.log(response.data.data[0]);
             this.userid = response.data.data[0].userid;
             this.lineId = response.data.data[0].lineid;
-            this.email = response.data.data[0].email;
-            if (this.avatarImgUrl = response.data.data[0].avatarImgUrl!="") {
-              this.avatarImgUrl = response.data.data[0].avatarImgUrl;
-            }
+            
+            
           } else {
             this.lineId = '';
-            this.email = '';
+            
           }
       }
       else
@@ -340,7 +340,14 @@ export default {
                   });
               });             
           this.optionSubScribeEmail = tmpArray;
-          this.selectedSubScribeEmail = tmpArray[0].value;
+          if (this.email!='') {
+            this.selectedSubScribeEmail = tmpArray.find(x=> x.value==this.email).value;  
+          }
+          else
+          {
+            this.selectedSubScribeEmail = tmpArray[0].value;
+          }
+          
       }
       else
       {

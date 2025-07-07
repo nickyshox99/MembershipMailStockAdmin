@@ -687,6 +687,7 @@
   "Order Near Expire":"Order Near Expire",
   "Days Left":"Days Left",
   "Latest Sent Message":"Latest Sent Message",
-  "Send Message Succesful":"Send Message Succesful"
+  "Send Message Succesful":"Send Message Succesful",
+  "Order Expired":"Order Expired"
 
 }

@@ -706,11 +706,11 @@ export default {
     this.page_name = this.$route.name;
 
     await this.getPagePermission();
-    await this.search();
-
+    
     await Promise.all([
-            this.getActiveGroupList(),
-        ]);             
+          this.search(),
+          this.getActiveGroupList(),
+      ]);           
 
     console.log(this.page_name);
   },

@@ -685,8 +685,9 @@
   "Sent Message Date":"ส่งข้อความเมื่อ",
   "Sent By":"ส่งโดย",
   "Send Message Offer":"ส่งข้อความเสนอ",
-  "Order Near Expire":"ลูกค้าใกล้หมดเวลา",
+  "Order Near Expire":"รายการใกล้หมดอายุ",
   "Days Left":"จำนวนวันที่เหลือ",
   "Latest Sent Message":"ส่งข้อความล่าสุดเมื่อ",
-  "Send Message Succesful":"ส่งข้อความสำเร็จ"
+  "Send Message Succesful":"ส่งข้อความสำเร็จ",
+  "Order Expired":"รายการหมดอายุ"
 }

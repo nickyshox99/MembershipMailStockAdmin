@@ -41,7 +41,7 @@
       </div>
     </b-card>
 
-    <b-card :title="t('Order Near Expire')">
+    <b-card :title="t('Order Expired')">
       
       <vue-good-table
         ref="my-table-order-history"
@@ -101,33 +101,13 @@
           <span v-if="props.column.field === 'days_left2'">
             <b-badge
               v-if="
-                props.row.days_left <=7 && props.row.days_left >3
-              "
-              pill
-              :variant="`light-success`"
-              class="text-capitalize"
-            >
-              {{ props.row.days_left }} วัน
-            </b-badge>
-            <b-badge
-              v-if="
-                props.row.days_left <=3
-              "
-              pill
-              :variant="`light-danger`"
-              class="text-capitalize"
-            >
-              {{ props.row.days_left }} วัน
-            </b-badge>
-            <b-badge
-              v-if="
                 props.row.days_left <=0
               "
               pill
               :variant="`light-danger`"
               class="text-capitalize"
             >
-              {{ t('Expired') }}
+              {{ t('Expired') }} {{ (props.row.days_left*-1) }} {{ t('days') }}
             </b-badge>
           </span>
 
@@ -723,7 +703,7 @@ export default {
   methods: {
     
     ...mapActions(["GetPagePermission"]),
-    ...mapActions(["GetOrderNearExpire"]),
+    ...mapActions(["GetOrderExpired"]),
     ...mapActions(["VerifySlipOrder"]),
     ...mapActions(["SentPaymentMessageOrder"]),
      
@@ -762,7 +742,7 @@ export default {
           form.append("userid", userData.username);
           form.append("token", userData.token);
 
-          const response = await this.GetOrderNearExpire(form);
+          const response = await this.GetOrderExpired(form);
           if (response.data.status == 'success') {           
               this.rowsOrderHistory = response.data.data;                
               // for (let index = 0; index < this.rowsOrderHistory.length; index++) {

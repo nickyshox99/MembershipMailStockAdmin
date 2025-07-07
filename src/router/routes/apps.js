@@ -144,30 +144,20 @@ export default [
     component: () => import('@/views/apps/orders/OrderNearPayment.vue'),
   },
 
-
   {
-    path: '/apps/loan/onduedate',
-    name: 'apps-loan-onduedate',
-    component: () => import('@/views/apps/loan/LoanOnDue.vue'),
+    path: '/apps/orders/orderxpired',
+    name: 'order-expired',
+    component: () => import('@/views/apps/orders/OrderExpired.vue'),
   },
 
   {
-    path: '/apps/loan/overduedate',
-    name: 'apps-loan-overduedate',
-    component: () => import('@/views/apps/loan/LoanOverDue.vue'),
+    path: '/apps/orders/orderall',
+    name: 'order-all',
+    component: () => import('@/views/apps/orders/OrderAll.vue'),
   },
 
-  {
-    path: '/apps/loan/closed',
-    name: 'apps-loan-closed',
-    component: () => import('@/views/apps/loan/LoanClosed.vue'),
-  },
 
-  {
-    path: '/apps/loan/all',
-    name: 'apps-loan-all',
-    component: () => import('@/views/apps/loan/LoanAll.vue'),
-  },
+  
 
   //Bank
   {
