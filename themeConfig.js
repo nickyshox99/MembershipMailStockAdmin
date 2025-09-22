@@ -1,6 +1,14 @@
-// Theme Colors
-// Initially this will be blank. Later on when app is initialized we will assign bootstrap colors to this from CSS variables.
-export const $themeColors = {}
+// Theme Colors - White, Black, Red Theme with proper status colors
+export const $themeColors = {
+  primary: '#dc3545',    // Red for primary actions
+  secondary: '#000000',  // Black for secondary
+  success: '#28c76f',    // Green for positive status (active, enabled, success)
+  info: '#00cfe8',       // Blue for information
+  warning: '#ff9f43',    // Orange for warnings
+  danger: '#dc3545',     // Red for negative status (inactive, disabled, error)
+  light: '#ffffff',      // White
+  dark: '#000000'        // Black
+}
 
 // App Breakpoints
 // Initially this will be blank. Later on when app is initialized we will assign bootstrap breakpoints to this object from CSS variables.
@@ -16,7 +24,7 @@ export const $themeConfig = {
   },
   layout: {
     isRTL: false,
-    skin: 'semi-dark', // light, dark, bordered, semi-dark
+    skin: 'light', // light, dark, bordered, semi-dark
     routerTransition: 'fade', // zoom-fade, slide-fade, fade-bottom, fade, zoom-out, none
     type: 'vertical', // vertical, horizontal
     contentWidth: 'full', // full, boxed
@@ -27,7 +35,7 @@ export const $themeConfig = {
     navbar: {
       // ? For horizontal menu, navbar type will work for navMenu type
       type: 'static', // static , sticky , floating, hidden
-      backgroundColor: '', // BS color options [primary, success, etc]
+      backgroundColor: 'primary', // BS color options [primary, success, etc]
     },
     footer: {
       type: 'static', // static, sticky, hidden

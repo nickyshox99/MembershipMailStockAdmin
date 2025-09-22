@@ -1,86 +1,95 @@
 <template>
-  <div style="background-image: url('bg.png');background-repeat: repeat;background-size: 1714px 1142px;">
+  <div class="buy-product-container">
+    <div class="buy-product-background">
+      <div class="background-overlay"></div>
+    </div>
+    
     <div class="auth-wrapper auth-v1 px-2">
-      <div class="auth-inner py-2" >
-
-        
-        <b-card class="mb-0" style="background-color: rgb(255, 255, 242);">
-          <b-link class="brand-logo">
+      <div class="auth-inner py-2">
+        <b-card class="buy-product-card mb-0">
+          <div class="logo-section">
             <vuexy-logo />
-
-            <h2 class="brand-text text-primary ml-1">
+            <h2 class="brand-text">
               BigaByte Membership
             </h2>
-          </b-link>
+          </div>
 
-          <b-card-title class="mb-1 " v-if="!showCompleteDialog">       
-            <b-row>
-              <b-col cols="6" class="text-center">
-                <div v-if="product.id!=0"  > 
-                    <img :src="product.product_img" height="50px" width="50px" /> <br/>
-                    <span style="color:grey;font-size: 12px;font-weight: 500;" > {{product.product_name}}</span><br/>
-                    <span style="color:grey;font-size: 10px;" > {{product.product_desc}}</span>
+          <div class="content-section" v-if="!showCompleteDialog">
+            <div class="product-section">
+              <h3 class="section-title">เลือกแพ็กเกจสมาชิก</h3>
+              
+              <div class="product-display" v-if="product.id!=0">
+                <div class="product-info">
+                  <img :src="product.product_img" class="product-image" />
+                  <div class="product-details">
+                    <h4 class="product-name">{{ product.product_name }}</h4>
+                    <p class="product-desc">{{ product.product_desc }}</p>
+                  </div>
                 </div>
-
-              </b-col> 
-              <b-col cols="6" class="text-center">
-                 <b-button                
-                  class="btn btn-primary float-right"
+                
+                <b-button
+                  variant="primary"
+                  class="select-product-btn"
                   @click="tabShowProduct()"
                 >
-                  
-                  {{t('Select Product')}}
+                  <feather-icon icon="ShoppingCartIcon" class="button-icon" />
+                  {{ t('Select Product') }}
                 </b-button>
-              </b-col> 
-               
-             
-            </b-row>  
-            <b-row>
-              <b-col cols="12" class="text-center">
-                <hr/>
-              </b-col>
-            </b-row>  
-            <b-row>
-              <b-col cols="12" >
-                Email ที่ใช้ในการสมัคร 
-              </b-col> 
-            </b-row>  
-            <b-row>
-              <b-col cols="12" >
-                {{selectedSubScribeEmail}}
-              </b-col> 
-            </b-row>  
-            <b-row>
-              <b-col cols="12" class="text-center">
-                <hr/>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col cols="12" >
-                <b-button              
-                  v-if="product.id!=0"  
-                  class="btn btn-success float-right"
-                  @click="confirmProduct()"
-                >
-                  
-                  {{t('Confirm')}}
-                </b-button>
-              </b-col>
-            </b-row>  
-            
-          </b-card-title>
+              </div>
+              
+              <div class="no-product" v-else>
+                <div class="no-product-content">
+                  <feather-icon icon="PackageIcon" class="no-product-icon" />
+                  <p class="no-product-text">ยังไม่ได้เลือกแพ็กเกจ</p>
+                  <b-button
+                    variant="primary"
+                    class="select-product-btn"
+                    @click="tabShowProduct()"
+                  >
+                    <feather-icon icon="ShoppingCartIcon" class="button-icon" />
+                    {{ t('Select Product') }}
+                  </b-button>
+                </div>
+              </div>
+            </div>
 
-          <b-card-title class="mb-1 " v-if="showCompleteDialog">       
-            <b-row>
-              <b-col cols="12" >
+            <div class="divider"></div>
+
+            <div class="email-section">
+              <h4 class="email-title">
+                <feather-icon icon="MailIcon" class="title-icon" />
+                Email ที่ใช้ในการสมัคร
+              </h4>
+              <div class="email-display">
+                <span class="email-text">{{ selectedSubScribeEmail }}</span>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="action-section">
+              <b-button
+                v-if="product.id!=0"
+                variant="success"
+                class="confirm-btn"
+                @click="confirmProduct()"
+              >
+                <feather-icon icon="CheckIcon" class="button-icon" />
+                {{ t('Confirm') }}
+              </b-button>
+            </div>
+          </div>
+
+          <div class="complete-section" v-if="showCompleteDialog">
+            <div class="complete-content">
+              <feather-icon icon="CheckCircleIcon" class="complete-icon" />
+              <h3 class="complete-title">การสั่งซื้อเสร็จสิ้น</h3>
+              <p class="complete-message">
                 การสั่งซื้อสินค้าเสร็จสิ้นแล้ว ถ้าเป็นสมาชิกใหม่กรุณารออีเมลล์เชิญเข้ากลุ่ม
-              </b-col> 
-            </b-row>  
-          </b-card-title>
-    
-          
+              </p>
+            </div>
+          </div>
         </b-card>
-        
       </div>
     </div>
 
@@ -99,6 +108,7 @@
             buttonSize="sm"
             :cancelTitle="t('NO')"
             footerClass="p-2"
+            modal-class="product-modal"
         >   
             <b-row>
                 <b-col md="12">
@@ -114,25 +124,21 @@
             </b-row>
     
             <b-row>                
-                <div class="dialog-content2" style="padding-left: 20px;">
+                <div class="dialog-content2" style="padding-left: 20px; width: 100%; margin-right: 15px;">
                     <h4>{{t('Select Product')}}</h4>
-                    <div class="content-container">     
+                    <div class="content-container ">     
                         <div class="grid-container">
-                            <div class="grid-item" style="padding-top: 10px;padding-bottom: 10px; padding-left: 10px; padding-right: 10px;  cursor: pointer;" 
-                                v-for="(product) in productList" :key="product.id" >
-                                
-                                <div v-if="product.id==selectedProductId" @click="changeSelectedProduct(product.id)" style="color:black;background-color: antiquewhite;" > 
-                                    <img :src="product.product_img" height="50px" width="50px" /> <br/>
-                                    <span style="color:grey;font-size: 12px; font-weight: 500;" > {{product.product_name}}</span><br/>
-                                    <span style="color:grey;font-size: 10px;" > {{product.product_desc}}</span>
+                            <div class="grid-item" 
+                                v-for="(product) in productList" 
+                                :key="product.id"
+                                @click="changeSelectedProduct(product.id)"
+                                :class="{ 'selected': product.id == selectedProductId }"
+                            >
+                                <img :src="product.product_img" />
+                                <div class="product-info">
+                                    <span>{{ product.product_name }}</span>
+                                    <span>{{ product.product_desc }}</span>
                                 </div>
-                                
-                                <div v-if="product.id!=selectedProductId" @click="changeSelectedProduct(product.id)" > 
-                                    <img :src="product.product_img" height="50px" width="50px" /> <br/>
-                                    <span style="color:grey;font-size: 12px;font-weight: 500;" > {{product.product_name}}</span><br/>
-                                    <span style="color:grey;font-size: 10px;" > {{product.product_desc}}</span>
-                                </div>
-                                
                             </div>
                         </div>
                         
@@ -404,12 +410,14 @@ export default {
                 title: this.$t('Please Confirm'),
                 size: 'sm',
                 buttonSize: 'sm',
-                okVariant: 'danger',
+                okVariant: 'success',
                 okTitle: 'YES',
                 cancelTitle: 'NO',
                 footerClass: 'p-2',
-                hideHeaderClose: false,
-                centered: true
+                hideHeaderClose: true,
+                centered: true,
+                headerBgVariant: 'success',
+                headerTextVariant: 'white'
             })
                 .then(value => {                    
                     if (value) {
@@ -468,99 +476,667 @@ export default {
 
 <style lang="scss">
 @import '@core/scss/vue/pages/page-auth.scss';
-.bounce-enter-active {
-    animation: bounce-in 0.5s;
+
+// Modern Buy Product Styling - White, Black, Red Theme (Same as RegisterEmail)
+.buy-product-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  font-family: 'MiSansMU', sans-serif;
 }
 
-.bounce-leave-active {
-    animation: bounce-in 0.5s reverse;
-}
-
-@keyframes bounce-in {
-    0% {
-        transform: scale(0);
-    }
-
-    50% {
-        transform: scale(1.25);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-.dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 20px;
-  z-index: 9999; /* Adjust z-index to bring it front of other elements */
-}
-
-.dialog-content {
-  /* Add your styles for dialog content */
-  min-width: 400px;
-  min-height: 600px;
-}
-
-.dialog2 {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 20px;
-  z-index: 9999; /* Adjust z-index to bring it front of other elements */
-}
-
-.dialog-content2 {
-  /* Add your styles for dialog content */
-  min-width: 380px;
-  min-height: 300px;
-}
-
-.dialog3 {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 20px;
-  z-index: 9999; /* Adjust z-index to bring it front of other elements */
-}
-
-.dialog-content3 {
-  /* Add your styles for dialog content */
-  min-width: 400px;
-  min-height: 500px;
-}
-
-.close-btn {
+.buy-product-background {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #dc3545 0%, #a71e2a 50%, #000000 100%);
+  opacity: 0.05;
+  z-index: 1;
 }
 
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(220, 53, 69, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.1) 0%, transparent 50%);
+  z-index: 2;
+}
+
+.auth-wrapper {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 500px;
+}
+
+.buy-product-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: none !important;
+  border-radius: 24px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px);
+  padding: 2.5rem;
+  animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  .brand-text {
+    color: #dc3545 !important;
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    text-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+  }
+}
+
+.content-section {
+  .product-section {
+    margin-bottom: 2rem;
+    
+    .section-title {
+      color: #000000;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 600;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .product-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(220, 53, 69, 0.08) 0%, rgba(220, 53, 69, 0.02) 100%);
+      border: 2px solid rgba(220, 53, 69, 0.1);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      width: 100%;
+      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.1);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(220, 53, 69, 0.15);
+        border-color: rgba(220, 53, 69, 0.2);
+      }
+      
+      .product-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        
+        .product-image {
+          width: 80px;
+          height: 80px;
+          border-radius: 16px;
+          margin-bottom: 1rem;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+          transition: transform 0.3s ease;
+          
+          &:hover {
+            transform: scale(1.05);
+          }
+        }
+        
+        .product-details {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          
+          .product-name {
+            color: #2c3e50;
+            font-family: 'MiSansMU', sans-serif;
+            font-weight: 600;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            text-align: center;
+            word-wrap: break-word;
+            hyphens: auto;
+          }
+          
+          .product-desc {
+            color: #6c757d;
+            font-size: 1rem;
+            margin: 0;
+            line-height: 1.4;
+            max-width: 280px;
+            text-align: center;
+            word-wrap: break-word;
+            hyphens: auto;
+          }
+        }
+      }
+      
+      .select-product-btn {
+        width: 100%;
+        max-width: 250px;
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 0.75rem 1.5rem !important;
+        font-family: 'MiSansMU', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #ffffff !important;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        .button-icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 0.5rem;
+        }
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4) !important;
+          background: linear-gradient(135deg, #c82333 0%, #bd2130 100%) !important;
+        }
+        
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+    
+    .no-product {
+      text-align: center;
+      padding: 2rem;
+      
+      .no-product-content {
+        .no-product-icon {
+          width: 48px;
+          height: 48px;
+          color: #dc3545;
+          margin-bottom: 1rem;
+        }
+        
+        .no-product-text {
+          color: #666666;
+          font-family: 'MiSansMU', sans-serif;
+          font-weight: 400;
+          margin-bottom: 1.5rem;
+        }
+        
+        .select-product-btn {
+          background: linear-gradient(135deg, #dc3545 0%, #a71e2a 100%) !important;
+          border: none !important;
+          border-radius: 12px !important;
+          padding: 0.875rem 1.5rem !important;
+          font-family: 'MiSansMU', sans-serif;
+          font-weight: 500;
+          color: #ffffff !important;
+          box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          margin: 0 auto;
+          
+          .button-icon {
+            width: 18px;
+            height: 18px;
+            margin-right: 0.5rem;
+          }
+          
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4) !important;
+          }
+        }
+      }
+    }
+  }
+  
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #e9ecef 50%, transparent 100%);
+    margin: 1.5rem 0;
+  }
+  
+  .email-section {
+    margin-bottom: 2rem;
+    
+    .email-title {
+      color: #000000;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      
+      .title-icon {
+        width: 18px;
+        height: 18px;
+        margin-right: 0.5rem;
+        color: #dc3545;
+      }
+    }
+    
+    .email-display {
+      background: rgba(220, 53, 69, 0.05);
+      border-radius: 12px;
+      padding: 1rem;
+      
+      .email-text {
+        color: #000000;
+        font-family: 'MiSansMU', sans-serif;
+        font-weight: 500;
+        font-size: 1rem;
+      }
+    }
+  }
+  
+  .action-section {
+    text-align: center;
+    
+    .confirm-btn {
+      background: linear-gradient(135deg, #28c76f 0%, #20a55a 100%) !important;
+      border: none !important;
+      border-radius: 12px !important;
+      padding: 0.875rem 2rem !important;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #ffffff !important;
+      box-shadow: 0 4px 15px rgba(40, 199, 111, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      margin: 0 auto;
+      
+      .button-icon {
+        width: 18px;
+        height: 18px;
+        margin-right: 0.5rem;
+      }
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(40, 199, 111, 0.4) !important;
+      }
+    }
+  }
+}
+
+.complete-section {
+  text-align: center;
+  padding: 2rem 0;
+  
+  .complete-content {
+    .complete-icon {
+      width: 64px;
+      height: 64px;
+      color: #28c76f;
+      margin-bottom: 1.5rem;
+    }
+    
+    .complete-title {
+      color: #000000;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 600;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+    
+    .complete-message {
+      color: #666666;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 400;
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .buy-product-card {
+    margin: 1rem;
+    padding: 2rem;
+    border-radius: 20px !important;
+  }
+  
+  .logo-section .brand-text {
+    font-size: 1.5rem;
+  }
+  
+  .content-section .product-section .product-display {
+    padding: 1rem;
+    
+    .product-info {
+      margin-bottom: 1rem;
+      
+      .product-image {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 0.8rem;
+      }
+      
+      .product-details {
+        .product-name {
+          font-size: 1.1rem;
+          margin-bottom: 0.3rem;
+          line-height: 1.2;
+        }
+        
+        .product-desc {
+          font-size: 0.85rem;
+          max-width: 220px;
+          line-height: 1.3;
+        }
+      }
+    }
+    
+    .select-product-btn {
+      max-width: 180px;
+      padding: 0.5rem 1rem !important;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .buy-product-card {
+    margin: 0.5rem;
+    padding: 1rem;
+    border-radius: 16px !important;
+  }
+  
+  .logo-section .brand-text {
+    font-size: 1.2rem;
+  }
+  
+  .content-section .product-section .product-display {
+    padding: 0.8rem;
+    
+    .product-info {
+      margin-bottom: 0.8rem;
+      
+      .product-image {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 0.6rem;
+      }
+      
+      .product-details {
+        .product-name {
+          font-size: 1rem;
+          margin-bottom: 0.2rem;
+          line-height: 1.1;
+        }
+        
+        .product-desc {
+          font-size: 0.8rem;
+          max-width: 200px;
+          line-height: 1.2;
+        }
+      }
+    }
+    
+    .select-product-btn {
+      max-width: 160px;
+      padding: 0.4rem 0.8rem !important;
+      font-size: 0.8rem;
+    }
+  }
+  
+  .content-section .product-section .section-title {
+    font-size: 1.1rem;
+  }
+}
+
+// Modal Styling
+.product-modal {
+  .modal-dialog {
+    margin: 1rem auto;
+    max-width: 500px;
+  }
+  
+  .modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    color: white;
+    border-radius: 12px 12px 0 0;
+    
+    .modal-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    
+    .close {
+      color: white;
+      opacity: 0.8;
+      font-size: 1.5rem;
+      font-weight: 300;
+      padding: 0;
+      margin: 0;
+      line-height: 1;
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      
+      &:hover {
+        opacity: 1;
+        color: white;
+      }
+      
+      &:focus {
+        outline: none;
+        box-shadow: none;
+      }
+    }
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+    background: #f8f9fa;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 0 0 12px 12px;
+    
+    .btn {
+      border-radius: 8px;
+      font-weight: 500;
+      padding: 0.5rem 1.5rem;
+    }
+  }
+}
+
+// Confirm Modal Styling
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  border-radius: 12px 12px 0 0;
+  
+  &.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    color: white !important;
+    
+    .modal-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    
+    .close {
+      color: white;
+      opacity: 0.8;
+      font-size: 1.5rem;
+      font-weight: 300;
+      
+      &:hover {
+        opacity: 1;
+        color: white;
+      }
+    }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  background: white;
+  border-radius: 0 0 12px 12px;
+  justify-content: center;
+  
+  .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+    margin: 0 0.25rem;
+    min-width: 80px;
+    
+    &.btn-success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      border: none;
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+      }
+    }
+    
+    &.btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      border: none;
+      box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+      }
+    }
+  }
+}
+
+// Modal Grid Styling
 .content-container {
-  max-height: 300px; /* Set your desired max height */
-  overflow-y: auto; /* Add vertical scrollbar */
+  max-height: 300px;
+  overflow-y: auto;
+  width: 100%;
 }
 
 .grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust as needed */
-  gap: 10px; /* Adjust gap between grid items */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  
 }
 
 .grid-item {
-  /* Add any additional styling for grid items */
-  color:grey;
+  width: 100%;
+  color: grey;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  
+  &:hover {
+    border-color: #dc3545;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
+  }
+  
+  &.selected {
+    background-color: antiquewhite;
+    border-color: #dc3545;
+    color: black;
+  }
+  
+  img {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  
+  .product-info {
+    flex: 1;
+    text-align: left;
+    
+    span {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      word-wrap: break-word;
+      
+      &:last-child {
+        font-size: 10px;
+        font-weight: 400;
+      }
+    }
+  }
 }
 </style>
