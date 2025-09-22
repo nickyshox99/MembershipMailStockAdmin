@@ -51,10 +51,10 @@ export default [
       //   title: "Setting % Report",
       //   route: "apps-setting-percentreport",
       // },
-      // {
-      //   title: "Line Setting",
-      //   route: "apps-line-linesettingmain",
-      // },
+      {
+        title: "Line Setting",
+        route: "apps-line-linesettingmain",
+      },
       // {
       //   title: "Friend Reccommend Setting",
       //   route: "apps-affilate-affilatesettingmain",
