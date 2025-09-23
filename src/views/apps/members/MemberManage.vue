@@ -394,11 +394,6 @@ export default {
     await this.search();
     this.isModeEdit = true;
   },
-  //เพิ่มแก้ bug ตอนโหลดเข้า
-  async mounted() {
-    // โหลดข้อมูลอีกครั้งเมื่อ component mount
-    await this.search();
-  },
   methods: {
     ...mapActions(["GetAgent"]),   
     ...mapActions(["GetPagePermission"]),  
