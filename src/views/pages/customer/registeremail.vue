@@ -1,56 +1,73 @@
 <template>
-  <div style="background-image: url('bg.png');background-repeat: repeat;background-size: 1714px 1142px;">
+  <div class="register-container">
+    <div class="register-background">
+      <div class="background-overlay"></div>
+    </div>
+    
     <div class="auth-wrapper auth-v1 px-2">
       <div class="auth-inner py-2">
 
-        <!-- Login v1 -->
-        <b-card class="mb-0" style="background-color: rgb(255, 255, 242);">
-          <b-link class="brand-logo">
-            <vuexy-logo />
+        <b-card class="register-card mb-0">
+          <div class="logo-section">
 
-            <h2 class="brand-text text-primary ml-1">
+            <vuexy-logo />
+            <h2 class="brand-text">
               BigaByte Membership
             </h2>
-          </b-link>
 
-          <b-card-title class="mb-1 ">
-            ใส่ Email ที่ใช้ในการสมัคร
-          </b-card-title>
-          <b-form class="auth-login-form mt-2 " @submit.prevent>
-            <b-form-group class="text-center">
-              <b-avatar :src="avatarImgUrl" size="6rem" variant="primary" class="mb-2"></b-avatar>
-            </b-form-group>
-            <!-- 
-              <b-form-group                  
-                label="Line Id"
-                label-for="lineid"
-                style="color: white;"
-              >
-                
-                  <b-form-input
-                    id="lineid"
-                    v-model="lineId"                      
-                    name="lineid"
-                    readonly
-                  />
-                  
-              </b-form-group> -->
+          </div>
 
-            <b-form-group label="Email" label-for="email" style="color: white;">
+          <div class="welcome-section">
+            <h3 class="welcome-title">ยินดีต้อนรับสู่ระบบสมาชิก</h3>
+            <p class="welcome-subtitle">กรุณาใส่ Email ที่ใช้ในการสมัครสมาชิก</p>
+          </div>
 
-              <b-form-input id="email" v-model="email" name="email" placeholder="Enter Email" />
+          <div class="form-section">
+            <b-form class="auth-login-form" @submit.prevent>
+              <b-form-group class="avatar-section text-center">
+                <b-avatar
+                  :src="avatarImgUrl"
+                  size="6rem"
+                  class="user-avatar mb-3"
+                ></b-avatar>
+                <h5 class="user-name">{{ displayName || 'ผู้ใช้ LINE' }}</h5>
+              </b-form-group>
 
-            </b-form-group>
+              <b-form-group class="form-group-modern">
+                <label for="email" class="form-label">
+                  <feather-icon icon="MailIcon" class="label-icon" />
+                  Email Address
+                </label>
+                <b-form-input
+                  id="email"
+                  v-model="email"
+                  name="email"
+                  placeholder="กรุณาใส่ Email ของคุณ"
+                  class="form-input-modern"
+                />
+              </b-form-group>
 
-            <b-form-group>
-              <span style="color:red;"> {{ errorMessage }} </span>
-            </b-form-group>
+              <b-form-group v-if="errorMessage" class="error-section">
+                <div class="error-message">
+                  <feather-icon icon="AlertCircleIcon" class="error-icon" />
+                  {{ errorMessage }}
+                </div>
+              </b-form-group>
 
-            <b-button type="submit" variant="primary" block @click="registerEmail()">
-              ยืนยัน
-            </b-button>
-          </b-form>
-
+              <div class="submit-section">
+                <b-button
+                  type="submit"
+                  variant="primary"
+                  block
+                  class="submit-button"
+                  @click="registerEmail()"
+                >
+                  <feather-icon icon="CheckIcon" class="button-icon" />
+                  ยืนยันการสมัครสมาชิก
+                </b-button>
+              </div>
+            </b-form>
+          </div>
         </b-card>
 
       </div>
@@ -254,4 +271,282 @@ export default {
 
 <style lang="scss">
 @import '@core/scss/vue/pages/page-auth.scss';
+
+// Modern Register Email Styling - White, Black, Red Theme
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  font-family: 'MiSansMU', sans-serif;
+}
+
+.register-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #dc3545 0%, #a71e2a 50%, #000000 100%);
+  opacity: 0.05;
+  z-index: 1;
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(220, 53, 69, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.1) 0%, transparent 50%);
+  z-index: 2;
+}
+
+.auth-wrapper {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 400px;
+}
+
+.register-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: none !important;
+  border-radius: 24px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px);
+  padding: 2.5rem;
+  animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  .brand-text {
+    color: #dc3545 !important;
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    text-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+  }
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  .welcome-title {
+    color: #000000;
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .welcome-subtitle {
+    color: #666666;
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 400;
+    font-size: 0.95rem;
+    margin-bottom: 0;
+  }
+}
+
+.form-section {
+  .avatar-section {
+    margin-bottom: 2rem;
+    
+    .user-avatar {
+      border: 4px solid #dc3545;
+      box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 25px rgba(220, 53, 69, 0.4);
+      }
+    }
+    
+    .user-name {
+      color: #000000;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 500;
+      margin-top: 0.5rem;
+      margin-bottom: 0;
+    }
+  }
+  
+  .form-group-modern {
+    margin-bottom: 1.5rem;
+    
+    .form-label {
+      color: #000000;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      
+      .label-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 0.5rem;
+        color: #dc3545;
+      }
+    }
+    
+    .form-input-modern {
+      border: 2px solid #e9ecef !important;
+      border-radius: 12px !important;
+      padding: 0.875rem 1rem !important;
+      font-family: 'MiSansMU', sans-serif;
+      font-size: 0.95rem;
+      background: #ffffff !important;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      
+      &:focus {
+        border-color: #dc3545 !important;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15) !important;
+        background: #ffffff !important;
+      }
+      
+      &::placeholder {
+        color: #adb5bd;
+        font-family: 'MiSansMU', sans-serif;
+      }
+    }
+  }
+  
+  .error-section {
+    margin-bottom: 1rem;
+    
+    .error-message {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: rgba(220, 53, 69, 0.1);
+      border: 1px solid rgba(220, 53, 69, 0.2);
+      border-radius: 8px;
+      color: #dc3545;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 500;
+      font-size: 0.9rem;
+      
+      .error-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+  
+  .submit-section {
+    margin-top: 2rem;
+    
+    .submit-button {
+      background: linear-gradient(135deg, #dc3545 0%, #a71e2a 100%) !important;
+      border: none !important;
+      border-radius: 12px !important;
+      padding: 0.875rem 1.5rem !important;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #ffffff !important;
+      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      .button-icon {
+        width: 18px;
+        height: 18px;
+        margin-right: 0.5rem;
+      }
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4) !important;
+        background: linear-gradient(135deg, #a71e2a 0%, #8b1a24 100%) !important;
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .register-card {
+    margin: 1rem;
+    padding: 2rem;
+    border-radius: 20px !important;
+  }
+  
+  .logo-section .brand-text {
+    font-size: 1.5rem;
+  }
+  
+  .welcome-section .welcome-title {
+    font-size: 1.2rem;
+  }
+  
+  .form-section .avatar-section .user-avatar {
+    width: 4rem;
+    height: 4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    margin: 0.5rem;
+    padding: 1.5rem;
+    border-radius: 16px !important;
+  }
+  
+  .logo-section .brand-text {
+    font-size: 1.3rem;
+  }
+  
+  .welcome-section .welcome-title {
+    font-size: 1.1rem;
+  }
+}
+
+// Loading Animation
+.register-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 </style>

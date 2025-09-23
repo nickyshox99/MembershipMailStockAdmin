@@ -22,21 +22,23 @@ $gray-800: #1e1e1e !default; // $gray-dark
 $gray-900: #2a2e30 !default;
 $black: #22292f !default; // 231f48 22292f
 
-$purple: #7367f0 !default; //$primary
-$green: #28c76f !default; //$success
-$blue: #00cfe8 !default; //$info
-$orange: #ff9f43 !default; //$warning
-$red: #ea5455 !default; //$danger
+$purple: #dc3545 !default; //$primary - Red color
+$green: #28c76f !default; //$success - Green color for positive status
+$blue: #00cfe8 !default; //$info - Blue color for information
+$orange: #ff9f43 !default; //$warning - Orange color for warnings
+$red: #dc3545 !default; //$danger - Red color for negative status
 
-$gold: #cccf03 !default;
-$darkblue: #2f9cf5 !default;
+$gold: #ffc107 !default; // Gold color
+$darkblue: #2f9cf5 !default; // Dark blue color
 
-$primary: $darkblue !default;
-$secondary: #82868b !default;
-$info: $blue !default;
-$warning: $orange !default;
-$light: $gray-50 !default;
-$dark: #4b4b4b !default;
+$primary: #dc3545 !default; // Red color for primary actions
+$secondary: #000000 !default; // Black color
+$info: #00cfe8 !default; // Blue color for information
+$warning: #ff9f43 !default; // Orange color for warnings
+$success: #28c76f !default; // Green color for success/positive status
+$danger: #dc3545 !default; // Red color for danger/negative status
+$light: #ffffff !default; // White color
+$dark: #000000 !default; // Black color
 
 // Spacing
 //
@@ -92,8 +94,8 @@ $spacers: map-merge(
 // Body
 //
 // Settings for the `<body>` element.
-$body-bg: #f8f8f8 !default;
-$body-color: #6e6b7b !default;
+$body-bg: #ffffff !default; // White background
+$body-color: #000000 !default; // Black text
 
 // Links
 //
@@ -117,7 +119,7 @@ $line-height-lg: 1.25 !default;
 $line-height-sm: 1 !default;
 
 $border-width: 1px !default;
-$border-color: #ebe9f1 !default;
+$border-color: #000000 !default; // Black borders
 $border-radius: 0.357rem !default;
 $border-radius-lg: 0.6rem !default;
 $border-radius-sm: 0.25rem !default;
@@ -139,8 +141,8 @@ $box-shadow: 0 4px 24px 0 rgba($black, 0.1) !default;
 // $font-family-sans-serif: 'Kanit', Helvetica, Arial, serif !default;
 // $font-family-monospace: 'Kanit', Helvetica, Arial, serif !default;
 
-$font-family-sans-serif: 'Mitr', Helvetica, Arial, serif !default;
-$font-family-monospace: 'Mitr', Helvetica, Arial, serif !default;
+$font-family-sans-serif: 'MiSansMU', Helvetica, Arial, serif !default;
+$font-family-monospace: 'MiSansMU', Helvetica, Arial, serif !default;
 
 // stylelint-enable value-keyword-case
 $font-size-base: 1rem !default;
@@ -160,7 +162,7 @@ $h4-font-size: $font-size-base * 1.286 !default;
 $h5-font-size: $font-size-base * 1.07 !default;
 
 $headings-font-family: inherit !default;
-$headings-color: #5e5873 !default;
+$headings-color: #000000 !default; // Black headings
 
 $display1-weight: $font-weight-normal !default;
 $display2-weight: $font-weight-normal !default;
@@ -172,7 +174,7 @@ $lead-font-weight: $font-weight-normal !default;
 
 $small-font-size: 0.857rem !default;
 
-$text-muted: #b9b9c3 !default;
+$text-muted: #666666 !default; // Dark gray for muted text
 $hr-border-color: $border-color !default;
 
 $blockquote-small-color: $text-muted !default;
@@ -181,13 +183,13 @@ $blockquote-small-color: $text-muted !default;
 
 $table-cell-padding: 0.72rem !default;
 
-$table-accent-bg: #fafafc !default;
-$table-hover-bg: #f6f6f9 !default;
+$table-accent-bg: #ffffff !default; // White accent
+$table-hover-bg: rgba(220, 53, 69, 0.05) !default; // Light red hover
 
 $table-border-color: $border-color !default;
 
-$table-head-bg: #f3f2f7 !default;
-$table-head-color: $headings-color !default;
+$table-head-bg: #dc3545 !default; // Red header background
+$table-head-color: #ffffff !default; // White header text
 
 $table-dark-bg: $dark !default;
 $table-dark-border-color: #404040 !default;
