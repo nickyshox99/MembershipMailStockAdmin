@@ -10,7 +10,7 @@ export default [
   {
     path: '/RegisterEmail',
     name: 'registeremail',
-    component: () => import('@/views/pages/customer/RegisterEmail.vue'),
+    component: () => import('@/views/pages/customer/registeremail.vue'),
     meta: {
       layout: 'full',            
     },

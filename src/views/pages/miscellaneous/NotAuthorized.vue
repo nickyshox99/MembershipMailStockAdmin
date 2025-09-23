@@ -31,9 +31,7 @@
           :src="imgUrl"
           alt="Home"
         /> -->
-
-        
-       
+ 
       </div>
     </div>
   </div>
@@ -104,4 +102,43 @@ export default {
 
 <style lang="scss">
 @import '@core/scss/vue/pages/page-misc.scss';
+
+// Custom styling to showcase MiSansMU font
+.misc-wrapper {
+  .brand-text {
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 600; // Semibold
+  }
+  
+  h2 {
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 500; // Medium
+  }
+  
+  p {
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 400; // Normal
+  }
+  
+  // Example of different font weights
+  .font-light {
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 300;
+  }
+  
+  .font-normal {
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 400;
+  }
+  
+  .font-medium {
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 500;
+  }
+  
+  .font-semibold {
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 600;
+  }
+}
 </style>
