@@ -1,7 +1,7 @@
 <template>
   <div style="background-image: url('bg.png');background-repeat: repeat;background-size: 1714px 1142px;">
     <div class="auth-wrapper auth-v1 px-2">
-      <div class="auth-inner py-2" >
+      <div class="auth-inner py-2">
 
         <!-- Login v1 -->
         <b-card class="mb-0" style="background-color: rgb(255, 255, 242);">
@@ -13,22 +13,14 @@
             </h2>
           </b-link>
 
-          <b-card-title class="mb-1 ">            
+          <b-card-title class="mb-1 ">
             ใส่ Email ที่ใช้ในการสมัคร
           </b-card-title>
-          <b-form
-                class="auth-login-form mt-2 "
-                @submit.prevent
-              >
-              <b-form-group class="text-center">
-                <b-avatar
-                  :src="avatarImgUrl"
-                  size="6rem"
-                  variant="primary"
-                  class="mb-2"
-                ></b-avatar>
-              </b-form-group>
-<!-- 
+          <b-form class="auth-login-form mt-2 " @submit.prevent>
+            <b-form-group class="text-center">
+              <b-avatar :src="avatarImgUrl" size="6rem" variant="primary" class="mb-2"></b-avatar>
+            </b-form-group>
+            <!-- 
               <b-form-group                  
                 label="Line Id"
                 label-for="lineid"
@@ -44,37 +36,23 @@
                   
               </b-form-group> -->
 
-                <b-form-group                  
-                  label="Email"
-                  label-for="email"
-                  style="color: white;"
-                >
-                  
-                    <b-form-input
-                      id="email"
-                      v-model="email"                      
-                      name="email"
-                      placeholder="Enter Email"
-                    />
-                    
-                </b-form-group>
+            <b-form-group label="Email" label-for="email" style="color: white;">
 
-                <b-form-group>
-                  <span style="color:red;"> {{ errorMessage }} </span>
-                </b-form-group>
+              <b-form-input id="email" v-model="email" name="email" placeholder="Enter Email" />
 
-                 <b-button
-                  type="submit"
-                  variant="primary"
-                  block
-                  @click="registerEmail()"
-                >
-                  ยืนยัน
-                </b-button>
-            </b-form>
-          
+            </b-form-group>
+
+            <b-form-group>
+              <span style="color:red;"> {{ errorMessage }} </span>
+            </b-form-group>
+
+            <b-button type="submit" variant="primary" block @click="registerEmail()">
+              ยืนยัน
+            </b-button>
+          </b-form>
+
         </b-card>
-        
+
       </div>
     </div>
   </div>
@@ -86,7 +64,7 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton,BCard,BAvatar
+  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, BCard, BAvatar
 } from 'bootstrap-vue'
 import { required, email } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
@@ -123,15 +101,15 @@ export default {
   },
   mixins: [togglePasswordVisibility],
   setup(props, {
-        emit
-    }) {
+    emit
+  }) {
 
-        const { t } = useI18nUtils();
+    const { t } = useI18nUtils();
 
-        return {            
-            t,
-        }
-    }, 
+    return {
+      t,
+    }
+  },
   data() {
     return {
       status: '',
@@ -141,11 +119,11 @@ export default {
       sideImg: require('@/assets/images/pages/login-v3.png'),
       // validation rulesimport store from '@/store/index'
       required,
-      email:'',
-      lineId:'',
+      email: '',
+      lineId: '',
       avatarImgUrl: require('@/assets/images/avatars/4.png'),
-      displayName:'',
-      errorMessage:'',
+      displayName: '',
+      errorMessage: '',
     }
   },
   computed: {
@@ -166,13 +144,13 @@ export default {
     //this.lineId = params.get('lineid') || ''
     this.getSourceProfile();
   },
-  methods: {    
+  methods: {
     ...mapActions(["GetLineProfileByLineSourceId"]),
     ...mapActions(["RegisterMemberWithEmail"]),
     async validationForm() {
 
     },
-    async getSourceProfile(){
+    async getSourceProfile() {
       console.log('getSourceProfile');
 
       //const userData = JSON.parse(localStorage.getItem('userData'));
@@ -181,45 +159,47 @@ export default {
       //get query string
       const params = new URLSearchParams(window.location.search);
       const sourceUserId = params.get('sourceUserId') || '';
-          
+
       formData.append("userid", "-");
       formData.append("token", "-");
 
       formData.append("line_source_id", sourceUserId);
       formData.append("page_name", this.$route.name);
-      
+
       const response = await this.GetLineProfileByLineSourceId(formData);
-      if (response.data.status=='success') 
-      {         
-          if (response.data.data.length > 0) {
-            this.lineId = response.data.data[0].lineid;
-            this.email = response.data.data[0].email;
-            if (this.avatarImgUrl = response.data.data[0].picture_url!="") {
-              this.avatarImgUrl = response.data.data[0].picture_url;
-            }
-            this.displayName = response.data.data[0].display_name||"";
-          } else {
-            this.lineId = '';
-            this.email = '';
+      if (response.data.status == 'success') {
+        if (response.data.data.length > 0) {
+          this.lineId = response.data.data[0].lineid;
+          this.email = response.data.data[0].email;
+          // if (this.avatarImgUrl = response.data.data[0].picture_url != "") {
+          //   this.avatarImgUrl = response.data.data[0].picture_url;
+          // }
+          if (response.data.data[0].picture_url !== "" && response.data.data[0].picture_url != null) {
+            this.avatarImgUrl = response.data.data[0].picture_url;
           }
+          
+          this.displayName = response.data.data[0].display_name || "";
+        } else {
+          this.lineId = '';
+          this.email = '';
+        }
       }
-      else
-      {
-          this.$toast(
-            {
-              component: ToastificationContent,
-              props: {
-                title: response.data.message,
-                icon: 'EditIcon',
-                variant: 'error',
-              },
-            });
+      else {
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: response.data.message,
+              icon: 'EditIcon',
+              variant: 'error',
+            },
+          });
       }
     },
-    async registerEmail(){
+    async registerEmail() {
       console.log('registerEmail');
 
-      this.errorMessage="";
+      this.errorMessage = "";
 
       //const userData = JSON.parse(localStorage.getItem('userData'));
       const formData = new FormData();
@@ -227,7 +207,7 @@ export default {
       //get query string
       const params = new URLSearchParams(window.location.search);
       const sourceUserId = params.get('sourceUserId') || '';
-    
+
       formData.append("userid", "-");
       formData.append("token", "-");
 
@@ -235,38 +215,37 @@ export default {
       formData.append("email", this.email);
       formData.append("display_name", this.displayName);
       formData.append("page_name", this.$route.name);
-      formData.append("line_displayurl", this.avatarImgUrl);
-      
-      
-      
+      // formData.append("line_displayurl", this.avatarImgUrl);
+      formData.append("line_displayurl", typeof this.avatarImgUrl === 'string' ? this.avatarImgUrl : '');
+
+
+
       const response = await this.RegisterMemberWithEmail(formData);
-      if (response.data.status=='success') 
-      {         
-          this.$toast(
-            {
-              component: ToastificationContent,
-              props: {
-                title: response.data.message,
-                icon: 'CheckIcon',
-                variant: 'success',
-              },
-            });
+      if (response.data.status == 'success') {
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: response.data.message,
+              icon: 'CheckIcon',
+              variant: 'success',
+            },
+          });
 
-          this.$router.push({ name: 'buy-product', query: { sourceUserId: sourceUserId,email:this.email } });
+        this.$router.push({ name: 'buy-product', query: { sourceUserId: sourceUserId, email: this.email } });
       }
-      else
-      {
-          this.$toast(
-            {
-              component: ToastificationContent,
-              props: {
-                title: response.data.message,
-                icon: 'EditIcon',
-                variant: 'error',
-              },
-            });
+      else {
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: response.data.message,
+              icon: 'EditIcon',
+              variant: 'error',
+            },
+          });
 
-            this.errorMessage=response.data.message;
+        this.errorMessage = response.data.message;
       }
     }
   },
