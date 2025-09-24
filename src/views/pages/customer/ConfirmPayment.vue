@@ -80,14 +80,17 @@
                 
                 <div v-if="slip_file_url != ''" class="slip-display">
                   <img :src="slip_file_url" class="slip-image" alt="Slip Image" />
+                  <div class="slip-actions">
+                    <b-button variant="danger" size="sm" class="delete-btn" @click="deleteSlip()">
+                      <feather-icon icon="TrashIcon" class="button-icon" />
+                      ลบสลิป
+                    </b-button>
+                  </div>
                 </div>
                 
                 <div v-if="slip_file_url==''" class="slip-upload">
-                  <input type="file" @change="uploadFile('slip')" ref="slip" class="file-input" />
-                  <b-button variant="info" class="upload-btn" @click="submitFile('slip')">
-                    <feather-icon icon="UploadIcon" class="button-icon" />
-                    อัปโหลดสลิป
-                  </b-button>
+                  <input type="file" @change="uploadFile('slip')" ref="slip" class="file-input" accept="image/*" />
+                  <p class="upload-hint">กรุณาเลือกไฟล์รูปภาพ (JPG, PNG) ขนาดไม่เกิน 5MB</p>
                 </div>
               </div>
 
@@ -224,6 +227,8 @@ export default {
     ...mapActions(["GetOrderData"]),
     ...mapActions(["ConfirmPayment"]),
     ...mapActions(["UploadSlip"]),
+    ...mapActions(["UploadFileAndDeleteOldFile"]),
+    ...mapActions(["CustomerDeleteOldFile"]),
     async validationForm() {
 
     },
@@ -234,14 +239,19 @@ export default {
       formData.append("userid", "-");
       formData.append("token", "-");
       formData.append("page_name", this.$route.name);
+      formData.append("id", this.$route.query.id || "");
+      formData.append("email", this.$route.query.email || "");
       
       const response = await this.GetOrderData(formData);
+      console.log('API Response:', response.data);
       if (response.data.status=='success') 
       {         
           if (response.data.data.length > 0) {
             this.orderData = response.data.data[0];
             this.bankData = response.data.bank_data || {};
             this.slip_file_url = response.data.slip_file_url || '';
+            console.log('Order Data:', this.orderData);
+            console.log('Bank Data:', this.bankData);
           } else {
             this.showErrorParam = true;
           }
@@ -262,22 +272,131 @@ export default {
     },
     async uploadFile(type){
       console.log('uploadFile', type);
-      // Handle file upload logic here
+      
+      const fileInput = this.$refs[type];
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        
+        // Validate file type (only images)
+        if (!file.type.startsWith('image/')) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'กรุณาเลือกไฟล์รูปภาพเท่านั้น',
+              icon: 'AlertCircleIcon',
+              variant: 'error',
+            },
+          });
+          return;
+        }
+        
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'ขนาดไฟล์ต้องไม่เกิน 5MB',
+              icon: 'AlertCircleIcon',
+              variant: 'error',
+            },
+          });
+          return;
+        }
+        
+        await this.submitFile(type, file);
+      }
     },
-    async submitFile(type){
-      console.log('submitFile', type);
-      // Handle file submission logic here
+    async submitFile(type, file){
+      console.log('submitFile', type, file);
+      
+      try {
+        // Generate safe filename
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        const safeFilename = `slip_${this.orderData.id}_${Date.now()}.${fileExtension}`;
+        
+        const formData = new FormData();
+        formData.append("userid", "-");
+        formData.append("token", "-");
+        formData.append("order_id", this.orderData.id);
+        formData.append("email", this.orderData.email);
+        formData.append("tofilename", safeFilename);
+        formData.append("file", file);
+        formData.append("oldFilePath", this.slip_file_url || "");
+        
+        console.log('Uploading file:', {
+          originalName: file.name,
+          safeFilename: safeFilename,
+          fileSize: file.size,
+          fileType: file.type
+        });
+        
+        const response = await this.UploadFileAndDeleteOldFile(formData);
+        
+        if (response.data.status === 'success') {
+          this.slip_file_url = response.data.url;
+          
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'อัปโหลดสลิปสำเร็จ',
+              icon: 'CheckIcon',
+              variant: 'success',
+            },
+          });
+        } else {
+          console.error('Upload failed:', response.data);
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: response.data.message || 'อัปโหลดสลิปล้มเหลว',
+              icon: 'AlertCircleIcon',
+              variant: 'error',
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'เกิดข้อผิดพลาดในการอัปโหลด: ' + (error.message || 'ไม่ทราบสาเหตุ'),
+            icon: 'AlertCircleIcon',
+            variant: 'error',
+          },
+        });
+      }
     },
     async confirmPayment(){
       console.log('confirmPayment');
+
+      // Check if slip is uploaded
+      if (!this.slip_file_url || this.slip_file_url === '') {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'กรุณาอัปโหลดสลิปการโอนเงินก่อน',
+            icon: 'AlertCircleIcon',
+            variant: 'error',
+          },
+        });
+        return;
+      }
 
       const formData = new FormData();
       formData.append("userid", "-");
       formData.append("token", "-");
       formData.append("order_id", this.orderData.id);
-      formData.append("page_name", this.$route.name);
+      formData.append("email", this.orderData.email);
+      formData.append("slip_file_url", this.slip_file_url);
       
-      const response = await this.ConfirmPayment(formData);
+      console.log('Sending payment confirmation with:', {
+        order_id: this.orderData.id,
+        email: this.orderData.email,
+        slip_file_url: this.slip_file_url
+      });
+      
+      const response = await this.UploadSlip(formData);
+      console.log('Payment confirmation response:', response.data);
       if (response.data.status=='success') 
       {         
           this.showCompleteDialog = true;
@@ -285,7 +404,7 @@ export default {
             {
               component: ToastificationContent,
               props: {
-                title: response.data.message,
+                title: 'ยืนยันการชำระเงินสำเร็จ',
                 icon: 'CheckIcon',
                 variant: 'success',
               },
@@ -297,11 +416,77 @@ export default {
             {
               component: ToastificationContent,
               props: {
-                title: response.data.message,
-                icon: 'EditIcon',
+                title: response.data.message || 'ยืนยันการชำระเงินล้มเหลว',
+                icon: 'AlertCircleIcon',
                 variant: 'error',
               },
             });
+      }
+    },
+    async deleteSlip(){
+      console.log('deleteSlip');
+      console.log('Current slip_file_url:', this.slip_file_url);
+      
+      // Store the current URL for API call
+      const currentSlipUrl = this.slip_file_url;
+      
+      // Clear the UI immediately for better UX
+      this.slip_file_url = '';
+      console.log('Slip file URL cleared immediately');
+      
+      try {
+        const formData = new FormData();
+        formData.append("userid", "-");
+        formData.append("token", "-");
+        formData.append("order_id", this.orderData.id);
+        formData.append("email", this.orderData.email);
+        formData.append("oldFilePath", currentSlipUrl);
+        
+        console.log('Sending delete request with:', {
+          order_id: this.orderData.id,
+          email: this.orderData.email,
+          oldFilePath: currentSlipUrl
+        });
+        
+        const response = await this.CustomerDeleteOldFile(formData);
+        console.log('Delete response:', response.data);
+        
+        if (response.data.status === 'success') {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'ลบสลิปสำเร็จ',
+              icon: 'CheckIcon',
+              variant: 'success',
+            },
+          });
+        } else {
+          console.error('Delete failed:', response.data);
+          // Restore the URL if delete failed
+          this.slip_file_url = currentSlipUrl;
+          
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: response.data.message || 'ลบสลิปล้มเหลว',
+              icon: 'AlertCircleIcon',
+              variant: 'error',
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Delete error:', error);
+        // Restore the URL if delete failed
+        this.slip_file_url = currentSlipUrl;
+        
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'เกิดข้อผิดพลาดในการลบสลิป: ' + (error.message || 'ไม่ทราบสาเหตุ'),
+            icon: 'AlertCircleIcon',
+            variant: 'error',
+          },
+        });
       }
     }
   },
@@ -595,6 +780,37 @@ export default {
           max-height: 400px;
           border-radius: 12px;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          margin-bottom: 1rem;
+        }
+        
+        .slip-actions {
+          margin-top: 1rem;
+          
+          .delete-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 0.5rem 1rem !important;
+            font-family: 'MiSansMU', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            
+            .button-icon {
+              width: 14px;
+              height: 14px;
+              margin-right: 0.5rem;
+            }
+            
+            &:hover {
+              transform: translateY(-1px);
+              box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
+            }
+          }
         }
       }
       
@@ -609,30 +825,14 @@ export default {
           background: rgba(220, 53, 69, 0.05);
         }
         
-        .upload-btn {
-          background: linear-gradient(135deg, #00cfe8 0%, #00a8b8 100%) !important;
-          border: none !important;
-          border-radius: 12px !important;
-          padding: 0.75rem 1.5rem !important;
+        .upload-hint {
+          color: #666666;
           font-family: 'MiSansMU', sans-serif;
-          font-weight: 500;
-          color: #ffffff !important;
-          box-shadow: 0 4px 15px rgba(0, 207, 232, 0.3);
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          margin: 0 auto;
-          
-          .button-icon {
-            width: 16px;
-            height: 16px;
-            margin-right: 0.5rem;
-          }
-          
-          &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 207, 232, 0.4) !important;
-          }
+          font-weight: 400;
+          font-size: 0.9rem;
+          margin-top: 0.5rem;
+          margin-bottom: 0;
+          text-align: center;
         }
       }
     }

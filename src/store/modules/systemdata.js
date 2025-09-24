@@ -1141,6 +1141,187 @@ async GetActiveAdminBank({commit}, search) {
     return response;
 
   },
+  async GetAccountSummaryReport({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),
+        page_name : inputData.get("page_name") || "report_summary",  
+    }
+
+    let response;
+    await axios.post("api/report/getAccountSummaryReport",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+
+  },
+  async GetSubscriptionTypeReport({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),
+        page_name : inputData.get("page_name") || "report_summary",  
+    }
+
+    let response;
+    await axios.post("api/report/getSubscriptionTypeReport",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+
+  },
+  async GetOrderStatusReport({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),
+        page_name : inputData.get("page_name") || "report_summary",  
+    }
+
+    let response;
+    await axios.post("api/report/getOrderStatusReport",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+
+  },
+  async GetMonthlyRevenueReport({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),
+        page_name : inputData.get("page_name") || "report_summary",
+        from_date: inputData.get("from_date"),
+        to_date: inputData.get("to_date"),
+    }
+
+    console.log('GetMonthlyRevenueReport - Request body:', body);
+
+    let response;
+    await axios.post("api/report/getMonthlyRevenueReport",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    console.log('GetMonthlyRevenueReport - API Response:', response);
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+
+  },
+  async TestOrderStatusData({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),
+        page_name : inputData.get("page_name") || "report_summary",  
+    }
+
+    let response;
+    await axios.post("api/report/testOrderStatusData",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+
+  },
   async GetLastBonusTransaction({commit}, inputData) {
         
     //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
@@ -2300,6 +2481,39 @@ async GetActiveAdminBank({commit}, search) {
     );
 
     // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetOrderData({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        id: inputData.get("id"),
+        email: inputData.get("email"),
+    }
+
+    let response;
+    await axios.post("api/product/GetSubScribeOrderById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
     if (response.data.status=="success") 
     {
       
