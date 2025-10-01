@@ -705,7 +705,7 @@ export default {
     ...mapActions(["GetPagePermission"]),
     ...mapActions(["GetOrderExpired"]),
     ...mapActions(["VerifySlipOrder"]),
-    ...mapActions(["SentPaymentMessageOrder"]),
+    ...mapActions(["SentPaymentMessageExpired"]),
      
     
     formatDateAssigned(value) {
@@ -1044,7 +1044,7 @@ export default {
         form.append("order_id", item.id);
         form.append("days_left", item.days_left);
                                                         
-        const response = await this.SentPaymentMessageOrder(form);
+        const response = await this.SentPaymentMessageExpired(form);
         if (response.data.status == "success") {
             //
 

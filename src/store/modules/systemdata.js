@@ -2594,6 +2594,80 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async SentPaymentMessageNearOrder({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        days_left: inputData.get("days_left"),       
+    }
+
+    console.log('SentPaymentMessageNearOrder - Request body:', body);
+
+    let response;
+    await axios.post("api/product/SentPaymentMessageNearOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+        response = resp;
+        }
+    );
+
+    console.log('SentPaymentMessageNearOrder - API Response:', response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async SentPaymentMessageExpired({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        days_left: inputData.get("days_left"),       
+    }
+
+    console.log('SentPaymentMessageExpired - Request body:', body);
+
+    let response;
+    await axios.post("api/product/SentPaymentMessageExpired",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+        response = resp;
+        }
+    );
+
+    console.log('SentPaymentMessageExpired - API Response:', response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetMemberEmail({commit}, inputData) {
         
     var headers = {

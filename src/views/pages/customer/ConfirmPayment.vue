@@ -225,8 +225,7 @@ export default {
   },
   methods: {    
     ...mapActions(["GetOrderData"]),
-    ...mapActions(["ConfirmPayment"]),
-    ...mapActions(["UploadSlip"]),
+    ...mapActions(["PaymentOrderWithSlip"]),
     ...mapActions(["UploadFileAndDeleteOldFile"]),
     ...mapActions(["CustomerDeleteOldFile"]),
     async validationForm() {
@@ -243,10 +242,10 @@ export default {
       formData.append("email", this.$route.query.email || "");
       
       const response = await this.GetOrderData(formData);
-      console.log('API Response:', response.data);
-      if (response.data.status=='success') 
+      console.log('API Response:', response);
+      if (response && response.data && response.data.status=='success') 
       {         
-          if (response.data.data.length > 0) {
+          if (response.data.data && response.data.data.length > 0) {
             this.orderData = response.data.data[0];
             this.bankData = response.data.bank_data || {};
             this.slip_file_url = response.data.slip_file_url || '';
@@ -263,7 +262,7 @@ export default {
             {
               component: ToastificationContent,
               props: {
-                title: response.data.message,
+                title: (response && response.data && response.data.message) || 'ไม่พบข้อมูลคำสั่งซื้อ',
                 icon: 'EditIcon',
                 variant: 'error',
               },
@@ -332,7 +331,7 @@ export default {
         
         const response = await this.UploadFileAndDeleteOldFile(formData);
         
-        if (response.data.status === 'success') {
+        if (response && response.data && response.data.status === 'success') {
           this.slip_file_url = response.data.url;
           
           this.$toast({
@@ -348,7 +347,7 @@ export default {
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: response.data.message || 'อัปโหลดสลิปล้มเหลว',
+              title: (response && response.data && response.data.message) || 'อัปโหลดสลิปล้มเหลว',
               icon: 'AlertCircleIcon',
               variant: 'error',
             },
@@ -395,9 +394,9 @@ export default {
         slip_file_url: this.slip_file_url
       });
       
-      const response = await this.UploadSlip(formData);
-      console.log('Payment confirmation response:', response.data);
-      if (response.data.status=='success') 
+      const response = await this.PaymentOrderWithSlip(formData);
+      console.log('Payment confirmation response:', response);
+      if (response && response.data && response.data.status=='success') 
       {         
           this.showCompleteDialog = true;
           this.$toast(
@@ -416,7 +415,7 @@ export default {
             {
               component: ToastificationContent,
               props: {
-                title: response.data.message || 'ยืนยันการชำระเงินล้มเหลว',
+                title: (response && response.data && response.data.message) || 'ยืนยันการชำระเงินล้มเหลว',
                 icon: 'AlertCircleIcon',
                 variant: 'error',
               },
@@ -449,9 +448,9 @@ export default {
         });
         
         const response = await this.CustomerDeleteOldFile(formData);
-        console.log('Delete response:', response.data);
+        console.log('Delete response:', response);
         
-        if (response.data.status === 'success') {
+        if (response && response.data && response.data.status === 'success') {
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -468,7 +467,7 @@ export default {
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: response.data.message || 'ลบสลิปล้มเหลว',
+              title: (response && response.data && response.data.message) || 'ลบสลิปล้มเหลว',
               icon: 'AlertCircleIcon',
               variant: 'error',
             },

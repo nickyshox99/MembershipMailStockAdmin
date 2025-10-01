@@ -726,6 +726,7 @@ export default {
     ...mapActions(["GetOrderNearExpire"]),
     ...mapActions(["VerifySlipOrder"]),
     ...mapActions(["SentPaymentMessageOrder"]),
+    ...mapActions(["SentPaymentMessageNearOrder"]),
      
     
     formatDateAssigned(value) {
@@ -763,7 +764,7 @@ export default {
           form.append("token", userData.token);
 
           const response = await this.GetOrderNearExpire(form);
-          if (response.data.status == 'success') {           
+          if (response && response.data && response.data.status == 'success') {           
               this.rowsOrderHistory = response.data.data;                
               // for (let index = 0; index < this.rowsOrderHistory.length; index++) {
               //     const element = this.rowsOrderHistory[index];
@@ -778,7 +779,7 @@ export default {
               {
                   component: ToastificationContent,
                   props: {
-                  title: response.data.message,
+                  title: (response && response.data && response.data.message) || 'ไม่พบข้อมูลคำสั่งซื้อ',
                   icon: 'EditIcon',
                   variant: 'error',
                   },
@@ -798,13 +799,13 @@ export default {
       formData.append("page_name", this.$route.name);
 
       const response = await this.GetPagePermission(formData);
-      if (response.data.status == "success") {
+      if (response && response.data && response.data.status == "success") {
         this.pagePermission = response.data.data;
       } else {
         this.$toast({
           component: ToastificationContent,
           props: {
-            title: response.data.message,
+            title: (response && response.data && response.data.message) || 'ไม่สามารถเข้าถึงได้',
             icon: "EditIcon",
             variant: "error",
           },
@@ -828,7 +829,7 @@ export default {
         form.append("slip_correct", 1);
                                                         
         const response = await this.VerifySlipOrder(form);
-        if (response.data.status == "success") {
+        if (response && response.data && response.data.status == "success") {
             //
 
             this.$toast({
@@ -854,7 +855,7 @@ export default {
                     title: `Verify Payment`,
                     icon: 'TrashIcon',
                     variant: 'danger',
-                    text: this.$t('Update Order UnSuccesful') +` ${response.data.message}`,
+                    text: this.$t('Update Order UnSuccesful') + ` ${(response && response.data && response.data.message) || 'ไม่ทราบสาเหตุ'}`,
                 },
                 autoHideDelay: 3000,
             });
@@ -880,7 +881,7 @@ export default {
         form.append("note", note?note:'');
                                                         
         const response = await this.CancelSubScribeOrder(form);
-        if (response.data.status == "success") {
+        if (response && response.data && response.data.status == "success") {
             //
 
             this.$toast({
@@ -906,7 +907,7 @@ export default {
                     title: `Cancel Order`,
                     icon: 'TrashIcon',
                     variant: 'danger',
-                    text: this.$t('Cancel Order UnSuccesful') +` ${response.data.message}`,
+                    text: this.$t('Cancel Order UnSuccesful') + ` ${(response && response.data && response.data.message) || 'ไม่ทราบสาเหตุ'}`,
                 },
                 autoHideDelay: 3000,
             });
@@ -930,7 +931,7 @@ export default {
         form.append("slip_correct", 1);
                                                         
         const response = await this.VerifySlipOrder(form);
-        if (response.data.status == "success") {
+        if (response && response.data && response.data.status == "success") {
             //
 
             this.$toast({
@@ -956,7 +957,7 @@ export default {
                     title: `Verify Payment`,
                     icon: 'TrashIcon',
                     variant: 'danger',
-                    text: this.$t('Update Order UnSuccesful') +` ${response.data.message}`,
+                    text: this.$t('Update Order UnSuccesful') + ` ${(response && response.data && response.data.message) || 'ไม่ทราบสาเหตุ'}`,
                 },
                 autoHideDelay: 3000,
             });
@@ -1064,8 +1065,11 @@ export default {
         form.append("order_id", item.id);
         form.append("days_left", item.days_left);
                                                         
-        const response = await this.SentPaymentMessageOrder(form);
-        if (response.data.status == "success") {
+        const response = await this.SentPaymentMessageNearOrder(form);
+        
+        // Check if response and response.data exist
+        if (response && response.data) {
+          if (response && response.data && response.data.status == "success") {
             //
 
             this.$toast({
@@ -1083,19 +1087,32 @@ export default {
             this.search();
             
             
-        } else {
+          } else {
             this.$toast({
-                component: ToastificationContent,
-                position: 'top-right',
-                props: {
-                    title: `Send Message`,
-                    icon: 'TrashIcon',
-                    variant: 'danger',
-                    text: this.$t('Send Message UnSuccesful') +` ${response.data.message}`,
-                },
-                autoHideDelay: 3000,
+              component: ToastificationContent,
+              position: 'top-right',
+              props: {
+                title: `Send Message`,
+                icon: 'TrashIcon',
+                variant: 'danger',
+                text: this.$t('Send Message UnSuccesful') + ` ${response.data.message || 'ไม่ทราบสาเหตุ'}`,
+              },
+              autoHideDelay: 3000,
             });
-            
+          }
+        } else {
+          console.error('Invalid response structure:', response);
+          this.$toast({
+            component: ToastificationContent,
+            position: 'top-right',
+            props: {
+              title: `Send Message`,
+              icon: 'TrashIcon',
+              variant: 'danger',
+              text: this.$t('Send Message UnSuccesful') + ' tmpReturnData is not defined',
+            },
+            autoHideDelay: 3000,
+          });
         }
     }
   },
