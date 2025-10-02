@@ -3,56 +3,35 @@
     <b-card no-body>
       <div class="m-2">
         <b-row>
-          <b-col
-            cols="2"
-            class="d-flex align-items-center justify-content-start mb-1"
-          >
+          <b-col cols="2" class="d-flex align-items-center justify-content-start mb-1">
             <b-button variant="primary" @click="search">
               <feather-icon icon="SearchIcon" />
               {{ t("Load") }}
             </b-button>
           </b-col>
 
-          <b-col
-            cols="3"
-            md="3"
-            class="d-flex align-items-left justify-content-start mb-1"
-          >
+          <b-col cols="3" md="3" class="d-flex align-items-left justify-content-start mb-1">
             <b-input-group class="input-group-merge">
               <b-input-group-prepend is-text>
                 <feather-icon icon="SearchIcon" />
               </b-input-group-prepend>
-              <b-form-input
-                id="icons-search"
-                v-model="searchTerm"
-                :placeholder="t('Search')"
-              />
+              <b-form-input id="icons-search" v-model="searchTerm" :placeholder="t('Search')" />
             </b-input-group>
             &nbsp;
           </b-col>
 
-          <b-col
-            cols="6"
-            md="3"
-            class="d-flex align-items-left justify-content-start mb-1"
-          >
+          <b-col cols="6" md="3" class="d-flex align-items-left justify-content-start mb-1">
           </b-col>
         </b-row>
       </div>
     </b-card>
 
     <b-card :title="t('All')">
-      
-      <vue-good-table
-        ref="my-table-order-history"
-        :columns="columnsOrderHistory"
-        :rows="rowsOrderHistory"
-        :rtl="directionOrderHistory"
-        :line-numbers="true"
-        :search-options="{
+
+      <vue-good-table ref="my-table-order-history" :columns="columnsOrderHistory" :rows="rowsOrderHistory"
+        :rtl="directionOrderHistory" :line-numbers="true" :search-options="{
           enabled: false,
-        }"
-        :select-options="{
+        }" :select-options="{
           enabled: false,
           selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
           selectionInfoClass: 'custom-class',
@@ -61,23 +40,22 @@
           disableSelectInfo: true, // disable the select info panel on top
           selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
           searchFn: searchOnTable,
-        }"
-        :pagination-options="{
+        }" :pagination-options="{
           enabled: true,
           perPage: pageLengthOrderHistory,
-        }"
-        theme="polar-bear"
-      >
+        }" theme="polar-bear">
         <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field === 'line_name'">
+            <div style="font-size: 14px;">
+              <b-img v-if="props.row.line_profile_url" :src="props.row.line_profile_url" fluid thumbnail
+                style="height: 30px; width: 30px; border-radius: 50%; margin-right: 8px; vertical-align: middle;" />
+              <span style="vertical-align: middle;">{{ props.row.line_display_name || props.row.line_user_id || '-'
+                }}</span>
+            </div>
+          </span>
           <span v-if="props.column.field === 'subscription_img2'">
-            
             <div style="font-size: 14px; color: gray">
-              <b-img
-              :src="props.row.subscription_img"
-              fluid
-              thumbnail
-              style="height: 30px"
-            />
+              <b-img :src="props.row.subscription_img" fluid thumbnail style="height: 30px" />
               {{ props.row.product_name }}
             </div>
           </span>
@@ -91,25 +69,16 @@
           </span>
           <span v-if="props.column.field === 'group_name2'">
 
-            <b-badge
-              style="cursor: pointer;"
-              @click="()=>{confirmJoinGroup(props.row.group_id,props.row.email,props.row.user_id)}"
-              v-if="props.row.group_name && props.row.group_name.length > 0"
-              pill
-              :variant="`light-success`"
-              class="text-capitalize"
-            >
+            <b-badge style="cursor: pointer;"
+              @click="() => { confirmJoinGroup(props.row.group_id, props.row.email, props.row.user_id) }"
+              v-if="props.row.group_name && props.row.group_name.length > 0" pill :variant="`light-success`"
+              class="text-capitalize">
               {{ props.row.group_name }}
             </b-badge>
 
-            <b-badge
-              style="cursor: pointer;"
-              v-if="!props.row.group_name"              
-              @click="()=>{confirmJoinGroup(props.row.group_id,props.row.email,props.row.user_id)}"
-              pill
-              :variant="`light-warning`"
-              class="text-capitalize"
-            >
+            <b-badge style="cursor: pointer;" v-if="!props.row.group_name"
+              @click="() => { confirmJoinGroup(props.row.group_id, props.row.email, props.row.user_id) }" pill
+              :variant="`light-warning`" class="text-capitalize">
               {{ t('No Group') }}
             </b-badge>
 
@@ -122,14 +91,9 @@
                 : ""
             }}
           </span>
-          <span v-if="props.column.field === 'slip'" >
-            <b-img v-if="props.row.slip_file_url!=''" 
-              @click="showImage(props.row)"
-              :src="props.row.slip_file_url"
-              fluid
-              thumbnail
-              style="cursor: pointer; height: 100px"
-            />
+          <span v-if="props.column.field === 'slip'">
+            <b-img v-if="props.row.slip_file_url != ''" @click="showImage(props.row)" :src="props.row.slip_file_url" fluid
+              thumbnail style="cursor: pointer; height: 100px" />
             <div style="font-size: 14px;">
               {{
                 props.row.slip_file_at != null
@@ -137,18 +101,13 @@
                   : ""
               }}
             </div>
-            
+
           </span>
 
           <span v-if="props.column.field === 'approved'">
-            <b-badge
-              v-if="
-                props.row.slip_correct == 1 
-              "
-              pill
-              :variant="`light-success`"
-              class="text-capitalize"
-            >
+            <b-badge v-if="
+              props.row.slip_correct == 1
+            " pill :variant="`light-success`" class="text-capitalize">
               {{ t("Correct Slip") }}
               {{
                 props.row.slip_file_at != null
@@ -156,14 +115,9 @@
                   : ""
               }}
             </b-badge>
-            <b-badge
-              v-if="
-                props.row.slip_correct == 0 
-              "
-              pill
-              :variant="`light-danger`"
-              class="text-capitalize"
-            >
+            <b-badge v-if="
+              props.row.slip_correct == 0
+            " pill :variant="`light-danger`" class="text-capitalize">
               {{ t("Incorrect Slip") }}
               {{
                 props.row.slip_file_at != null
@@ -171,18 +125,13 @@
                   : ""
               }}
             </b-badge>
-            <b-badge
-              v-if="
-                props.row.wait_check_payment == 1
-              "
-              pill
-              :variant="`light-info`"
-              class="text-capitalize"
-            >
+            <b-badge v-if="
+              props.row.wait_check_payment == 1
+            " pill :variant="`light-info`" class="text-capitalize">
               <feather-icon icon="ClockIcon" size="16" class="mr-0 mr-sm-50" />
               {{ t('Wait Admin Verify') }}
             </b-badge>
-            
+
           </span>
 
           <span>
@@ -190,11 +139,7 @@
           </span>
 
           <span v-if="props.column.field === 'action'">
-            <b-badge
-              style="cursor: pointer; margin-right: 2px"
-              variant="info"
-              @click="inspectData(props.row)"
-            >
+            <b-badge style="cursor: pointer; margin-right: 2px" variant="info" @click="inspectData(props.row)">
               <feather-icon icon="SearchIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Information") }}</span>
             </b-badge>
@@ -207,31 +152,18 @@
               <span class="text-nowrap">
                 {{ t("Showing") + " 1 " + t("to") }}
               </span>
-              <b-form-select
-                v-model="pageLengthOrderHistory"
-                :options="['3', '5', '10', '20', '50', '100']"
-                class="mx-1"
-                @input="
+              <b-form-select v-model="pageLengthOrderHistory" :options="['3', '5', '10', '20', '50', '100']"
+                class="mx-1" @input="
                   (value) => props.perPageChanged({ currentPerPage: value })
-                "
-              />
+                " />
               <span class="text-nowrap">
                 {{ t("of") }} {{ props.total }} {{ t("entries") }}
               </span>
             </div>
             <div>
-              <b-pagination
-                :value="1"
-                :total-rows="props.total"
-                :per-page="pageLengthOrderHistory"
-                first-number
-                last-number
-                align="right"
-                prev-class="prev-item"
-                next-class="next-item"
-                class="mt-1 mb-0"
-                @input="(value) => props.pageChanged({ currentPage: value })"
-              >
+              <b-pagination :value="1" :total-rows="props.total" :per-page="pageLengthOrderHistory" first-number
+                last-number align="right" prev-class="prev-item" next-class="next-item" class="mt-1 mb-0"
+                @input="(value) => props.pageChanged({ currentPage: value })">
                 <template #prev-text>
                   <feather-icon icon="ChevronLeftIcon" size="18" />
                 </template>
@@ -244,278 +176,160 @@
         </template>
       </vue-good-table>
 
-      <br/>
-     
+      <br />
+
 
     </b-card>
 
-    
-        <b-modal
-            id="modal-approve"
-            ref="modalApprove"
-            v-model="showModalApprove"
-            :title="t('Please confirm that you want to approve')"
-            @show="resetModalApprove"        
-            @hidden="resetModalApprove"
-            @ok="handleOkApprove"      
-            size="sm"  
-            :hideHeaderClose="false"            
-            ok-variant="success"
-            :okTitle="t('YES')"
-            buttonSize="sm"
-            :cancelTitle="t('NO')"
-            footerClass="p-2"
-        >
-            
-            <b-row>
-                <b-col md="12">
-                    <b-form-group
-                        :label="t('Note')"
-                        label-for="approve-note-input"                    
-                        >
-                        
-                        <b-form-textarea
-                            id="approve-note-input"
-                            v-model="approveNoteInput"                
-                            rows="3"
-                            max-rows="6"
-                        ></b-form-textarea>
-                    </b-form-group>
-                </b-col>
-            </b-row>
-        </b-modal>
 
-        <b-modal
-            id="modal-reject"
-            ref="modalReject"
-            v-model="showModalReject"
-            :title="t('Please confirm that you want to reject')"
-            @show="resetModalReject"        
-            @hidden="resetModalReject"
-            @ok="handleOkReject"      
-            size="sm"  
-            :hideHeaderClose="false"            
-            ok-variant="danger"
-            :okTitle="t('YES')"
-            buttonSize="sm"
-            :cancelTitle="t('NO')"
-            footerClass="p-2"
-        >
-        <b-row>
-                <b-col md="12">
-                    <b-form-group
-                        :label="t('Note')"
-                        label-for="cancel-note-input"                    
-                        >
-                        
-                        <b-form-textarea
-                            id="cancel-note-input"
-                            v-model="cancelNoteInput"                
-                            rows="3"
-                            max-rows="6"
-                        ></b-form-textarea>
-                    </b-form-group>
-                </b-col>
-            </b-row>
-        </b-modal>
+    <b-modal id="modal-approve" ref="modalApprove" v-model="showModalApprove"
+      :title="t('Please confirm that you want to approve')" @show="resetModalApprove" @hidden="resetModalApprove"
+      @ok="handleOkApprove" size="sm" :hideHeaderClose="false" ok-variant="success" :okTitle="t('YES')" buttonSize="sm"
+      :cancelTitle="t('NO')" footerClass="p-2">
 
-        <b-modal
-            id="modal-cancel"
-            ref="modalCancel"
-            v-model="showModalCancel"
-            :title="t('Please confirm that you want to cancel')"
-            @show="resetModalCancel"        
-            @hidden="resetModalCancel"
-            @ok="handleOkCancel"      
-            size="sm"  
-            :hideHeaderClose="false"            
-            ok-variant="success"
-            :okTitle="t('YES')"
-            buttonSize="sm"
-            :cancelTitle="t('NO')"
-            footerClass="p-2"
-        >
-            
-            <b-row>
-                <b-col md="12">
-                    <b-form-group
-                        :label="t('Note')"
-                        label-for="cancel-note-input"                    
-                        >
-                        
-                        <b-form-textarea
-                            id="cancel-note-input"
-                            v-model="cancelNoteInput"                
-                            rows="3"
-                            max-rows="6"
-                        ></b-form-textarea>
-                    </b-form-group>
-                </b-col>
-            </b-row>
-        </b-modal>
+      <b-row>
+        <b-col md="12">
+          <b-form-group :label="t('Note')" label-for="approve-note-input">
 
-        <b-modal
-            id="modal-note"
-            ref="modalNote"
-            v-model="showModalNote"
-            :title="t('Note')"
-            @show="resetModalNote"        
-            @hidden="resetModalNote"
-            @ok="handleOkNote"      
-            size="sm"  
-            :hideHeaderClose="false"            
-            ok-variant="success"
-            :okTitle="t('Ok')"
-            buttonSize="sm"
-            hide-footer
-        >
-            
-            <b-row>
-                <b-col md="12">
-                    <b-form-group
-                        :label="t('Note')"
-                        label-for="cancel-note-input"                    
-                        >
-                        
-                        <b-form-textarea
-                            id="cancel-note-input"
-                            v-model="cancelNoteInput"                
-                            rows="3"
-                            max-rows="6"
-                        ></b-form-textarea>
-                    </b-form-group>
-                </b-col>
-            </b-row>
-        </b-modal>
+            <b-form-textarea id="approve-note-input" v-model="approveNoteInput" rows="3" max-rows="6"></b-form-textarea>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </b-modal>
 
-        <b-modal
-            id="modal-image"
-            ref="modalImage"
-            v-model="showModalImage"
-            :title="t('Slip')"
-            @show="resetModalImage"        
-            @hidden="resetModalImage"
-            @ok="handleOkImage"      
-            @cancel="handleCancelImage"
-            size="md"  
-            :hideHeaderClose="false"            
-            ok-variant="success"
-            :okTitle="t('Correct Slip')"
-            buttonSize="sm"
-            :cancelTitle="t('Incorrect Slip')"
-            cancel-variant="danger"
-            hide-footer
-        >
-            <b-row>
-                <b-col md="12">
-                    <b-form-group
-                        label-for="cancel-note-input"                    
-                        >
-                        <img :src="imageModal"
-                          style="min-width: 300px;max-width: 300px; max-height: 600px;"
-                        />
-                        
-                    </b-form-group>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col md="12">
-                    <b-badge
-                      v-if="
-                        selectImageData.slip_correct == 1 
-                      "
-                      pill
-                      :variant="`light-success`"
-                      class="text-capitalize"
-                    >
-                      {{ t("Correct Slip") }}
-                      {{
-                        selectImageData.slip_file_at != null
-                          ? formatDateAssigned2(selectImageData.slip_file_at)
-                          : ""
-                      }}
-                    </b-badge>
-                    <b-badge
-                      v-if="
-                        selectImageData.slip_correct == 0 
-                      "
-                      pill
-                      :variant="`light-danger`"
-                      class="text-capitalize"
-                    >
-                      {{ t("Incorrect Slip") }}
-                      {{
-                        selectImageData.slip_file_at != null
-                          ? formatDateAssigned(selectImageData.slip_file_at)
-                          : ""
-                      }}
-                      {{
-                        selectImageData.check_slip_by 
-                      }}
-                    </b-badge>
-                </b-col>
-            </b-row>
+    <b-modal id="modal-reject" ref="modalReject" v-model="showModalReject"
+      :title="t('Please confirm that you want to reject')" @show="resetModalReject" @hidden="resetModalReject"
+      @ok="handleOkReject" size="sm" :hideHeaderClose="false" ok-variant="danger" :okTitle="t('YES')" buttonSize="sm"
+      :cancelTitle="t('NO')" footerClass="p-2">
+      <b-row>
+        <b-col md="12">
+          <b-form-group :label="t('Note')" label-for="cancel-note-input">
 
-        </b-modal>
+            <b-form-textarea id="cancel-note-input" v-model="cancelNoteInput" rows="3" max-rows="6"></b-form-textarea>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </b-modal>
 
-        
-        <b-modal
-            id="modal-join-group"
-            ref="modalJoinGroup"
-            v-model="showModalJoinGroup"
-            :title="t('Join Group')"
-            @show="resetModalJoinGroup"        
-            @hidden="resetModalJoinGroup"
-            @ok="handleOkJoinGroup"      
-            size="md"  
-            :hideHeaderClose="false"            
-            ok-variant="success"
-            :okTitle="t('YES')"
-            buttonSize="md"
-            :cancelTitle="t('NO')"
-            footerClass="p-2"
-        >
-                
-            <b-row>                
-                <b-col md="12">
-                    <b-form-group :label="t('Select Group')" label-for="group-selected">
-                        <b-input-group class="input-group-merge">
-                            <b-input-group-prepend is-text>
-                                <feather-icon icon="UsersIcon" />
-                            </b-input-group-prepend>
-                            <b-form-select v-model="selectedSubScribeGroupId" :options="optionSubScribeGroup" @change="groupChange()"></b-form-select>
-                        </b-input-group>
-                    </b-form-group>
-                </b-col>
+    <b-modal id="modal-cancel" ref="modalCancel" v-model="showModalCancel"
+      :title="t('Please confirm that you want to cancel')" @show="resetModalCancel" @hidden="resetModalCancel"
+      @ok="handleOkCancel" size="sm" :hideHeaderClose="false" ok-variant="success" :okTitle="t('YES')" buttonSize="sm"
+      :cancelTitle="t('NO')" footerClass="p-2">
+
+      <b-row>
+        <b-col md="12">
+          <b-form-group :label="t('Note')" label-for="cancel-note-input">
+
+            <b-form-textarea id="cancel-note-input" v-model="cancelNoteInput" rows="3" max-rows="6"></b-form-textarea>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </b-modal>
+
+    <b-modal id="modal-note" ref="modalNote" v-model="showModalNote" :title="t('Note')" @show="resetModalNote"
+      @hidden="resetModalNote" @ok="handleOkNote" size="sm" :hideHeaderClose="false" ok-variant="success"
+      :okTitle="t('Ok')" buttonSize="sm" hide-footer>
+
+      <b-row>
+        <b-col md="12">
+          <b-form-group :label="t('Note')" label-for="cancel-note-input">
+
+            <b-form-textarea id="cancel-note-input" v-model="cancelNoteInput" rows="3" max-rows="6"></b-form-textarea>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </b-modal>
+
+    <b-modal id="modal-image" ref="modalImage" v-model="showModalImage" :title="t('Slip')" @show="resetModalImage"
+      @hidden="resetModalImage" @ok="handleOkImage" @cancel="handleCancelImage" size="md" :hideHeaderClose="false"
+      ok-variant="success" :okTitle="t('Correct Slip')" buttonSize="sm" :cancelTitle="t('Incorrect Slip')"
+      cancel-variant="danger" hide-footer>
+      <b-row>
+        <b-col md="12">
+          <b-form-group label-for="cancel-note-input">
+            <img :src="imageModal" style="min-width: 300px;max-width: 300px; max-height: 600px;" />
+
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col md="12">
+          <b-badge v-if="
+            selectImageData.slip_correct == 1
+          " pill :variant="`light-success`" class="text-capitalize">
+            {{ t("Correct Slip") }}
+            {{
+              selectImageData.slip_file_at != null
+                ? formatDateAssigned2(selectImageData.slip_file_at)
+                : ""
+            }}
+          </b-badge>
+          <b-badge v-if="
+            selectImageData.slip_correct == 0
+          " pill :variant="`light-danger`" class="text-capitalize">
+            {{ t("Incorrect Slip") }}
+            {{
+              selectImageData.slip_file_at != null
+                ? formatDateAssigned(selectImageData.slip_file_at)
+                : ""
+            }}
+            {{
+              selectImageData.check_slip_by
+            }}
+          </b-badge>
+        </b-col>
+      </b-row>
+
+    </b-modal>
+
+
+    <b-modal id="modal-join-group" ref="modalJoinGroup" v-model="showModalJoinGroup" :title="t('Join Group')"
+      @show="resetModalJoinGroup" @hidden="resetModalJoinGroup" @ok="handleOkJoinGroup" size="md"
+      :hideHeaderClose="false" ok-variant="success" :okTitle="t('YES')" buttonSize="md" :cancelTitle="t('NO')"
+      footerClass="p-2">
+
+      <b-row>
+        <b-col md="12">
+          <b-form-group :label="t('Select Group')" label-for="group-selected">
+            <b-input-group class="input-group-merge">
+              <b-input-group-prepend is-text>
+                <feather-icon icon="UsersIcon" />
+              </b-input-group-prepend>
+              <b-form-select v-model="selectedSubScribeGroupId" :options="optionSubScribeGroup"
+                @change="groupChange()"></b-form-select>
+            </b-input-group>
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col md="12">
+          <hr />
+        </b-col>
+      </b-row>
+
+      <b-row>
+        <b-col md="12">
+          <span>{{ t('Amount') }}: <b-badge pill :variant="`light-success`"
+              class="text-capitalize">{{ memberInGroupList.length }}</b-badge> {{ t('Member') }}</span>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col md="12">
+          <hr />
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col md="12">
+          <b-form-group :label="t('Member in group')" label-for="member-in-group">
+            <b-row v-for="item in memberInGroupList" :key="item.email" style="padding-left: 30px;">
+              <b-col>
+                <span style="padding-left: 10px;color:grey;cursor: pointer;"> {{ item.email }} </span>
+              </b-col>
             </b-row>
-            <b-row>
-                <b-col md="12">
-                   <hr/>
-                </b-col>
-            </b-row>
-           
-            <b-row>
-                <b-col md="12">
-                    <span>{{ t('Amount') }}: <b-badge pill :variant="`light-success`" class="text-capitalize">{{memberInGroupList.length}}</b-badge> {{ t('Member') }}</span>
-                </b-col>                
-            </b-row>
-            <b-row>
-                <b-col md="12">
-                   <hr/>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col md="12">
-                    <b-form-group :label="t('Member in group')" label-for="member-in-group">
-                        <b-row v-for="item in memberInGroupList" :key="item.email" style="padding-left: 30px;" >
-                            <b-col>
-                                <span style="padding-left: 10px;color:grey;cursor: pointer;"> {{ item.email }} </span>
-                            </b-col>
-                        </b-row>
-                    </b-form-group>
-                </b-col>
-            </b-row>
-        </b-modal>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </b-modal>
 
 
   </div>
@@ -597,47 +411,52 @@ export default {
   setup() {
     const { t } = useI18nUtils();
 
-    const columnsOrderHistory =  [
-            {
-            label: t('Email'),
-            field: 'email',  
-            width: '10%',          
-            },
-            {
-            label: t('Product'),
-            field: 'subscription_img2',  
-            width: '20%',          
-            },
-            {
-            label: t('Create Date'),
-            field: 'create_date2',
-            width: '10%',
-            },
-            {
-            label: t('Group Name'),
-            field: 'group_name2',
-            width: '10%',
-            },
-            {
-            label: t('Slip'),
-            field: 'slip',
-            width: '10%',
-            },   
-            {
-            label: t('Verify'),
-            field: 'approved',
-            width: '10%',
-            },   
-            {
-            label: t('Verify By'),
-            field: 'check_slip_by',
-            width: '10%',
-            }, 
-            {
-                label: t('Action'),
-                field: 'action',                
-            },             
-        ];
+    const columnsOrderHistory = [
+      {
+        label: t('Email'),
+        field: 'email',
+        width: '10%',
+      },
+      {
+        label: t('LINE'),
+        field: 'line_name',
+        width: '15%',
+      },
+      {
+        label: t('Product'),
+        field: 'subscription_img2',
+        width: '20%',
+      },
+      {
+        label: t('Create Date'),
+        field: 'create_date2',
+        width: '10%',
+      },
+      {
+        label: t('Group Name'),
+        field: 'group_name2',
+        width: '10%',
+      },
+      {
+        label: t('Slip'),
+        field: 'slip',
+        width: '10%',
+      },
+      {
+        label: t('Verify'),
+        field: 'approved',
+        width: '10%',
+      },
+      {
+        label: t('Verify By'),
+        field: 'check_slip_by',
+        width: '10%',
+      },
+      {
+        label: t('Action'),
+        field: 'action',
+      },
+    ];
 
     return {
       t,
@@ -669,11 +488,11 @@ export default {
     return {
       fromDate: fDate,
       toDate: tDate,
-      rowsOrderHistory:[],
-      dirOrderHistory:false,
-      pageLengthOrderHistory:10,
+      rowsOrderHistory: [],
+      dirOrderHistory: false,
+      pageLengthOrderHistory: 10,
 
-      searchTerm: "",      
+      searchTerm: "",
       deptorId: "",
       paymentId: 0,
       page_name: "",
@@ -681,36 +500,36 @@ export default {
       keyPaymentReadonly: false,
       keyFineReadonly: false,
       keyForwardReadonly: false,
-      
-      showModalNote:false,
-      showModalCancel:false,
-      showModalApprove:false,
-      showModalReject:false,
+
+      showModalNote: false,
+      showModalCancel: false,
+      showModalApprove: false,
+      showModalReject: false,
       showInspectApprove: false,
 
-      cancelNoteInput:"",
-      cancelOrderId:0,
-      approveOrderId:0,
-      approveNoteInput:"",
-      
-      pagePermission:[],
-      showModalImage:false,
-      imageModal : "",
-      selectImageData : {},
+      cancelNoteInput: "",
+      cancelOrderId: 0,
+      approveOrderId: 0,
+      approveNoteInput: "",
 
-      showModalJoinGroup:false,
+      pagePermission: [],
+      showModalImage: false,
+      imageModal: "",
+      selectImageData: {},
 
-      selectedSubScribeGroupId : 0,
-      selectedSubScribeEmail : '',
-      selected_user_id : '',
+      showModalJoinGroup: false,
 
-      memberInGroupList:[],
-      groupList:[],
+      selectedSubScribeGroupId: 0,
+      selectedSubScribeEmail: '',
+      selected_user_id: '',
 
-      selectedSubScribeGroupId:0,
-      optionSubScribeGroup : [{
-          value: 0,
-          text: 'Select Group'
+      memberInGroupList: [],
+      groupList: [],
+
+      selectedSubScribeGroupId: 0,
+      optionSubScribeGroup: [{
+        value: 0,
+        text: 'Select Group'
       },],
 
     };
@@ -740,30 +559,30 @@ export default {
       return this.dir;
     },
     directionOrderHistory() {
-        if (store.state.appConfig.isRTL) {
-            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-            this.dirOrderHistory = true
-            return this.dirOrderHistory
-        }
+      if (store.state.appConfig.isRTL) {
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-        this.dirOrderHistory = false
+        this.dirOrderHistory = true
         return this.dirOrderHistory
+      }
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.dirOrderHistory = false
+      return this.dirOrderHistory
     },
   },
   async created() {
     this.page_name = this.$route.name;
 
     await this.getPagePermission();
-    
+
     await Promise.all([
-          this.search(),
-          this.getActiveGroupList(),
-      ]); 
+      this.search(),
+      this.getActiveGroupList(),
+    ]);
 
     console.log(this.page_name);
   },
   methods: {
-    
+
     ...mapActions(["GetPagePermission"]),
     ...mapActions(["GetHistorySubScribeOrderAll"]),
     ...mapActions(["GetActiveSubscriptionGroup"]),
@@ -794,39 +613,38 @@ export default {
         ("0" + formattedDate.getDate()).slice(-2)
       );
     },
-    async search()
-      {
-          console.log("search");
+    async search() {
+      console.log("search");
 
-          const userData = JSON.parse(localStorage.getItem('userData'));
-          const form = new FormData();
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const form = new FormData();
 
-          form.append("userid", userData.username);
-          form.append("token", userData.token);
+      form.append("userid", userData.username);
+      form.append("token", userData.token);
 
-          const response = await this.GetHistorySubScribeOrderAll(form);
-          if (response.data.status == 'success') {           
-              this.rowsOrderHistory = response.data.data;                
-              // for (let index = 0; index < this.rowsOrderHistory.length; index++) {
-              //     const element = this.rowsOrderHistory[index];
-              //     // if (element.end_date!=null) {
-              //     //     let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
-              //     //     diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
-              //     //     this.rowsOrderHistory[index]['diffDay'] = diffDay;
-              //     // }
-              // }
-          } else {
-              this.$toast(
-              {
-                  component: ToastificationContent,
-                  props: {
-                  title: response.data.message,
-                  icon: 'EditIcon',
-                  variant: 'error',
-                  },
-              });
-          }
-      },
+      const response = await this.GetHistorySubScribeOrderAll(form);
+      if (response.data.status == 'success') {
+        this.rowsOrderHistory = response.data.data;
+        // for (let index = 0; index < this.rowsOrderHistory.length; index++) {
+        //     const element = this.rowsOrderHistory[index];
+        //     // if (element.end_date!=null) {
+        //     //     let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
+        //     //     diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
+        //     //     this.rowsOrderHistory[index]['diffDay'] = diffDay;
+        //     // }
+        // }
+      } else {
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: response.data.message,
+              icon: 'EditIcon',
+              variant: 'error',
+            },
+          });
+      }
+    },
     async getPagePermission() {
       console.log("getPagePermission");
 
@@ -853,205 +671,192 @@ export default {
         });
       }
     },
-    async handleOkApprove()
-    {
-        const note = this.approveNoteInput;
-        console.log("handleOkApprove");
+    async handleOkApprove() {
+      const note = this.approveNoteInput;
+      console.log("handleOkApprove");
 
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        const form = new FormData();
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const form = new FormData();
 
-        form.append("userid", userData.username);
-        form.append("token", userData.token);
+      form.append("userid", userData.username);
+      form.append("token", userData.token);
 
-        form.append("admin_id", userData.username);
-        form.append("order_id", this.approveOrderId);
-        form.append("note", note?note:'');
-        form.append("slip_correct", 1);
-                                                        
-        const response = await this.VerifySlipOrder(form);
-        if (response.data.status == "success") {
-            //
+      form.append("admin_id", userData.username);
+      form.append("order_id", this.approveOrderId);
+      form.append("note", note ? note : '');
+      form.append("slip_correct", 1);
 
-            this.$toast({
-                component: ToastificationContent,
-                position: 'top-right',
-                props: {
-                    title: `Verify Payment`,
-                    icon: 'EditIcon',
-                    variant: 'success',
-                    text: this.$t(`Update Order Succesful`),
-                },
-                autoHideDelay: 3000,
-            });
+      const response = await this.VerifySlipOrder(form);
+      if (response.data.status == "success") {
+        //
 
-            this.search();
-            
-            
-        } else {
-            this.$toast({
-                component: ToastificationContent,
-                position: 'top-right',
-                props: {
-                    title: `Verify Payment`,
-                    icon: 'TrashIcon',
-                    variant: 'danger',
-                    text: this.$t('Update Order UnSuccesful') +` ${response.data.message}`,
-                },
-                autoHideDelay: 3000,
-            });
-            
-        }
-        
-        
-    },        
-    async handleOkCancel()
-    {
-        //CancelSubScribeOrder
-        const note = this.cancelNoteInput;
-        console.log("handleOkCancel");
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Verify Payment`,
+            icon: 'EditIcon',
+            variant: 'success',
+            text: this.$t(`Update Order Succesful`),
+          },
+          autoHideDelay: 3000,
+        });
 
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        const form = new FormData();
+        this.search();
 
-        form.append("userid", userData.username);
-        form.append("token", userData.token);
 
-        form.append("admin_id", userData.username);
-        form.append("order_id", this.cancelOrderId);
-        form.append("note", note?note:'');
-                                                        
-        const response = await this.CancelSubScribeOrder(form);
-        if (response.data.status == "success") {
-            //
+      } else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Verify Payment`,
+            icon: 'TrashIcon',
+            variant: 'danger',
+            text: this.$t('Update Order UnSuccesful') + ` ${response.data.message}`,
+          },
+          autoHideDelay: 3000,
+        });
 
-            this.$toast({
-                component: ToastificationContent,
-                position: 'top-right',
-                props: {
-                    title: `Cancel Order`,
-                    icon: 'EditIcon',
-                    variant: 'success',
-                    text: this.$t(`Cancel Order Succesful`),
-                },
-                autoHideDelay: 3000,
-            });
+      }
 
-            this.search();
-            
-            
-        } else {
-            this.$toast({
-                component: ToastificationContent,
-                position: 'top-right',
-                props: {
-                    title: `Cancel Order`,
-                    icon: 'TrashIcon',
-                    variant: 'danger',
-                    text: this.$t('Cancel Order UnSuccesful') +` ${response.data.message}`,
-                },
-                autoHideDelay: 3000,
-            });
-            
-        }
+
     },
-    async handleOkReject()
-    {
-        const note = this.cancelNoteInput;
-        console.log("handleOkReject");
+    async handleOkCancel() {
+      //CancelSubScribeOrder
+      const note = this.cancelNoteInput;
+      console.log("handleOkCancel");
 
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        const form = new FormData();
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const form = new FormData();
 
-        form.append("userid", userData.username);
-        form.append("token", userData.token);
+      form.append("userid", userData.username);
+      form.append("token", userData.token);
 
-        form.append("admin_id", userData.username);
-        form.append("order_id", this.cancelOrderId);
-        form.append("note", note?note:'');
-        form.append("slip_correct", 1);
-                                                        
-        const response = await this.VerifySlipOrder(form);
-        if (response.data.status == "success") {
-            //
+      form.append("admin_id", userData.username);
+      form.append("order_id", this.cancelOrderId);
+      form.append("note", note ? note : '');
 
-            this.$toast({
-                component: ToastificationContent,
-                position: 'top-right',
-                props: {
-                    title: `Verify Payment`,
-                    icon: 'EditIcon',
-                    variant: 'success',
-                    text: this.$t(`Update Order Succesful`),
-                },
-                autoHideDelay: 3000,
-            });
+      const response = await this.CancelSubScribeOrder(form);
+      if (response.data.status == "success") {
+        //
 
-            this.search();
-            
-            
-        } else {
-            this.$toast({
-                component: ToastificationContent,
-                position: 'top-right',
-                props: {
-                    title: `Verify Payment`,
-                    icon: 'TrashIcon',
-                    variant: 'danger',
-                    text: this.$t('Update Order UnSuccesful') +` ${response.data.message}`,
-                },
-                autoHideDelay: 3000,
-            });
-            
-        }
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Cancel Order`,
+            icon: 'EditIcon',
+            variant: 'success',
+            text: this.$t(`Cancel Order Succesful`),
+          },
+          autoHideDelay: 3000,
+        });
+
+        this.search();
+
+
+      } else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Cancel Order`,
+            icon: 'TrashIcon',
+            variant: 'danger',
+            text: this.$t('Cancel Order UnSuccesful') + ` ${response.data.message}`,
+          },
+          autoHideDelay: 3000,
+        });
+
+      }
     },
-    async handleOkNote()
-    {
-        this.showModalNote = false;
-    },    
-    resetModalReject()
-    {
-        
+    async handleOkReject() {
+      const note = this.cancelNoteInput;
+      console.log("handleOkReject");
+
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const form = new FormData();
+
+      form.append("userid", userData.username);
+      form.append("token", userData.token);
+
+      form.append("admin_id", userData.username);
+      form.append("order_id", this.cancelOrderId);
+      form.append("note", note ? note : '');
+      form.append("slip_correct", 1);
+
+      const response = await this.VerifySlipOrder(form);
+      if (response.data.status == "success") {
+        //
+
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Verify Payment`,
+            icon: 'EditIcon',
+            variant: 'success',
+            text: this.$t(`Update Order Succesful`),
+          },
+          autoHideDelay: 3000,
+        });
+
+        this.search();
+
+
+      } else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Verify Payment`,
+            icon: 'TrashIcon',
+            variant: 'danger',
+            text: this.$t('Update Order UnSuccesful') + ` ${response.data.message}`,
+          },
+          autoHideDelay: 3000,
+        });
+
+      }
     },
-    resetModalCancel()
-    {
-        
+    async handleOkNote() {
+      this.showModalNote = false;
     },
-    resetModalNote()
-    {
-        
+    resetModalReject() {
+
     },
-    resetModalApprove()
-    {
-          
+    resetModalCancel() {
+
     },
-    async inspectData(itemData)
-    {
-        this.showModalNote = true;
-        this.cancelNoteInput = itemData.note;
+    resetModalNote() {
+
     },
-    async inspectCancel(itemData)
-    {
-        this.showModalCancel = true;            
-        this.cancelNoteInput = itemData.note;
-        this.cancelOrderId = itemData.id;
-        
+    resetModalApprove() {
+
     },
-    async inspectApprove(itemData)
-    {
-        this.showModalApprove=true;
-        this.approveNoteInput = itemData.note;
-        this.approveOrderId = itemData.id;
+    async inspectData(itemData) {
+      this.showModalNote = true;
+      this.cancelNoteInput = itemData.note;
     },
-    async inspectReject(itemData)
-    {
-        this.showModalReject=true;                   
-        this.cancelNoteInput = itemData.note;
-        this.cancelOrderId = itemData.id;
+    async inspectCancel(itemData) {
+      this.showModalCancel = true;
+      this.cancelNoteInput = itemData.note;
+      this.cancelOrderId = itemData.id;
+
     },
-    closeInspectionApprove()
-    {
-        this.showInspectApprove = false;
+    async inspectApprove(itemData) {
+      this.showModalApprove = true;
+      this.approveNoteInput = itemData.note;
+      this.approveOrderId = itemData.id;
+    },
+    async inspectReject(itemData) {
+      this.showModalReject = true;
+      this.cancelNoteInput = itemData.note;
+      this.cancelOrderId = itemData.id;
+    },
+    closeInspectionApprove() {
+      this.showInspectApprove = false;
     },
     searchOnTable(row, col, cellValue, searchTerm) {
       if (searchTerm.length < 3) {
@@ -1071,115 +876,107 @@ export default {
 
       return found;
     },
-    showImage(item)
-    {
+    showImage(item) {
       this.selectImageData = item;
       this.imageModal = item.slip_file_url;
-      this.showModalImage= true;
+      this.showModalImage = true;
     },
-    resetModalImage()
-    {
-      this.showModalImage= false;
+    resetModalImage() {
+      this.showModalImage = false;
     },
-    handleOkImage()
-    {
-        this.showModalImage= false;
-        this.inspectApprove(this.selectImageData);
+    handleOkImage() {
+      this.showModalImage = false;
+      this.inspectApprove(this.selectImageData);
     },
-    handleCancelImage()
-    {
-        this.showModalImage= false;
-        this.inspectReject(this.selectImageData);
+    handleCancelImage() {
+      this.showModalImage = false;
+      this.inspectReject(this.selectImageData);
     },
-    resetModalJoinGroup()
-    {
-        
-    },
-    async handleOkJoinGroup()
-    {
-        
+    resetModalJoinGroup() {
 
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        const form = new FormData();
+    },
+    async handleOkJoinGroup() {
 
-        form.append("userid", userData.username);
-        form.append("token", userData.token);
 
-        form.append("admin_id", userData.username);            
-        form.append("group_id", this.selectedSubScribeGroupId);
-        form.append("email", this.selectedSubScribeEmail);
-        form.append("user_id", this.selected_user_id);
-        
-        const response = await this.AddMemberToGroup(form);
-        if (response.data.status == 'success') {                       
-            this.search();
-            this.groupChange();
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const form = new FormData();
 
-        } else {
-            this.$toast(
-            {
-                component: ToastificationContent,
-                props: {
-                title: response.data.message,
-                icon: 'EditIcon',
-                variant: 'error',
-                },
-            });
-            this.showModalJoinGroup = true;
-        }
+      form.append("userid", userData.username);
+      form.append("token", userData.token);
+
+      form.append("admin_id", userData.username);
+      form.append("group_id", this.selectedSubScribeGroupId);
+      form.append("email", this.selectedSubScribeEmail);
+      form.append("user_id", this.selected_user_id);
+
+      const response = await this.AddMemberToGroup(form);
+      if (response.data.status == 'success') {
+        this.search();
+        this.groupChange();
+
+      } else {
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: response.data.message,
+              icon: 'EditIcon',
+              variant: 'error',
+            },
+          });
+        this.showModalJoinGroup = true;
+      }
     },
     async getActiveGroupList() {
-          const userData = JSON.parse(localStorage.getItem('userData'));
-          const User = new FormData();
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const User = new FormData();
 
-          User.append("userid", userData.username);
-          User.append("token", userData.token);
-          User.append("page_name", this.$route.name);
+      User.append("userid", userData.username);
+      User.append("token", userData.token);
+      User.append("page_name", this.$route.name);
 
-          const response = await this.GetActiveSubscriptionGroup(User);
-          if (response.data.status == 'success') {                
-              this.groupList = response.data.data; 
-              let tmpArray = [];                
-              this.groupList.forEach(element => {
-                      tmpArray.push({
-                          value: element.id,
-                          text: "["+element.subscription_name+"] "+ element.group_name
-                      });
-                  });             
-              this.optionSubScribeGroup = tmpArray;
-              this.selectedSubScribeGroupId = tmpArray[0].value;
+      const response = await this.GetActiveSubscriptionGroup(User);
+      if (response.data.status == 'success') {
+        this.groupList = response.data.data;
+        let tmpArray = [];
+        this.groupList.forEach(element => {
+          tmpArray.push({
+            value: element.id,
+            text: "[" + element.subscription_name + "] " + element.group_name
+          });
+        });
+        this.optionSubScribeGroup = tmpArray;
+        this.selectedSubScribeGroupId = tmpArray[0].value;
 
-          } else {
+      } else {
 
-          }
-      },
-    async groupChange()
-        {
-            console.log("groupChange")
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            const User = new FormData();
+      }
+    },
+    async groupChange() {
+      console.log("groupChange")
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const User = new FormData();
 
-            User.append("userid", userData.username);
-            User.append("token", userData.token);
-            User.append("page_name", this.$route.name);
-            User.append("id", this.selectedSubScribeGroupId);
+      User.append("userid", userData.username);
+      User.append("token", userData.token);
+      User.append("page_name", this.$route.name);
+      User.append("id", this.selectedSubScribeGroupId);
 
-            const response = await this.GetSubscribeMemberByGroupById(User);
-            if (response.data.status == 'success') {                
-                this.memberInGroupList = response.data.data; 
-                
-            } else {
+      const response = await this.GetSubscribeMemberByGroupById(User);
+      if (response.data.status == 'success') {
+        this.memberInGroupList = response.data.data;
 
-            }
-        },
-    async confirmJoinGroup(selectedSubScribeGroupId,selectedSubScribeEmail,selected_user_id)
-    {
+      } else {
+
+      }
+    },
+    async confirmJoinGroup(selectedSubScribeGroupId, selectedSubScribeEmail, selected_user_id) {
       console.log("confirmJoinGroup");
-        this.selectedSubScribeGroupId =selectedSubScribeGroupId;
-        this.selectedSubScribeEmail = selectedSubScribeEmail;
-        this.selected_user_id =selected_user_id;
-        this.showModalJoinGroup=true;
-        this.groupChange();
+      this.selectedSubScribeGroupId = selectedSubScribeGroupId;
+      this.selectedSubScribeEmail = selectedSubScribeEmail;
+      this.selected_user_id = selected_user_id;
+      this.showModalJoinGroup = true;
+      this.groupChange();
     },
   },
 };
