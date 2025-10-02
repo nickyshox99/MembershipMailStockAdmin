@@ -7,42 +7,50 @@
 
         <b-col md="6">
           <b-form-group label-for="register" label="Register Token">
-            <b-form-input id="register" v-model="localOptions.Register" placeholder="" />
+            <b-form-input id="register" v-model="localOptions.Register" placeholder="" readonly/>
           </b-form-group>
         </b-col>
 
         <b-col md="6">
           <b-form-group label-for="deposit" label="Deposit Token">
-            <b-form-input id="deposit" v-model="localOptions.Deposit" placeholder="" />
+            <b-form-input id="deposit" v-model="localOptions.Deposit" placeholder="" readonly/>
           </b-form-group>
         </b-col>
 
         <b-col md="6">
           <b-form-group label-for="withdraw" label="Withdraw">
-            <b-form-input id="withdraw" v-model="localOptions.Withdraw" placeholder="" />
+            <b-form-input id="withdraw" v-model="localOptions.Withdraw" placeholder="" readonly/>
           </b-form-group>
         </b-col>
 
         <b-col md="6">
           <b-form-group label-for="login" label="Login">
-            <b-form-input id="login" v-model="localOptions.Login" placeholder="" />
+            <b-form-input id="login" v-model="localOptions.Login" placeholder="" readonly/>
           </b-form-group>
         </b-col>
 
         <b-col md="6">
           <b-form-group label-for="cronday" label="Cron Daily">
-            <b-form-input id="cronday" v-model="localOptions.Cron_day" placeholder="" />
+            <b-form-input id="cronday" v-model="localOptions.Cron_day" placeholder="" readonly/>
+          </b-form-group>
+        </b-col>
+
+        <!-- <b-col md="6">
+          <b-form-group label-for="setneardate" label="Near Expire Days">
+            <b-form-input id="setneardate" v-model="localOptions.SetNearDate" type="number" placeholder="3" />
           </b-form-group>
         </b-col>
 
         <b-col md="6">
-          <b-form-group label-for="setneardate" label="Near Expire 1 - 7 (days) ">
-            <b-form-input id="setneardate" v-model="localOptions.SetNearDate" type="number" min="1" max="7"
-              placeholder="3" />
+          <b-form-group label="Auto message on expired">
+            <b-form-checkbox v-model="localOptions.enableAutoExpireMessage">
+              Send auto message
+            </b-form-checkbox>
+
+            <b-form-input v-if="localOptions.enableAutoExpireMessage" v-model="localOptions.expireMessageRepeat"
+              type="number" placeholder="จำนวนครั้งที่จะส่ง เช่น 3" class="mt-1" />
           </b-form-group>
-        </b-col>
-
-
+        </b-col> -->
 
         <b-col cols="12">
           <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mt-1 mr-1"
