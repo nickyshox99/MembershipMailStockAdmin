@@ -1,20 +1,32 @@
 <template>
-<b-tabs vertical content-class="col-12 col-md-9 mt-1 mt-md-0" pills nav-wrapper-class="col-md-3 col-12" nav-class="nav-left">
+    <b-tabs vertical content-class="col-12 col-md-9 mt-1 mt-md-0" pills nav-wrapper-class="col-md-3 col-12"
+        nav-class="nav-left">
 
-    
-   
-    
-    <b-tab active>
-        <template #title>
-            <feather-icon icon="SettingsIcon" size="18" class="mr-50" />
-            <span class="font-weight-bold">Line Token</span>
-        </template>
 
-        <line-setting-token v-if="settingdata.line_token" :setting-data="settingdata.line_token" 
-        :readOnlyControl="settingTokenReadonly" />
-    </b-tab>
 
-    <!-- <b-tab>
+
+        <b-tab active>
+            <template #title>
+                <feather-icon icon="SettingsIcon" size="18" class="mr-50" />
+                <span class="font-weight-bold">Line Token</span>
+            </template>
+
+            <line-setting-token v-if="settingdata.line_token" :setting-data="settingdata.line_token"
+                :readOnlyControl="settingTokenReadonly" />
+        </b-tab>
+
+        <b-tab active>
+            <template #title>
+                <feather-icon icon="SettingsIcon" size="18" class="mr-50" />
+                <span class="font-weight-bold">ตั้งค่าร้าน</span>
+            </template>
+
+            <line-setting-expire v-if="settingdata.line_token" :setting-data="settingdata.line_token"
+                :readOnlyControl="settingTokenReadonly" />
+        </b-tab>
+        
+
+        <!-- <b-tab>
         <template #title>
             <feather-icon icon="SettingsIcon" size="18" class="mr-50" />
             <span class="font-weight-bold">Deposit Line Message</span>
@@ -30,9 +42,9 @@
         <line-setting-withdraw-format v-if="settingdata.withdrawmessage" :setting-data="settingdata.withdrawmessage" />
     </b-tab> -->
 
-   
 
-</b-tabs>
+
+    </b-tabs>
 </template>
 
 <script>
@@ -44,6 +56,7 @@ import {
 import LineSettingToken from './LineSettingToken.vue'
 import LineSettingDepositFormat from './LineSettingDepositFormat.vue'
 import LineSettingWithdrawFormat from './LineSettingWithdrawFormat.vue'
+import LineSettingExpire from './LineSettingExpire.vue'
 
 import axios from "axios";
 import { mapActions } from "vuex";
@@ -51,24 +64,25 @@ import { mapActions } from "vuex";
 export default {
     components: {
         BTabs,
-        BTab,        
-        LineSettingToken,    
+        BTab,
+        LineSettingToken,
         LineSettingDepositFormat,
-        LineSettingWithdrawFormat
+        LineSettingWithdrawFormat,
+        LineSettingExpire
     },
     data() {
         return {
             options: {},
             settingdata: {},
-            pagePermission:[],
-            settingTokenReadonly:false,
+            pagePermission: [],
+            settingTokenReadonly: false,
         }
     },
-    async created() {                
+    async created() {
         await this.getPagePermission();
     },
     async beforeCreate() {
-        
+
 
         const userData = JSON.parse(localStorage.getItem('userData'));
         const formData = new FormData();
@@ -109,50 +123,49 @@ export default {
             }
             tmpSettingData[meta_name] = meta_data;
         }
-        
+
         this.settingdata = tmpSettingData;
 
     },
     methods: {
         ...mapActions(["GetPagePermission"]),
         async getPagePermission() {
-      console.log('getPagePermission');
+            console.log('getPagePermission');
 
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      const formData = new FormData();
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const formData = new FormData();
 
-      formData.append("userid", userData.username);
-      formData.append("token", userData.token);
-      
-      formData.append("admin_id", userData.username);
-      const currentRouteName = this.$route.name;
-      formData.append("page_name", currentRouteName);      
+            formData.append("userid", userData.username);
+            formData.append("token", userData.token);
 
-      const response = await this.GetPagePermission(formData);
-      if (response.data.status == 'success') {  
-        // console.log(response.data.data);
-        this.pagePermission = response.data.data;
-        if (this.pagePermission.canEdit) {
-            this.settingTokenReadonly = false;
-        }
-        else
-        {
-            this.settingTokenReadonly = true;
-        }
-      }
-      else {
-        this.$toast(
-          {
-            component: ToastificationContent,
-            props: {
-              title: response.data.message,
-              icon: 'EditIcon',
-              variant: 'error',
-            },
-          });
-      }
+            formData.append("admin_id", userData.username);
+            const currentRouteName = this.$route.name;
+            formData.append("page_name", currentRouteName);
 
-    },
+            const response = await this.GetPagePermission(formData);
+            if (response.data.status == 'success') {
+                // console.log(response.data.data);
+                this.pagePermission = response.data.data;
+                if (this.pagePermission.canEdit) {
+                    this.settingTokenReadonly = false;
+                }
+                else {
+                    this.settingTokenReadonly = true;
+                }
+            }
+            else {
+                this.$toast(
+                    {
+                        component: ToastificationContent,
+                        props: {
+                            title: response.data.message,
+                            icon: 'EditIcon',
+                            variant: 'error',
+                        },
+                    });
+            }
+
+        },
     },
 }
 </script>
