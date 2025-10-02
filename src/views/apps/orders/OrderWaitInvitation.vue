@@ -69,6 +69,18 @@
         theme="polar-bear"
       >
         <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field === 'line_name'">
+            <div style="font-size: 14px;">
+              <b-img
+                v-if="props.row.line_profile_url"
+                :src="props.row.line_profile_url"
+                fluid
+                thumbnail
+                style="height: 30px; width: 30px; border-radius: 50%; margin-right: 8px; vertical-align: middle;"
+              />
+              <span style="vertical-align: middle;">{{ props.row.line_display_name || props.row.line_user_id || '-' }}</span>
+            </div>
+          </span>
           <span v-if="props.column.field === 'subscription_img2'">
             
             <div style="font-size: 14px; color: gray">
@@ -560,6 +572,11 @@ export default {
             label: t('Email'),
             field: 'email',  
             width: '10%',          
+            },
+            {
+            label: t('LINE'),
+            field: 'line_name',  
+            width: '15%',          
             },
             {
             label: t('Product'),
