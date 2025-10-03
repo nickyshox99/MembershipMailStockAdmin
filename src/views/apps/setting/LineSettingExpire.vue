@@ -43,6 +43,14 @@
                 </b-col>
 
                 <b-col md="6">
+                    <b-form-group label="Near-expire send">
+                        <b-form-checkbox v-model="localOptions.enableExpireOnlyOnce">
+                            ส่งแจ้งเตือนครั้งเดียว (แทนการส่งเรื่อย ๆ ตาม Near Expire Days)
+                        </b-form-checkbox>
+                    </b-form-group>
+                </b-col>
+
+                <b-col md="6">
                     <b-form-group label="Approval Step">
                         <b-form-checkbox v-model="localOptions.enableSkipApproval">
                             Skip approval step
@@ -133,6 +141,7 @@ export default {
             localOptions: {
                 ...base,
                 SetNearDate: Number.isFinite(+base.SetNearDate) ? +base.SetNearDate : 3,
+                enableExpireOnlyOnce: !!base.enableExpireOnlyOnce, // เพิ่มใหม่
                 enableSkipApproval: !!base.enableSkipApproval,
                 enableAutoExpireMessage: !!base.enableAutoExpireMessage,
                 expireMessageRepeat: Number.isFinite(+base.expireMessageRepeat) ? +base.expireMessageRepeat : 1,
@@ -151,6 +160,7 @@ export default {
                     ...this.localOptions,     // คงค่าเดิมถ้าไม่มีใน prop
                     ...JSON.parse(JSON.stringify(v)),
                     SetNearDate: Number.isFinite(+v.SetNearDate) ? +v.SetNearDate : (this.localOptions.SetNearDate ?? 3),
+                    enableExpireOnlyOnce: !!v.enableExpireOnlyOnce, // เพิ่มใหม่
                     enableSkipApproval: !!v.enableSkipApproval,
                     enableAutoExpireMessage: !!v.enableAutoExpireMessage,
                     expireMessageRepeat: Number.isFinite(+v.expireMessageRepeat) ? +v.expireMessageRepeat : (this.localOptions.expireMessageRepeat ?? 1),
@@ -167,6 +177,7 @@ export default {
                 ...v,
                 SetNearDate: Number.isFinite(+v.SetNearDate) ? +v.SetNearDate : 3,
                 enableSkipApproval: !!v.enableSkipApproval,
+                enableExpireOnlyOnce: !!v.enableExpireOnlyOnce,
                 enableAutoExpireMessage: !!v.enableAutoExpireMessage,
                 expireMessageRepeat: Number.isFinite(+v.expireMessageRepeat) ? +v.expireMessageRepeat : 1,
             }
@@ -250,7 +261,6 @@ export default {
 
         // },
         async updateSetting() {
-            // ✅ validate ก่อน
             const errs = []
             if (!Number.isFinite(+this.localOptions.SetNearDate) || +this.localOptions.SetNearDate < 0) {
                 errs.push('Near Expire Days ต้องเป็นตัวเลข ≥ 0')
@@ -268,7 +278,6 @@ export default {
                 return
             }
 
-            // ✅ normalize ค่าที่จะส่งขึ้น backend
             const tmp = JSON.parse(JSON.stringify(this.localOptions))
             tmp.SetNearDate = +tmp.SetNearDate
             if (tmp.enableAutoExpireMessage) tmp.expireMessageRepeat = +tmp.expireMessageRepeat
