@@ -8,14 +8,14 @@ export default [
     title: "MemberShip List",
     icon: "CreditCardIcon",
     children: [
-      {
-        title: "Wait Approve",
-        route: "order-wait-approve",
-      },
-      {
-        title: "Wait Family Invite",
-        route: "order-wait-invite",
-      },
+      // {
+      //   title: "Wait Approve",
+      //   route: "order-wait-approve",
+      // },
+      // {
+      //   title: "Wait Family Invite",
+      //   route: "order-wait-invite",
+      // },
       {
         title: "Wait Payment",
         route: "order-wait-payment",
