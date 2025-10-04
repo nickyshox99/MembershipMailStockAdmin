@@ -12,7 +12,7 @@
           <!-- Logo Section -->
           <div class="logo-section">
             
-              <vuexy-logo />
+              <!-- <vuexy-logo /> -->
               <h2 class="brand-text text-primary ml-1">
                 BigaByte Membership
               </h2>
@@ -22,7 +22,7 @@
           <!-- Welcome Section -->
           <div class="welcome-section">
             <b-card-title class="welcome-title mb-1">
-              ยินดีต้อนรับเข้าสู่ระบบจัดการสมาชิก! 👋
+              ยินดีต้อนรับเข้าสู่ระบบจัดการสมาชิก! 
             </b-card-title>
             <b-card-text class="welcome-subtitle mb-2">
               กรุณาเข้าระบบด้วยแอคเคาท์ของคุณ
@@ -149,6 +149,7 @@
                 </div>
               </b-form>
             </validation-observer>
+
           </div>
         </b-card>
       </div>
@@ -712,3 +713,4 @@ export default {
   }
 }
 </style>
+

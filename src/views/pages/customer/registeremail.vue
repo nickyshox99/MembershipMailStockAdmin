@@ -10,7 +10,7 @@
         <b-card class="register-card mb-0">
           <div class="logo-section">
 
-            <vuexy-logo />
+          
             <h2 class="brand-text">
               BigaByte Membership
             </h2>

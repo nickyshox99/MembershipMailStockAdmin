@@ -12,13 +12,41 @@
             <b-form @submit.prevent>
               <b-row>                
                 <b-col md="12">
-                  <b-form-group :label="t('Select Email')" label-for="email-selected">
-                        <b-input-group class="input-group-merge">
-                            <b-input-group-prepend is-text>
-                                <feather-icon icon="MailIcon" />
-                            </b-input-group-prepend>
-                            <b-form-select v-model="selectedSubScribeEmail" :options="optionSubScribeEmail"></b-form-select>
-                        </b-input-group>
+                  <b-form-group
+                    :label="t('Email')"
+                    label-for="email"
+                  >
+                    <b-form-input
+                      id="email"
+                      placeholder="Enter email address"
+                      v-model="newMemberEmail"
+                      type="email"
+                    />
+                  </b-form-group>
+                </b-col>
+
+                <b-col md="12">
+                  <b-form-group
+                    :label="t('Password')"
+                    label-for="password"
+                  >
+                    <b-input-group>
+                      <b-form-input
+                        :type="showNewPassword ? 'text' : 'password'"
+                        id="password"
+                        placeholder="Enter password/code"
+                        v-model="newMemberPassword"
+                      />
+                      <b-input-group-append>
+                        <b-button 
+                          :variant="showNewPassword ? 'outline-info' : 'outline-secondary'"
+                          @click="toggleNewPasswordVisibility"
+                          type="button"
+                        >
+                          <feather-icon :icon="showNewPassword ? 'EyeOffIcon' : 'EyeIcon'" />
+                        </b-button>
+                      </b-input-group-append>
+                    </b-input-group>
                   </b-form-group>
                 </b-col>
 
@@ -33,7 +61,7 @@
                     v-if="isModeMemberEdit"
                   >
                     <feather-icon icon="EditIcon" />
-                    {{ t("Add") }}
+                    {{ t("Add Mail") }}
                   </b-button>
                   
                   <b-button
@@ -44,6 +72,100 @@
                   >
                     <feather-icon icon="DeleteIcon" />
                     {{ t("Close") }}
+                  </b-button>
+                </b-col>
+              </b-row>
+            </b-form>
+          </b-card-code>
+        </b-col>
+      </b-row>
+      <b-row v-if="isEditMode">
+        <b-col md="9">
+          <b-card-code
+            id="edit-member"
+            :title="t('Edit Member')"
+          >
+            <b-form @submit.prevent>
+              <b-row>                
+                <b-col md="6">
+                  <b-form-group
+                    :label="t('Email')"
+                    label-for="edit-email"
+                  >
+                    <b-form-input
+                      id="edit-email"
+                      placeholder="edit email address"
+                      v-model="editingEmail"
+                      type="email"
+                    />
+                  </b-form-group>
+                </b-col>
+
+                <b-col md="6">
+                  <b-form-group
+                    :label="t('Password')"
+                    label-for="edit-password"
+                  >
+                    <b-input-group>
+                      <b-form-input
+                        :type="showEditPassword ? 'text' : 'password'"
+                        id="edit-password"
+                        placeholder="Enter password/code"
+                        v-model="editingPassword"
+                      />
+                      <b-input-group-append>
+                        <b-button 
+                          :variant="showEditPassword ? 'outline-info' : 'outline-secondary'"
+                          @click="toggleEditPasswordVisibility"
+                          type="button"
+                        >
+                          <feather-icon :icon="showEditPassword ? 'EyeOffIcon' : 'EyeIcon'" />
+                        </b-button>
+                      </b-input-group-append>
+                    </b-input-group>
+                  </b-form-group>
+                </b-col>
+
+                <b-col md="12">
+                  <b-form-group
+                    :label="t('Line User ID')"
+                    label-for="edit-line-user-id"
+                  >
+                    <b-form-input
+                      id="edit-line-user-id"
+                      :placeholder="editingLineUserId ? 'Enter Line User ID' : 'Empty - No Line ID'"
+                      v-model="editingLineUserId"
+                      :class="editingLineUserId ? '' : 'text-muted'"
+                    />
+                    <small class="text-info" v-if="editingLineUserId">
+                      Line ID: {{ editingLineUserId }}
+                    </small>
+                    <small class="text-muted" v-else>
+                      No Line ID assigned
+                    </small>
+                  </b-form-group>
+                </b-col>
+
+                <b-col md="12">
+                  <b-button
+                    v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                    type="submit"
+                    variant="success"
+                    class="mr-1"
+                    @click="saveMemberEdit"
+                  >
+                    <feather-icon icon="SaveIcon" />
+                    {{ t("Save") }}
+                  </b-button>
+                  
+                  <b-button
+                    @click="cancelEdit"
+                    v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+                    type="reset"
+                    variant="outline-secondary"
+                  >
+                    <feather-icon icon="XIcon" />
+                    {{ t("Cancel") }}
                   </b-button>
                 </b-col>
               </b-row>
@@ -77,6 +199,10 @@
               <template slot="table-row" slot-scope="props">
 
                 <span v-if="props.column.field === 'action'">
+                    <b-badge  style="cursor: pointer; margin-right:2px" variant="info" @click="editMemberData(props.row)">
+                      <feather-icon icon="EditIcon" size="16" class="mr-0 mr-sm-50" />
+                      <span class="d-none d-sm-inline">{{t('Edit')}}</span>
+                    </b-badge>
                     <b-badge  style="cursor: pointer; margin-right:2px" variant="warning" @click="confirmDeleteMemberInGroup(props.row)">
                       <feather-icon icon="TrashIcon" size="16" class="mr-0 mr-sm-50" />
                       <span class="d-none d-sm-inline">{{t('Delete')}}</span>
@@ -235,11 +361,15 @@ export default {
       rows: [],
       searchTerm: "",
 
-      selectedSubScribeEmail :"",
-      optionSubScribeEmail : [{
-          value: "",
-          text: 'Select Email'
-      },],
+      newMemberEmail: '',
+      newMemberPassword: '',
+      showNewPassword: false,
+      isEditMode: false,
+      editingMemberId: null,
+      editingEmail: '',
+      editingPassword: '',
+      showEditPassword: false,
+      editingLineUserId: '',
       
     };
   },
@@ -285,30 +415,25 @@ export default {
     },
     isModeMemberEdit: function (newVal, oldVal) {
       if (newVal == true) {
-        this.titleCard = this.$t("Add Member To Group");
+        this.titleCard = this.$t("Add Mail To Stock");
       } else {
-        this.titleCard = this.$t("Add Member To Group");
+        this.titleCard = this.$t("Add Mail To Stock");
       }
     },
   },
   async created() {
     
     
-    this.titleCard = this.$t("Add Member To Group");
+    this.titleCard = this.$t("Add Mail To Stock");
 
     await this.getPagePermission();
-    await Promise.all([              
-      this.getAllMemberEmail(),          
-     ]);
     
   },
   methods: {
     ...mapActions(["GetPagePermission"]),    
     ...mapActions(["UploadFileAndDeleteOldFile"]),  
     ...mapActions(["DeleteOldFile"]),     
-    ...mapActions(["GetSubscribeMemberByGroupById"]), 
-    ...mapActions(["GetAllMemberEmail"]), 
-    ...mapActions(["AddMemberToGroupById"]),
+    ...mapActions(["GetSubscribeMemberByGroupById"]),
     getCurrentTimeString(ctime) {
       return ctime;
       // const ctime2 = new Date(ctime);
@@ -390,34 +515,6 @@ export default {
 
           }
       },
-    async getAllMemberEmail() {
-        console.log("getAllMemberEmail")
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        const User = new FormData();
-
-        User.append("userid", userData.username);
-        User.append("token", userData.token);
-
-        User.append("selected_id", this.pRowData.id);            
-        User.append("page_name", this.$route.name);
-
-        const response = await this.GetAllMemberEmail(User);
-        if (response.data.status == 'success') {                       
-            this.emailList = response.data.data; 
-            let tmpArray = [];                
-            this.emailList.forEach(element => {
-                    tmpArray.push({
-                        value: element.id,
-                        text: element.email + " [" + element.user_id + "]",
-                    });
-                });             
-            this.optionSubScribeEmail = tmpArray;
-            this.selectedSubScribeEmail = tmpArray[0].value;
-
-        } else {
-
-        }
-    },
     uploadFile(tmpName) {                                    
             this.tmpFileUpload[tmpName] = this.$refs[tmpName].files[0];            
             //console.log(this.tmpFileUpload[tmpName]); 
@@ -572,6 +669,19 @@ export default {
         {
             console.log('addMemberEmail');
             
+            // Validate input
+            if (!this.newMemberEmail || !this.newMemberPassword) {
+                this.$toast({
+                    component: ToastificationContent,
+                    props: {
+                        title: 'Please enter both email and password',
+                        icon: 'AlertTriangleIcon',
+                        variant: 'warning',
+                    },
+                });
+                return;
+            }
+            
             const userData = JSON.parse(localStorage.getItem('userData'));
             
             var headers = {
@@ -580,13 +690,15 @@ export default {
             }
 
             var body = {        
-                id: this.selectedSubScribeEmail,
+                email: this.newMemberEmail,
+                password: this.newMemberPassword,
+                user_id: '', // line_user_id ว่างตามที่ระบุ
                 group_id: this.pRowData.id,
                 page_name: this.$route.name,
             }
 
             let response;
-            await axios.post("api/subscriptiongroup/addMemberToGroupById",body,
+            await axios.post("api/subscriptiongroup/addMemberToGroup",body,
             {
                 headers: {            
                 'Content-Type': 'application/json',
@@ -601,21 +713,145 @@ export default {
             );
         
             if (response.data.status == 'success') {
-                this.getSubscribeMemberByGroupById();
-                this.$emit("refetch-data");
-            }
-            else {
-                this.$toast(
-                {
+                this.$toast({
                     component: ToastificationContent,
                     props: {
-                    title: response.data.message,
-                    icon: 'EditIcon',
-                    variant: 'error',
+                        title: 'Success',
+                        icon: 'CheckIcon',
+                        variant: 'success',
+                        text: 'Mail added to stock successfully',
                     },
+                    autoHideDelay: 3000,
                 });
+                
+        // Clear form
+        this.newMemberEmail = '';
+        this.newMemberPassword = '';
+        this.showNewPassword = false;
+        
+        this.getSubscribeMemberByGroupById();
+        this.$emit("refetch-data");
+      }
+      else {
+        this.$toast(
+        {
+            component: ToastificationContent,
+            props: {
+            title: response.data.message || 'Error',
+            icon: 'EditIcon',
+            variant: 'error',
+            },
+        });
+      }
+      
+},
+    editMemberData(memberRow) {
+        console.log('editMemberData', memberRow);
+        this.isEditMode = true;
+        this.editingMemberId = memberRow.id;
+        this.editingEmail = memberRow.email;
+        this.editingPassword = memberRow.password || '';
+        this.editingLineUserId = memberRow.line_user_id || '';
+    },
+    saveMemberEdit() {
+        console.log('saveMemberEdit');
+        
+        // Validate input
+        if (!this.editingEmail) {
+            this.$toast({
+                component: ToastificationContent,
+                props: {
+                    title: 'Please enter email',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'warning',
+                },
+            });
+            return;
+        }
+        
+        // Call API to update member
+        this.updateMemberData();
+    },
+    async updateMemberData() {
+        console.log('updateMemberData');
+        
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        
+        var headers = {
+            userid: userData.username,
+            token: userData.token,
+        }
+
+        var body = {        
+            id: this.editingMemberId,
+            email: this.editingEmail,
+            password: this.editingPassword,
+            line_user_id: this.editingLineUserId,
+            page_name: this.$route.name,
+        }
+
+        let response;
+        await axios.post("api/subscriptiongroup/updateMemberData",body,
+        {
+            headers: {            
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
             }
+        }).then(
+            resp => 
+            {
+                response = resp;
+            }
+        );
+    
+        if (response.data.status == 'success') {
+            this.$toast({
+                component: ToastificationContent,
+                props: {
+                    title: 'Success',
+                    icon: 'CheckIcon',
+                    variant: 'success',
+                    text: 'Member data updated successfully',
+                },
+                autoHideDelay: 3000,
+            });
             
+            // Clear edit form and refresh data
+            this.isEditMode = false;
+            this.editingMemberId = null;
+            this.editingEmail = '';
+            this.editingPassword = '';
+            this.editingLineUserId = '';
+            
+            this.getSubscribeMemberByGroupById();
+            this.$emit("refetch-data");
+        }
+        else {
+            this.$toast(
+            {
+                component: ToastificationContent,
+                props: {
+                title: response.data.message || 'Error',
+                icon: 'EditIcon',
+                variant: 'error',
+                },
+            });
+        }
+    },
+    cancelEdit() {
+        this.isEditMode = false;
+        this.editingMemberId = null;
+        this.editingEmail = '';
+        this.editingPassword = '';
+        this.editingLineUserId = '';
+        this.showEditPassword = false;
+    },
+    toggleEditPasswordVisibility() {
+        this.showEditPassword = !this.showEditPassword;
+    },
+    toggleNewPasswordVisibility() {
+        this.showNewPassword = !this.showNewPassword;
     },
   },
 };

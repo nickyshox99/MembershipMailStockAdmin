@@ -213,7 +213,7 @@ export default {
   },
   model: {
     event: "update:is-admin-edit-active",
-    subscribeTypeSelected: 0,
+    subscribeTypeSelected: 1, // เปลี่ยนจาก 0 เป็น 1 เพื่อให้เริ่มต้นด้วย subscription type แรก
     subscribeTypeOptions: [{
         value: 0,
         text: '-'
@@ -352,7 +352,7 @@ export default {
       var body = this.pRowData;
       body.page_name = this.$route.name;
       //body.status = this.statusActive ? this.statusActive : 1;
-      body.subscription_type_id = this.subscribeTypeSelected?this.subscribeTypeSelected:0;
+      body.subscription_type_id = this.subscribeTypeSelected || 1; // ถ้าไม่ได้เลือกให้เป็น 1 แทนที่จะเป็น 0
       body.status = this.familyActive;
       
       let response;
@@ -416,7 +416,8 @@ export default {
 
       var body = this.pRowData;
       body.page_name = this.$route.name;
-      body.subscription_type_id = this.subscribeTypeSelected?this.subscribeTypeSelected:0;
+      body.subscription_type_id = this.subscribeTypeSelected || 1; // ถ้าไม่ได้เลือกให้เป็น 1 แทนที่จะเป็น 0
+      body.status = this.familyActive || 1;
       
 
       let response;

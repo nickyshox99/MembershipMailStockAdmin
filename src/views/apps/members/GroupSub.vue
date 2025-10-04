@@ -543,8 +543,11 @@ export default {
       this.isModeEdit = false;
 
       let EmptyRow = {
-        group_name : '-',         
-        subscription_type_id : 0,
+        group_name : '',         
+        subscription_type_id : 1, // เริ่มต้นด้วย subscription type แรกแทนที่จะเป็น 0
+        head_email: '',
+        password: '',
+        status: 1,
         update_by : userData.username,
         update_at : new Date(),
       };
