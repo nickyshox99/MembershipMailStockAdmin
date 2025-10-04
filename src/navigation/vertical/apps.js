@@ -7,10 +7,7 @@ export default [
     title: "Member",
     icon: "UserIcon",
     children: [
-      {
-        title: "Manage Member",
-        route: "apps-members-manage",        
-      },   
+        
       {
         title: "Group Subscription",
         route: "apps-group-sub",        

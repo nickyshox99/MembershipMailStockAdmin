@@ -47,7 +47,7 @@
 
             <div class="divider"></div>
 
-            <div class="email-section">
+            <!-- <div class="email-section">
               <h4 class="email-title">
                 <feather-icon icon="MailIcon" class="title-icon" />
                 Email ที่ใช้ในการสมัคร
@@ -55,7 +55,7 @@
               <div class="email-display">
                 <span class="email-text">{{ selectedSubScribeEmail }}</span>
               </div>
-            </div>
+            </div> -->
 
             <div class="divider"></div>
 
@@ -84,7 +84,7 @@
       @show="resetModalProduct" @hidden="resetModalProduct" @ok="handleOkProductOk" size="sm" :hideHeaderClose="false"
       ok-variant="success" :okTitle="t('YES')" buttonSize="sm" :cancelTitle="t('NO')" footerClass="p-2"
       modal-class="product-modal">
-      <b-row>
+      <!-- <b-row>
         <b-col md="12">
           <b-form-group :label="t('Select Email')" label-for="email-selected">
             <b-input-group class="input-group-merge">
@@ -95,7 +95,7 @@
             </b-input-group>
           </b-form-group>
         </b-col>
-      </b-row>
+      </b-row> -->
 
       <b-row>
         <div class="dialog-content2" style="padding-left: 20px; width: 100%; margin-right: 15px;">
@@ -257,7 +257,7 @@ export default {
     } else {
       await Promise.all([
         this.getProductList(),
-        this.getEmailByLineSourceId(),
+        // this.getEmailByLineSourceId(),
       ]);
     }
   },
@@ -415,23 +415,16 @@ export default {
       const formData = new FormData();
       formData.append("user_id", this.userid);
       formData.append("token", "-");
-      formData.append("line_id", this.lineId);
+      formData.append("line_id", this.sourceUserId);
       formData.append("email", this.selectedSubScribeEmail);
       formData.append("product_id", this.product.id);
       formData.append("note", "");
       formData.append("page_name", this.$route.name);
 
 
-      let response
-      if (this.enableSkipApproval) {
-        // call create + approve ทันที
-        formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"
-        response = await this.CreateAndApproveSubScribeOrder(formData)
-      } else {
-        // flow เดิม: รอ admin อนุมัติ
-        response = await this.CreateSubScribeOrder(formData)
-      }
-
+      formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"
+      response = await this.CreateAndApproveSubScribeOrder(formData)
+     
       if (response.data.status == 'success') {
         this.$toast(
           {
