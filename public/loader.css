@@ -9,11 +9,7 @@ body {
   display: block;
   position: absolute;
 }
-.loading-logo {
-  position: absolute;
-  left: calc(50% - 45px);
-  top: 40%;
-}
+
 .loading {
   position: absolute;
   left: calc(50% - 35px);
