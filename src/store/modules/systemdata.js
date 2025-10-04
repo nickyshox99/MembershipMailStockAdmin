@@ -2154,7 +2154,7 @@ async GetActiveAdminBank({commit}, search) {
         // userid: search.get("userid"),
         // token: search.get("token"),        
         id: inputData.get("id"),
-        email: inputData.get("email"),
+        user_id: inputData.get("user_id"),
         page_name: inputData.get("page_name"),
 
     }
@@ -2497,7 +2497,7 @@ async GetActiveAdminBank({commit}, search) {
 
     var body = {
         id: inputData.get("id"),
-        email: inputData.get("email"),
+        user_id: inputData.get("user_id"),
     }
 
     let response;
