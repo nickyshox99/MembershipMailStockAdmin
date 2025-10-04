@@ -208,6 +208,7 @@ export default {
       userid: '',
       email: '',
       enableSkipApproval: false,
+      sourceUserId: ''
     }
   },
   computed: {
@@ -414,8 +415,10 @@ export default {
 
       const formData = new FormData();
       formData.append("user_id", this.userid);
+      console.log(this.userid);
       formData.append("token", "-");
       formData.append("line_id", this.sourceUserId);
+      console.log(this.sourceUserId);
       formData.append("email", this.selectedSubScribeEmail);
       formData.append("product_id", this.product.id);
       formData.append("note", "");
@@ -423,9 +426,15 @@ export default {
 
 
       formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"
-      response = await this.CreateAndApproveSubScribeOrder(formData)
-     
+      const response = await this.CreateAndApproveSubScribeOrder(formData)
+
+
+
+      console.log(response.data);
+
       if (response.data.status == 'success') {
+
+
         this.$toast(
           {
             component: ToastificationContent,
@@ -435,6 +444,20 @@ export default {
               variant: 'success',
             },
           });
+
+        // const orderId = response.data.orderId || response.data.data?.id || '';
+        const orderId = response.data.order_id || '';
+        console.log('orderId:', orderId);
+        if (orderId) {
+          this.$router.replace(
+            {
+              name: 'confirm-payment',
+              query: { user_id: String(this.sourceUserId), id: String(orderId) }
+            })
+        }
+
+
+
 
         this.showCompleteDialog = true;
       }
