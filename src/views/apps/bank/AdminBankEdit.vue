@@ -717,6 +717,7 @@
               bank_break_enable : this.bankBreakSelected,
               deposit_decimal : this.bankDecimalSelected,
               statusActive : this.statusActive,
+              parent: 0
           }
       
           // console.log(body);
