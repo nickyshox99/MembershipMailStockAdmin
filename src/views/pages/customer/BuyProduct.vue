@@ -8,9 +8,9 @@
       <div class="auth-inner py-2">
         <b-card class="buy-product-card mb-0">
           <div class="logo-section">
-            <vuexy-logo />
+           <img src="/logo_lb2.png" alt="BigaByte Membership" class="logo-image">
             <h2 class="brand-text">
-              BigaByte Membership
+              littlebeem
             </h2>
           </div>
 
@@ -45,7 +45,7 @@
               </div>
             </div>
 
-            <div class="divider"></div>
+            <!-- <div class="divider"></div> -->
 
             <!-- <div class="email-section">
               <h4 class="email-title">
@@ -57,7 +57,7 @@
               </div>
             </div> -->
 
-            <div class="divider"></div>
+            <!-- <div class="divider"></div> -->
 
             <div class="action-section">
               <b-button v-if="product.id != 0" variant="success" class="confirm-btn" @click="confirmProduct()">
@@ -428,10 +428,6 @@ export default {
       formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"
       const response = await this.CreateAndApproveSubScribeOrder(formData)
 
-
-
-      console.log(response.data);
-
       if (response.data.status == 'success') {
 
 
@@ -444,6 +440,7 @@ export default {
               variant: 'success',
             },
           });
+
 
         // const orderId = response.data.orderId || response.data.data?.id || '';
         const orderId = response.data.order_id || '';
@@ -460,6 +457,7 @@ export default {
 
 
         this.showCompleteDialog = true;
+
       }
       else {
         this.$toast(
@@ -505,16 +503,16 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@core/scss/vue/pages/page-auth.scss';
+// @import '@core/scss/vue/pages/page-auth.scss';
 
-// Modern Buy Product Styling - White, Black, Red Theme (Same as RegisterEmail)
+// Modern Buy Product Styling - Pastel Theme
 .buy-product-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
   font-family: 'MiSansMU', sans-serif;
 }
 
@@ -524,7 +522,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #dc3545 0%, #a71e2a 50%, #000000 100%);
+  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
   opacity: 0.05;
   z-index: 1;
 }
@@ -535,8 +533,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(220, 53, 69, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.1) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%);
   z-index: 2;
 }
 
@@ -573,14 +571,32 @@ export default {
   text-align: center;
   margin-bottom: 2rem;
 
+  .logo-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
+    border: 3px solid rgba(255, 182, 193, 0.2);
+    transition: all 0.3s ease;
+    object-fit: cover;
+    background: linear-gradient(135deg, rgba(255, 240, 245, 0.9) 0%, rgba(240, 248, 255, 0.9) 100%);
+    padding: 8px;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 35px rgba(255, 182, 193, 0.4);
+      border-color: rgba(255, 182, 193, 0.3);
+    }
+  }
+
   .brand-text {
-    color: #dc3545 !important;
+    color: #ff69b4 !important;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    text-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+    text-shadow: 0 2px 4px rgba(255, 182, 193, 0.3);
   }
 }
 
@@ -589,7 +605,7 @@ export default {
     margin-bottom: 2rem;
 
     .section-title {
-      color: #000000;
+      color: #87ceeb;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 600;
       font-size: 1.3rem;
@@ -601,20 +617,20 @@ export default {
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: linear-gradient(135deg, rgba(220, 53, 69, 0.08) 0%, rgba(220, 53, 69, 0.02) 100%);
-      border: 2px solid rgba(220, 53, 69, 0.1);
+      background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+      border: 2px solid rgba(255, 182, 193, 0.2);
       border-radius: 20px;
       padding: 2rem;
       margin-bottom: 1.5rem;
       width: 100%;
-      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.1);
+      box-shadow: 0 8px 25px rgba(255, 182, 193, 0.15);
       transition: all 0.3s ease;
       white-space: nowrap;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 35px rgba(220, 53, 69, 0.15);
-        border-color: rgba(220, 53, 69, 0.2);
+        box-shadow: 0 12px 35px rgba(255, 182, 193, 0.25);
+        border-color: rgba(255, 182, 193, 0.3);
       }
 
       .product-info {
@@ -645,7 +661,7 @@ export default {
           text-align: center;
 
           .product-name {
-            color: #2c3e50;
+            color: #000000;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 600;
             font-size: 1.4rem;
@@ -657,7 +673,7 @@ export default {
           }
 
           .product-desc {
-            color: #6c757d;
+            color: #333333;
             font-size: 1rem;
             margin: 0;
             line-height: 1.4;
@@ -672,7 +688,7 @@ export default {
       .select-product-btn {
         width: 100%;
         max-width: 250px;
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+        background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
         border: none !important;
         border-radius: 12px !important;
         padding: 0.75rem 1.5rem !important;
@@ -680,7 +696,7 @@ export default {
         font-weight: 600;
         font-size: 1rem;
         color: #ffffff !important;
-        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
@@ -694,8 +710,8 @@ export default {
 
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4) !important;
-          background: linear-gradient(135deg, #c82333 0%, #bd2130 100%) !important;
+          box-shadow: 0 6px 20px rgba(255, 105, 180, 0.5) !important;
+          background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
         }
 
         &:active {
@@ -712,26 +728,26 @@ export default {
         .no-product-icon {
           width: 48px;
           height: 48px;
-          color: #dc3545;
+          color: #ff69b4;
           margin-bottom: 1rem;
         }
 
         .no-product-text {
-          color: #666666;
+          color: #333333;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 400;
           margin-bottom: 1.5rem;
         }
 
         .select-product-btn {
-          background: linear-gradient(135deg, #dc3545 0%, #a71e2a 100%) !important;
+          background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
           border: none !important;
           border-radius: 12px !important;
           padding: 0.875rem 1.5rem !important;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 500;
           color: #ffffff !important;
-          box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+          box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
@@ -745,18 +761,18 @@ export default {
 
           &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4) !important;
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5) !important;
           }
         }
       }
     }
   }
 
-  .divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, #e9ecef 50%, transparent 100%);
-    margin: 1.5rem 0;
-  }
+  // .divider {
+  //   height: 1px;
+  //   background: linear-gradient(90deg, transparent 0%, rgba(255, 182, 193, 0.3) 50%, transparent 100%);
+  //   margin: 1.5rem 0;
+  // }
 
   .email-section {
     margin-bottom: 2rem;
@@ -796,7 +812,7 @@ export default {
     text-align: center;
 
     .confirm-btn {
-      background: linear-gradient(135deg, #28c76f 0%, #20a55a 100%) !important;
+      background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%) !important;
       border: none !important;
       border-radius: 12px !important;
       padding: 0.875rem 2rem !important;
@@ -804,7 +820,7 @@ export default {
       font-weight: 600;
       font-size: 1rem;
       color: #ffffff !important;
-      box-shadow: 0 4px 15px rgba(40, 199, 111, 0.3);
+      box-shadow: 0 4px 15px rgba(152, 251, 152, 0.4);
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
@@ -818,7 +834,7 @@ export default {
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(40, 199, 111, 0.4) !important;
+        box-shadow: 0 8px 25px rgba(152, 251, 152, 0.5) !important;
       }
     }
   }
@@ -832,7 +848,7 @@ export default {
     .complete-icon {
       width: 64px;
       height: 64px;
-      color: #28c76f;
+      color: #98fb98;
       margin-bottom: 1.5rem;
     }
 
@@ -845,7 +861,7 @@ export default {
     }
 
     .complete-message {
-      color: #666666;
+      color: #333333;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 400;
       font-size: 1rem;
@@ -856,142 +872,192 @@ export default {
 }
 
 // Responsive Design
-@media (max-width: 768px) {
-  .buy-product-card {
-    margin: 1rem;
-    padding: 2rem;
-    border-radius: 20px !important;
-  }
+// @media (max-width: 768px) {
+//   .buy-product-card {
+//     margin: 1rem;
+//     padding: 2rem;
+//     border-radius: 20px !important;
+//   }
 
-  .logo-section .brand-text {
-    font-size: 1.5rem;
-  }
+//   .logo-section {
+//     .logo-image {
+//       width: 100px;
+//       height: 100px;
+//       border-radius: 50%;
+//     }
 
-  .content-section .product-section .product-display {
-    padding: 1rem;
+//     .brand-text {
+//       font-size: 1.5rem;
+//     }
+//   }
 
-    .product-info {
-      margin-bottom: 1rem;
+//   .content-section .product-section .product-display {
+//     padding: 1rem;
 
-      .product-image {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 0.8rem;
-      }
+//     .product-info {
+//       margin-bottom: 1rem;
 
-      .product-details {
-        .product-name {
-          font-size: 1.1rem;
-          margin-bottom: 0.3rem;
-          line-height: 1.2;
-        }
+//       .product-image {
+//         width: 60px;
+//         height: 60px;
+//         margin-bottom: 0.8rem;
+//       }
 
-        .product-desc {
-          font-size: 0.85rem;
-          max-width: 220px;
-          line-height: 1.3;
-        }
-      }
-    }
+//       .product-details {
+//         .product-name {
+//           font-size: 1.1rem;
+//           margin-bottom: 0.3rem;
+//           line-height: 1.2;
+//         }
 
-    .select-product-btn {
-      max-width: 180px;
-      padding: 0.5rem 1rem !important;
-      font-size: 0.85rem;
-    }
-  }
-}
+//         .product-desc {
+//           font-size: 0.85rem;
+//           max-width: 220px;
+//           line-height: 1.3;
+//         }
+//       }
+//     }
 
-@media (max-width: 480px) {
-  .buy-product-card {
-    margin: 0.5rem;
-    padding: 1rem;
-    border-radius: 16px !important;
-  }
+//     .select-product-btn {
+//       max-width: 180px;
+//       padding: 0.5rem 1rem !important;
+//       font-size: 0.85rem;
+//     }
+//   }
+// }
 
-  .logo-section .brand-text {
-    font-size: 1.2rem;
-  }
+// @media (max-width: 480px) {
+//   .buy-product-card {
+//     margin: 0.5rem;
+//     padding: 1rem;
+//     border-radius: 16px !important;
+//   }
 
-  .content-section .product-section .product-display {
-    padding: 0.8rem;
+//   .logo-section {
+//     .logo-image {
+//       width: 80px;
+//       height: 80px;
+//       border-radius: 50%;
+//     }
 
-    .product-info {
-      margin-bottom: 0.8rem;
+//     .brand-text {
+//       font-size: 1.2rem;
+//     }
+//   }
 
-      .product-image {
-        width: 50px;
-        height: 50px;
-        margin-bottom: 0.6rem;
-      }
+//   .content-section .product-section .product-display {
+//     padding: 0.8rem;
 
-      .product-details {
-        .product-name {
-          font-size: 1rem;
-          margin-bottom: 0.2rem;
-          line-height: 1.1;
-        }
+//     .product-info {
+//       margin-bottom: 0.8rem;
 
-        .product-desc {
-          font-size: 0.8rem;
-          max-width: 200px;
-          line-height: 1.2;
-        }
-      }
-    }
+//       .product-image {
+//         width: 50px;
+//         height: 50px;
+//         margin-bottom: 0.6rem;
+//       }
 
-    .select-product-btn {
-      max-width: 160px;
-      padding: 0.4rem 0.8rem !important;
-      font-size: 0.8rem;
-    }
-  }
+//       .product-details {
+//         .product-name {
+//           font-size: 1rem;
+//           margin-bottom: 0.2rem;
+//           line-height: 1.1;
+//         }
 
-  .content-section .product-section .section-title {
-    font-size: 1.1rem;
-  }
-}
+//         .product-desc {
+//           font-size: 0.8rem;
+//           max-width: 200px;
+//           line-height: 1.2;
+//         }
+//       }
+//     }
 
-// Modal Styling
+//     .select-product-btn {
+//       max-width: 160px;
+//       padding: 0.4rem 0.8rem !important;
+//       font-size: 0.8rem;
+//     }
+//   }
+
+//   .content-section .product-section .section-title {
+//     font-size: 1.1rem;
+//   }
+// }
+
+// Modal Styling - Modern Design
 .product-modal {
   .modal-dialog {
-    margin: 1rem auto;
-    max-width: 500px;
+    margin: 2rem auto;
+    max-width: 600px;
   }
 
   .modal-content {
-    border-radius: 12px;
+    border-radius: 24px;
     border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 
+      0 25px 50px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+      border-radius: 24px;
+      pointer-events: none;
+    }
   }
 
   .modal-header {
-    border-bottom: 1px solid #e9ecef;
-    padding: 1rem 1.5rem;
-    color: white;
-    border-radius: 12px 12px 0 0;
+    border-bottom: 1px solid rgba(255, 182, 193, 0.2);
+    padding: 2rem 2rem 1.5rem;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.1) 100%);
+    border-radius: 24px 24px 0 0;
+    position: relative;
+    z-index: 1;
 
     .modal-title {
-      font-weight: 600;
-      font-size: 1.1rem;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: #000000;
+      font-family: 'MiSansMU', sans-serif;
+      text-align: center;
+      margin: 0;
     }
 
     .close {
-      color: white;
+      color: #ff69b4;
       opacity: 0.8;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: 300;
       padding: 0;
       margin: 0;
       line-height: 1;
       position: absolute;
-      right: 1rem;
+      right: 2rem;
       top: 50%;
       transform: translateY(-50%);
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &:hover {
         opacity: 1;
-        color: white;
+        color: #ff1493;
+        transform: translateY(-50%) scale(1.1);
+        background: rgba(255, 255, 255, 1);
       }
 
       &:focus {
@@ -1002,170 +1068,325 @@ export default {
   }
 
   .modal-body {
-    padding: 1.5rem;
-    background: #f8f9fa;
+    padding: 2rem;
+    background: transparent;
+    position: relative;
+    z-index: 1;
+    
+    .dialog-title {
+      color: #000000;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 600;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
   }
 
   .modal-footer {
-    border-top: 1px solid #e9ecef;
-    padding: 1rem 1.5rem;
-    background: white;
-    border-radius: 0 0 12px 12px;
+    border-top: 1px solid rgba(255, 182, 193, 0.2);
+    padding: 1.5rem 2rem 2rem;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.05) 0%, rgba(135, 206, 235, 0.05) 100%);
+    border-radius: 0 0 24px 24px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
 
     .btn {
-      border-radius: 8px;
-      font-weight: 500;
-      padding: 0.5rem 1.5rem;
+      border-radius: 16px;
+      font-weight: 600;
+      padding: 0.875rem 2rem;
+      font-family: 'MiSansMU', sans-serif;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      min-width: 120px;
+      
+      &.btn-success {
+        background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%);
+        border: none;
+        color: white;
+        box-shadow: 0 6px 20px rgba(152, 251, 152, 0.3);
+        
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 30px rgba(152, 251, 152, 0.4);
+        }
+      }
+      
+      &.btn-secondary {
+        background: linear-gradient(135deg, #ffb6c1 0%, #ffa0b4 100%);
+        border: none;
+        color: white;
+        box-shadow: 0 6px 20px rgba(255, 182, 193, 0.3);
+        
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+        }
+      }
     }
   }
 }
 
-// Confirm Modal Styling
+// Confirm Modal Styling - Pastel Theme
 .modal-content {
-  border-radius: 12px;
+  border-radius: 24px;
   border: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+    border-radius: 24px;
+    pointer-events: none;
+  }
 }
 
 .modal-header {
-  border-bottom: 1px solid #e9ecef;
-  padding: 1rem 1.5rem;
-  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid rgba(255, 182, 193, 0.2);
+  padding: 2rem 2rem 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.1) 100%);
+  border-radius: 24px 24px 0 0;
+  position: relative;
+  z-index: 1;
 
   &.bg-success {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
-    color: white !important;
+    background: linear-gradient(135deg, rgba(152, 251, 152, 0.2) 0%, rgba(144, 238, 144, 0.2) 100%) !important;
+    color: #000000 !important;
 
     .modal-title {
-      font-weight: 600;
-      font-size: 1.1rem;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: #000000;
+      font-family: 'MiSansMU', sans-serif;
     }
 
     .close {
-      color: white;
+      color: #ff69b4;
       opacity: 0.8;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: 300;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
 
       &:hover {
         opacity: 1;
-        color: white;
+        color: #ff1493;
+        transform: scale(1.1);
+        background: rgba(255, 255, 255, 1);
       }
     }
   }
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 2rem;
   text-align: center;
   font-size: 1rem;
   line-height: 1.5;
+  color: #333333;
+  font-family: 'MiSansMU', sans-serif;
+  position: relative;
+  z-index: 1;
 }
 
 .modal-footer {
-  border-top: 1px solid #e9ecef;
-  padding: 1rem 1.5rem;
-  background: white;
-  border-radius: 0 0 12px 12px;
+  border-top: 1px solid rgba(255, 182, 193, 0.2);
+  padding: 1.5rem 2rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.05) 0%, rgba(135, 206, 235, 0.05) 100%);
+  border-radius: 0 0 24px 24px;
   justify-content: center;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 1rem;
 
   .btn {
-    border-radius: 8px;
-    font-weight: 500;
-    padding: 0.5rem 1.5rem;
+    border-radius: 16px;
+    font-weight: 600;
+    padding: 0.875rem 2rem;
     margin: 0 0.25rem;
-    min-width: 80px;
+    min-width: 120px;
+    font-family: 'MiSansMU', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
 
     &.btn-success {
-      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%);
       border: none;
-      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+      color: white;
+      box-shadow: 0 6px 20px rgba(152, 251, 152, 0.3);
 
       &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(152, 251, 152, 0.4);
       }
     }
 
     &.btn-secondary {
-      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      background: linear-gradient(135deg, #ffb6c1 0%, #ffa0b4 100%);
       border: none;
-      box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+      color: white;
+      box-shadow: 0 6px 20px rgba(255, 182, 193, 0.3);
 
       &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
       }
     }
   }
 }
 
-// Modal Grid Styling
+// Modal Grid Styling - Modern Cards
 .content-container {
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: auto;
   width: 100%;
+  padding: 1rem;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 182, 193, 0.1);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 105, 180, 0.3);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(255, 105, 180, 0.5);
+    }
+  }
 }
 
 .grid-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   width: 100%;
   padding: 0;
-
 }
 
 .grid-item {
   width: 100%;
-  color: grey;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 8px;
+  color: #000000;
+  border: 2px solid rgba(255, 182, 193, 0.3);
+  border-radius: 20px;
+  padding: 1.5rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(15px);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+    border-radius: 20px;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
 
   &:hover {
-    border-color: #dc3545;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
+    border-color: #ff69b4;
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+      0 15px 35px rgba(255, 105, 180, 0.2),
+      0 5px 15px rgba(255, 105, 180, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    
+    &::before {
+      background: linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(135, 206, 235, 0.1) 100%);
+    }
   }
 
   &.selected {
-    background-color: antiquewhite;
-    border-color: #dc3545;
-    color: black;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.25) 0%, rgba(135, 206, 235, 0.15) 100%);
+    border-color: #ff69b4;
+    color: #000000;
+    box-shadow: 
+      0 10px 30px rgba(255, 105, 180, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    
+    &::before {
+      background: linear-gradient(135deg, rgba(255, 182, 193, 0.3) 0%, rgba(135, 206, 235, 0.2) 100%);
+    }
   }
 
   img {
-    width: 50px;
-    height: 50px;
-    border-radius: 4px;
+    width: 70px;
+    height: 70px;
+    border-radius: 16px;
     flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    object-fit: cover;
+  }
+
+  &:hover img {
+    transform: scale(1.1) rotate(2deg);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
   }
 
   .product-info {
     flex: 1;
     text-align: left;
+    position: relative;
+    z-index: 1;
 
     span {
       display: block;
-      font-size: 12px;
-      font-weight: 500;
-      margin-bottom: 2px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
       word-wrap: break-word;
+      color: #000000;
+      font-family: 'MiSansMU', sans-serif;
+      line-height: 1.3;
 
       &:last-child {
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 400;
+        color: #333333;
+        line-height: 1.4;
       }
     }
   }

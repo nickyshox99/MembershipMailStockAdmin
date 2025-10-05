@@ -102,12 +102,7 @@ export default [
   //   component: () => import('@/views/apps/report/ReportSMS.vue'),
   // },
 
-  // Members
-  {
-    path: '/apps/members/manage',
-    name: 'apps-members-manage',
-    component: () => import('@/views/apps/members/MemberManage.vue'),
-  },
+  // Members - Removed apps-members-manage route
   {
     path: '/apps/members/groupsub',
     name: 'apps-group-sub',

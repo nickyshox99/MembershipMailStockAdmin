@@ -1842,7 +1842,7 @@ async GetActiveAdminBank({commit}, search) {
     var body = {
         oldFilePath : inputData.get("oldFilePath"), 
         order_id : inputData.get("order_id"), 
-        email : inputData.get("email"), 
+        user_id : inputData.get("user_id"), 
     }
 
     // console.log(search.get("file"));
