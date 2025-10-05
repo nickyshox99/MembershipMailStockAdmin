@@ -352,6 +352,7 @@
   import { useUtils as useI18nUtils } from '@core/libs/i18n'
   
   export default {
+    name: 'AdminBankEdit',
     components: {
       BCardCode,
       BRow,

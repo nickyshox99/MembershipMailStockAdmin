@@ -2,8 +2,11 @@
 
   <div>
 
-    <admin-bank-edit :isEditFormActive="isEditFormActive" :pRowData="selectedDataRow" :isModeEdit="isModeEdit"
+    <AdminBankEdit :isEditFormActive="isEditFormActive" :pRowData="selectedDataRow" :isModeEdit="isModeEdit"
       @refetch-data="search" @close-edit-form="closeEditForm" />
+
+    <AdminBankQRUpload :isActive="isQRModalActive" :rowData="selectedRowForQR" @refetch-data="search"
+      @close="closeQRModal" />
 
 
     <Transition name="fade" mode="out-in">
@@ -53,17 +56,17 @@
             enabled: false,
             externalQuery: searchTerm
           }" :select-options="{
-  enabled: true,
-  selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
-  selectionInfoClass: 'custom-class',
-  selectionText: 'rows selected',
-  clearSelectionText: 'clear',
-  disableSelectInfo: true, // disable the select info panel on top
-  selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-}" :pagination-options="{
-  enabled: true,
-  perPage: pageLength
-}" theme="polar-bear">
+            enabled: true,
+            selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
+            selectionInfoClass: 'custom-class',
+            selectionText: 'rows selected',
+            clearSelectionText: 'clear',
+            disableSelectInfo: true, // disable the select info panel on top
+            selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
+          }" :pagination-options="{
+            enabled: true,
+            perPage: pageLength
+          }" theme="polar-bear">
           <template slot="table-row" slot-scope="props">
 
             <!-- Column: Name -->
@@ -164,13 +167,16 @@ import axios from "axios";
 import { ref, onUnmounted } from '@vue/composition-api'
 
 import AdminBankEdit from './AdminBankEdit.vue';
+import AdminBankQRUpload from './AdminBankQRUpload.vue'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 import { useUtils as useI18nUtils } from '@core/libs/i18n'
 
 export default {
+  name: 'AdminBank',
   components: {
     AdminBankEdit,
+    AdminBankQRUpload,
     BRow,
     BCol,
     VueGoodTable,
@@ -259,6 +265,9 @@ export default {
       isEditFormActive: false,
       selectedDataRow: blankData,
       isModeEdit: false,
+      // olm เพิ่มครับ
+      isQRModalActive: false,
+      selectedRowForQR: null,
     }
   },
   computed: {
@@ -520,6 +529,17 @@ export default {
 
 
     },
+    //solm add
+    addQR(row) {
+      console.log('Add QR for account:', row.bank_acc_number);
+      this.selectedRowForQR = row;
+      this.isQRModalActive = true;
+    },
+    closeQRModal() {
+      this.isQRModalActive = false;
+      this.selectedRowForQR = null;
+    },
+
   },
 }
 </script>
