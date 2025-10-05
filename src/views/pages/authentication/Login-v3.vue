@@ -4,25 +4,25 @@
     <div class="login-background">
       <div class="background-overlay"></div>
     </div>
-    
+
     <div class="auth-wrapper auth-v1 px-2">
       <div class="auth-inner py-2">
         <!-- Login Card -->
         <b-card class="login-card mb-0">
           <!-- Logo Section -->
           <div class="logo-section">
-            
-              <!-- <vuexy-logo /> -->
-              <h2 class="brand-text text-primary ml-1">
-                BigaByte Membership
-              </h2>
-            
+
+            <!-- <vuexy-logo /> -->
+            <h2 class="brand-text text-primary ml-1">
+              BigaByte Membership
+            </h2>
+
           </div>
 
           <!-- Welcome Section -->
           <div class="welcome-section">
             <b-card-title class="welcome-title mb-1">
-              ยินดีต้อนรับเข้าสู่ระบบจัดการสมาชิก! 
+              ยินดีต้อนรับเข้าสู่ระบบจัดการสมาชิก!
             </b-card-title>
             <b-card-text class="welcome-subtitle mb-2">
               กรุณาเข้าระบบด้วยแอคเคาท์ของคุณ
@@ -32,29 +32,16 @@
           <!-- Form Section -->
           <div class="form-section">
             <validation-observer ref="loginValidation">
-              <b-form
-                class="auth-login-form"
-                @submit.prevent
-              >
+              <b-form class="auth-login-form" @submit.prevent>
                 <!-- Username Field -->
                 <b-form-group class="form-group-custom">
                   <label for="username" class="form-label">
                     <i class="fas fa-user form-icon"></i>
                     ผู้ใช้งาน
                   </label>
-                  <validation-provider
-                    #default="{ errors }"
-                    name="username"
-                    rules="required"
-                  >
-                    <b-form-input
-                      id="username"
-                      v-model="username"
-                      :state="errors.length > 0 ? false:null"
-                      name="username"
-                      placeholder="กรุณาใส่ชื่อผู้ใช้งาน"
-                      class="form-input-custom"
-                    />
+                  <validation-provider #default="{ errors }" name="username" rules="required">
+                    <b-form-input id="username" v-model="username" :state="errors.length > 0 ? false : null"
+                      name="username" placeholder="กรุณาใส่ชื่อผู้ใช้งาน" class="form-input-custom" />
                     <small class="text-danger error-message">{{ errors[0] }}</small>
                   </validation-provider>
                 </b-form-group>
@@ -65,34 +52,21 @@
                     <i class="fas fa-lock form-icon"></i>
                     รหัสผ่าน
                   </label>
-                  <validation-provider
-                    #default="{ errors }"
-                    name="password"
-                    rules="required"
-                  >
+                  <validation-provider #default="{ errors }" name="password" rules="required">
                     <b-input-group class="input-group-custom">
-                      <b-form-input
-                        id="password"
-                        v-model="password"
-                        :state="errors.length > 0 ? false:null"
-                        :type="passwordFieldType"
-                        name="password"
-                        placeholder="กรุณาใส่รหัสผ่าน"
-                        class="form-input-custom"
-                      />
+                      <b-form-input id="password" v-model="password" :state="errors.length > 0 ? false : null"
+                        :type="passwordFieldType" name="password" placeholder="กรุณาใส่รหัสผ่าน"
+                        class="form-input-custom" />
                       <b-input-group-append is-text class="">
-                        <feather-icon
-                          class="cursor-pointer toggle-icon"
-                          :icon="passwordToggleIcon"
-                          @click="togglePasswordVisibility"
-                        />
+                        <feather-icon class="cursor-pointer toggle-icon" :icon="passwordToggleIcon"
+                          @click="togglePasswordVisibility" />
                       </b-input-group-append>
                     </b-input-group>
                     <small class="text-danger error-message">{{ errors[0] }}</small>
                   </validation-provider>
                 </b-form-group>
 
-                
+
                 <!-- <b-form-group>
                   <div class="d-flex justify-content-between">
                     <label for="google-auth">รหัสกูเกิ้ล</label>
@@ -136,13 +110,7 @@
 
                 <!-- Submit Button -->
                 <div class="submit-section">
-                  <b-button
-                    type="submit"
-                    variant="primary"
-                    block
-                    class="login-button"
-                    @click="validationForm"
-                  >
+                  <b-button type="submit" variant="primary" block class="login-button" @click="validationForm">
                     <i class="fas fa-sign-in-alt button-icon"></i>
                     เข้าสู่ระบบ
                   </b-button>
@@ -163,7 +131,7 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton,BCard
+  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, BCard
 } from 'bootstrap-vue'
 import { required, email } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
@@ -222,45 +190,41 @@ export default {
       return this.sideImg
     },
   },
-  async created(){
+  async created() {
 
     // const User = new FormData();
     // let response = await this.GetTime(User);
     // console.log(response.data);
 
     // const time = Math.floor(Date.now() / 1000 / 30);    
-    
 
-    
-    
+
+
+
   },
   methods: {
     ...mapActions(["LogIn"]),
     ...mapActions(["CheckGoogleAuthen"]),
-    ...mapActions(["GetTime"]),    
-    ...mapActions(["GetGoogleAuthen"]),   
-    
+    ...mapActions(["GetTime"]),
+    ...mapActions(["GetGoogleAuthen"]),
+
     async validationForm() {
       let successValidate = false;
       await this.$refs.loginValidation.validate().then(
-      success => 
-      {
-        if (success) 
-        {
-          successValidate = true;          
-        }
-      });
+        success => {
+          if (success) {
+            successValidate = true;
+          }
+        });
 
 
-      if (successValidate) 
-      {        
+      if (successValidate) {
         const User = new FormData();
         User.append("userid", this.username);
-        User.append("password", this.password);        
+        User.append("password", this.password);
         User.append("otp", this.otp);
 
-        try 
-        {
+        try {
           // const time = Math.floor(Date.now() / 1000 / 30);
           // console.log(time);
           // let response3 = await this.GetGoogleAuthen(User);
@@ -268,41 +232,39 @@ export default {
           // return;
 
           let response2 = await this.CheckGoogleAuthen(User);
-          if (response2.data.status=='success') 
-          {
+          if (response2.data.status == 'success') {
             let response = await this.LogIn(User);
             // console.log(response);          
-            
-            if (response.data.status=='success') 
-            {
-              
+
+            if (response.data.status == 'success') {
+
               const { can, rules } = new AbilityBuilder();
               can('manage', 'all');
-                          
+
               this.$ability.update(rules);
 
               const userData = {
-                id : response.data.id,
-                email : this.username,
-                username : this.username,
-                fullName : response.data.fullName,
-                token : response.data.token,
-                creatAt : response.data.createAt,
-                expireAt : response.data.expireAt,              
-                am_rank : response.data.am_rank,
-                am_group : response.data.am_group,              
+                id: response.data.id,
+                email: this.username,
+                username: this.username,
+                fullName: response.data.fullName,
+                token: response.data.token,
+                creatAt: response.data.createAt,
+                expireAt: response.data.expireAt,
+                am_rank: response.data.am_rank,
+                am_group: response.data.am_group,
                 role: response.data.am_group_name,
-                ability : rules,
+                ability: rules,
                 avatar: "/img/13-small.d796bffd.png",
-                extras : {
-                  eCommerceCartItemsCount : 0
+                extras: {
+                  eCommerceCartItemsCount: 0
                 },
-                defaultPage:response.data.defaultPage??''
+                defaultPage: response.data.defaultPage ?? ''
               };
-              
-              localStorage.setItem('userData', JSON.stringify(userData));     
-              localStorage.setItem(useJwt.jwtConfig.storageTokenKeyName,JSON.stringify({token:response.data.token}));
-              localStorage.setItem(useJwt.jwtConfig.storageRefreshTokenKeyName,JSON.stringify({token:response.data.token}));
+
+              localStorage.setItem('userData', JSON.stringify(userData));
+              localStorage.setItem(useJwt.jwtConfig.storageTokenKeyName, JSON.stringify({ token: response.data.token }));
+              localStorage.setItem(useJwt.jwtConfig.storageRefreshTokenKeyName, JSON.stringify({ token: response.data.token }));
 
               this.$toast({
                 component: ToastificationContent,
@@ -316,31 +278,28 @@ export default {
                 autoHideDelay: 3000,
               })
 
-                            
-              if (response.data.defaultPage!='') {
-                await this.$router.push({name:response.data.defaultPage});
+
+              if (response.data.defaultPage != '') {
+                await this.$router.push({ path: '/apps/orders/ordercheckedpayment' });
               }
-              else
-              {
-                await this.$router.push({name:'apps-members-manage'});
+              else {
+                await this.$router.push({ path: '/apps/orders/ordercheckedpayment' });
               }
-              
+
             }
-            else
-            {
+            else {
               this.$toast(
-              {
-                component: ToastificationContent,
-                props: {
-                  title: response.data.message,
-                  icon: 'EditIcon',
-                  variant: 'error',
-                },
-              });
+                {
+                  component: ToastificationContent,
+                  props: {
+                    title: response.data.message,
+                    icon: 'EditIcon',
+                    variant: 'error',
+                  },
+                });
             }
           }
-          else
-          {
+          else {
             this.$toast(
               {
                 component: ToastificationContent,
@@ -354,10 +313,10 @@ export default {
 
           // if (response.data.status=='success') 
           //   {
-              
+
           //     const { can, rules } = new AbilityBuilder();
           //     can('manage', 'all');
-                          
+
           //     this.$ability.update(rules);
 
           //     const userData = {
@@ -377,7 +336,7 @@ export default {
           //         eCommerceCartItemsCount : 0
           //       }
           //     };
-              
+
           //     localStorage.setItem('userData', JSON.stringify(userData));     
           //     localStorage.setItem(useJwt.jwtConfig.storageTokenKeyName,JSON.stringify({token:response.data.token}));
           //     localStorage.setItem(useJwt.jwtConfig.storageRefreshTokenKeyName,JSON.stringify({token:response.data.token}));
@@ -409,23 +368,22 @@ export default {
           //     });
           //   }
 
-          
-        } 
-        catch (error) 
-        {
+
+        }
+        catch (error) {
           this.$toast(
-          {
-            component: ToastificationContent,
-            props: {
-              title: error.message,
-              icon: 'EditIcon',
-              variant: 'error',
-            },
-          });
+            {
+              component: ToastificationContent,
+              props: {
+                title: error.message,
+                icon: 'EditIcon',
+                variant: 'error',
+              },
+            });
         }
 
       }
-      
+
     },
   },
 }
@@ -490,6 +448,7 @@ export default {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -500,14 +459,14 @@ export default {
 .logo-section {
   text-align: center;
   margin-bottom: 2rem;
-  
+
   .brand-logo {
     text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    
+
     .brand-text {
       font-family: 'MiSansMU', sans-serif;
       font-weight: 600;
@@ -523,7 +482,7 @@ export default {
 .welcome-section {
   text-align: center;
   margin-bottom: 2rem;
-  
+
   .welcome-title {
     font-family: 'MiSansMU', sans-serif;
     font-weight: 500;
@@ -531,7 +490,7 @@ export default {
     color: #000000;
     margin-bottom: 0.5rem;
   }
-  
+
   .welcome-subtitle {
     font-family: 'MiSansMU', sans-serif;
     font-weight: 400;
@@ -545,7 +504,7 @@ export default {
   .auth-login-form {
     .form-group-custom {
       margin-bottom: 1.5rem;
-      
+
       .form-label {
         font-family: 'MiSansMU', sans-serif;
         font-weight: 500;
@@ -554,14 +513,14 @@ export default {
         display: flex;
         align-items: center;
         font-size: 0.9rem;
-        
+
         .form-icon {
           margin-right: 0.5rem;
           color: #dc3545;
           width: 16px;
         }
       }
-      
+
       .form-input-custom {
         border: 2px solid #000000;
         border-radius: 12px;
@@ -571,19 +530,19 @@ export default {
         transition: all 0.3s ease;
         background: #ffffff;
         color: #000000;
-        
+
         &:focus {
           border-color: #dc3545;
           box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
           background: white;
         }
-        
+
         &::placeholder {
           color: #666666;
           font-family: 'MiSansMU', sans-serif;
         }
       }
-      
+
       .input-group-custom {
         .password-toggle {
           background: transparent;
@@ -591,18 +550,18 @@ export default {
           border-left: none;
           border-radius: 0 12px 12px 0;
           padding: 0.75rem;
-          
+
           .toggle-icon {
             color: #dc3545;
             transition: color 0.3s ease;
-            
+
             &:hover {
               color: #a71e2a;
             }
           }
         }
       }
-      
+
       .error-message {
         font-family: 'MiSansMU', sans-serif;
         font-size: 0.8rem;
@@ -616,7 +575,7 @@ export default {
 // Submit Section
 .submit-section {
   margin-top: 2rem;
-  
+
   .login-button {
     background: linear-gradient(135deg, #dc3545 0%, #a71e2a 100%);
     border: 2px solid #000000;
@@ -630,17 +589,17 @@ export default {
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
     color: #ffffff;
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
       background: linear-gradient(135deg, #a71e2a 0%, #dc3545 100%);
     }
-    
+
     &:active {
       transform: translateY(0);
     }
-    
+
     .button-icon {
       margin-right: 0.5rem;
     }
@@ -654,11 +613,11 @@ export default {
     padding: 2rem;
     border-radius: 15px !important;
   }
-  
+
   .logo-section .brand-logo .brand-text {
     font-size: 1.5rem;
   }
-  
+
   .welcome-section .welcome-title {
     font-size: 1.3rem;
   }
@@ -669,7 +628,7 @@ export default {
     margin: 0.5rem;
     padding: 1.5rem;
   }
-  
+
   .form-section .auth-login-form .form-group-custom {
     margin-bottom: 1.25rem;
   }
@@ -679,7 +638,7 @@ export default {
 .login-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-  
+
   &::after {
     content: '';
     display: inline-block;
@@ -705,12 +664,14 @@ export default {
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
 }
 </style>
-

@@ -8,7 +8,7 @@
       <div class="auth-inner">
         <b-card class="confirm-payment-card mb-0">
           <div class="logo-section">
-            <vuexy-logo />
+            <img src="/logo_lb2.png" alt="BigaByte Membership" class="logo-image">
             <h2 class="brand-text">
               BigaByte Membership
             </h2>
@@ -37,18 +37,27 @@
 
               <div class="divider"></div>
 
-              <!-- Email Info -->
-              <div class="email-section">
-                <h4 class="email-title">
-                  <feather-icon icon="MailIcon" class="title-icon" />
-                  Email ที่ใช้ในการสมัคร
+              <!-- LINE Profile Info -->
+              <div class="userid-section">
+                <h4 class="userid-title">
+                  <feather-icon icon="UserIcon" class="title-icon" />
+                  ข้อมูลผู้ใช้ LINE
                 </h4>
-                <div class="email-display">
-                  <span class="email-text">{{ orderData.email }}</span>
+                <div class="userid-display">
+                  <div class="line-profile">
+                    <img v-if="lineProfile.picture_url" :src="lineProfile.picture_url" class="line-avatar" alt="LINE Avatar" />
+                    <div v-else class="line-avatar-placeholder">
+                      <feather-icon icon="UserIcon" class="placeholder-icon" />
+                    </div>
+                    <div class="line-info">
+                      <span class="line-name">{{ lineProfile.display_name || 'ไม่ระบุชื่อ' }}</span>
+                      <span class="line-id">{{ orderData.user_id }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="divider"></div>
+              <!-- <div class="divider"></div> -->
 
               <!-- Payment Info -->
               <div v-if="!showCompleteDialog && !showSlipCorrect" class="payment-section">
@@ -69,7 +78,7 @@
                 </div>
               </div>
 
-              <div class="divider"></div>
+              <!-- <div class="divider"></div> -->
 
               <!-- Slip Upload -->
               <div v-if="!showCompleteDialog && !showSlipCorrect" class="slip-section">
@@ -141,7 +150,7 @@ import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
   BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton,BCard,BAvatar
 } from 'bootstrap-vue'
-import { required, email } from '@validations'
+import { required, user_id } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -194,7 +203,7 @@ export default {
       sideImg: require('@/assets/images/pages/login-v3.png'),
       // validation rulesimport store from '@/store/index'
       required,
-      email:'',
+      user_id:'',
       lineId:'',
       avatarImgUrl: require('@/assets/images/avatars/4.png'),
       displayName:'',
@@ -202,9 +211,10 @@ export default {
       showErrorParam: false,
       showCompleteDialog: false,
       showSlipCorrect: false,
-      orderData: { id: 0, product_name: '', email: '', subscription_img: '' },
+      orderData: { id: 0, product_name: '', user_id: '', subscription_img: '' },
       bankData: { bank_name: '', bank_acc_number: '', bank_acc_name: '', bank_ico: '' },
       slip_file_url: '',
+      lineProfile: { display_name: '', picture_url: '' },
     }
   },
   computed: {
@@ -239,18 +249,29 @@ export default {
       formData.append("token", "-");
       formData.append("page_name", this.$route.name);
       formData.append("id", this.$route.query.id || "");
-      formData.append("email", this.$route.query.email || "");
+      formData.append("user_id", this.$route.query.user_id || "");
       
       const response = await this.GetOrderData(formData);
       console.log('API Response:', response);
+      
       if (response && response.data && response.data.status=='success') 
       {         
           if (response.data.data && response.data.data.length > 0) {
             this.orderData = response.data.data[0];
             this.bankData = response.data.bank_data || {};
             this.slip_file_url = response.data.slip_file_url || '';
+            
+            // Extract LINE profile data from order data
+            this.lineProfile = {
+              display_name: this.orderData.line_display_name || '',
+              picture_url: this.orderData.line_profile_url || ''
+            };
+            
             console.log('Order Data:', this.orderData);
             console.log('Bank Data:', this.bankData);
+            console.log('LINE Profile:', this.lineProfile);
+            console.log('LINE Display Name:', this.orderData.line_display_name);
+            console.log('LINE Picture URL:', this.orderData.line_profile_url);
           } else {
             this.showErrorParam = true;
           }
@@ -258,11 +279,15 @@ export default {
       else
       {
           this.showErrorParam = true;
+          const errorMessage = (response && response.data && response.data.message) || 
+                              (response && response.message) || 
+                              'ไม่พบข้อมูลคำสั่งซื้อ';
+          
           this.$toast(
             {
               component: ToastificationContent,
               props: {
-                title: (response && response.data && response.data.message) || 'ไม่พบข้อมูลคำสั่งซื้อ',
+                title: errorMessage,
                 icon: 'EditIcon',
                 variant: 'error',
               },
@@ -275,6 +300,19 @@ export default {
       const fileInput = this.$refs[type];
       if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
+        
+        // Check if file exists and is valid
+        if (!file || !file.name) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'ไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ใหม่',
+              icon: 'AlertCircleIcon',
+              variant: 'error',
+            },
+          });
+          return;
+        }
         
         // Validate file type (only images)
         if (!file.type.startsWith('image/')) {
@@ -308,6 +346,19 @@ export default {
     async submitFile(type, file){
       console.log('submitFile', type, file);
       
+      // Validate file before processing
+      if (!file || !file.name || !file.size) {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'ไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ใหม่',
+            icon: 'AlertCircleIcon',
+            variant: 'error',
+          },
+        });
+        return;
+      }
+      
       try {
         // Generate safe filename
         const fileExtension = file.name.split('.').pop().toLowerCase();
@@ -317,7 +368,7 @@ export default {
         formData.append("userid", "-");
         formData.append("token", "-");
         formData.append("order_id", this.orderData.id);
-        formData.append("email", this.orderData.email);
+        formData.append("user_id", this.orderData.user_id);
         formData.append("tofilename", safeFilename);
         formData.append("file", file);
         formData.append("oldFilePath", this.slip_file_url || "");
@@ -330,6 +381,7 @@ export default {
         });
         
         const response = await this.UploadFileAndDeleteOldFile(formData);
+        console.log('Upload response:', response);
         
         if (response && response.data && response.data.status === 'success') {
           this.slip_file_url = response.data.url;
@@ -343,11 +395,15 @@ export default {
             },
           });
         } else {
-          console.error('Upload failed:', response.data);
+          console.error('Upload failed:', response);
+          const errorMessage = (response && response.data && response.data.message) || 
+                              (response && response.message) || 
+                              'อัปโหลดสลิปล้มเหลว';
+          
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: (response && response.data && response.data.message) || 'อัปโหลดสลิปล้มเหลว',
+              title: errorMessage,
               icon: 'AlertCircleIcon',
               variant: 'error',
             },
@@ -385,17 +441,18 @@ export default {
       formData.append("userid", "-");
       formData.append("token", "-");
       formData.append("order_id", this.orderData.id);
-      formData.append("email", this.orderData.email);
+      formData.append("user_id", this.orderData.user_id);
       formData.append("slip_file_url", this.slip_file_url);
       
       console.log('Sending payment confirmation with:', {
         order_id: this.orderData.id,
-        email: this.orderData.email,
+        user_id: this.orderData.user_id,
         slip_file_url: this.slip_file_url
       });
       
       const response = await this.PaymentOrderWithSlip(formData);
       console.log('Payment confirmation response:', response);
+      
       if (response && response.data && response.data.status=='success') 
       {         
           this.showCompleteDialog = true;
@@ -411,11 +468,15 @@ export default {
       }
       else
       {
+          const errorMessage = (response && response.data && response.data.message) || 
+                              (response && response.message) || 
+                              'ยืนยันการชำระเงินล้มเหลว';
+          
           this.$toast(
             {
               component: ToastificationContent,
               props: {
-                title: (response && response.data && response.data.message) || 'ยืนยันการชำระเงินล้มเหลว',
+                title: errorMessage,
                 icon: 'AlertCircleIcon',
                 variant: 'error',
               },
@@ -425,6 +486,19 @@ export default {
     async deleteSlip(){
       console.log('deleteSlip');
       console.log('Current slip_file_url:', this.slip_file_url);
+      
+      // Check if there's a file to delete
+      if (!this.slip_file_url || this.slip_file_url === '') {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'ไม่มีไฟล์ให้ลบ',
+            icon: 'AlertCircleIcon',
+            variant: 'warning',
+          },
+        });
+        return;
+      }
       
       // Store the current URL for API call
       const currentSlipUrl = this.slip_file_url;
@@ -438,12 +512,12 @@ export default {
         formData.append("userid", "-");
         formData.append("token", "-");
         formData.append("order_id", this.orderData.id);
-        formData.append("email", this.orderData.email);
+        formData.append("user_id", this.orderData.user_id);
         formData.append("oldFilePath", currentSlipUrl);
         
         console.log('Sending delete request with:', {
           order_id: this.orderData.id,
-          email: this.orderData.email,
+          user_id: this.orderData.user_id,
           oldFilePath: currentSlipUrl
         });
         
@@ -460,14 +534,18 @@ export default {
             },
           });
         } else {
-          console.error('Delete failed:', response.data);
+          console.error('Delete failed:', response);
           // Restore the URL if delete failed
           this.slip_file_url = currentSlipUrl;
+          
+          const errorMessage = (response && response.data && response.data.message) || 
+                              (response && response.message) || 
+                              'ลบสลิปล้มเหลว';
           
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: (response && response.data && response.data.message) || 'ลบสลิปล้มเหลว',
+              title: errorMessage,
               icon: 'AlertCircleIcon',
               variant: 'error',
             },
@@ -495,14 +573,14 @@ export default {
 <style lang="scss">
 @import '@core/scss/vue/pages/page-auth.scss';
 
-// Modern Confirm Payment Styling - White, Black, Red Theme
+// Modern Confirm Payment Styling - Pastel Theme
 .confirm-payment-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
   font-family: 'MiSansMU', sans-serif;
 }
 
@@ -512,7 +590,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #dc3545 0%, #a71e2a 50%, #000000 100%);
+  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
   opacity: 0.05;
   z-index: 1;
 }
@@ -523,8 +601,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(220, 53, 69, 0.1) 0%, transparent 50%),
-              radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.1) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%);
   z-index: 2;
 }
 
@@ -559,15 +637,33 @@ export default {
 .logo-section {
   text-align: center;
   margin-bottom: 2rem;
+
+  .logo-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
+    border: 3px solid rgba(255, 182, 193, 0.2);
+    transition: all 0.3s ease;
+    object-fit: cover;
+    background: linear-gradient(135deg, rgba(255, 240, 245, 0.9) 0%, rgba(240, 248, 255, 0.9) 100%);
+    padding: 8px;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 35px rgba(255, 182, 193, 0.4);
+      border-color: rgba(255, 182, 193, 0.3);
+    }
+  }
   
   .brand-text {
-    color: #dc3545 !important;
+    color: #ff69b4 !important;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    text-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+    text-shadow: 0 2px 4px rgba(255, 182, 193, 0.3);
   }
 }
 
@@ -580,12 +676,12 @@ export default {
       .error-icon {
         width: 64px;
         height: 64px;
-        color: #dc3545;
+        color: #ff69b4;
         margin-bottom: 1.5rem;
       }
       
       .error-title {
-        color: #dc3545;
+        color: #ff69b4;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.4rem;
@@ -608,7 +704,7 @@ export default {
       margin-bottom: 2rem;
       
       .section-title {
-        color: #000000;
+        color: #87ceeb;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.3rem;
@@ -620,16 +716,30 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        background: rgba(220, 53, 69, 0.05);
-        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+        border: 2px solid rgba(255, 182, 193, 0.2);
+        border-radius: 20px;
         padding: 1.5rem;
+        box-shadow: 0 8px 25px rgba(255, 182, 193, 0.15);
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 35px rgba(255, 182, 193, 0.25);
+          border-color: rgba(255, 182, 193, 0.3);
+        }
         
         .product-image {
           width: 80px;
           height: 80px;
-          border-radius: 12px;
+          border-radius: 16px;
           margin-bottom: 1rem;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+          transition: transform 0.3s ease;
+
+          &:hover {
+            transform: scale(1.05);
+          }
         }
         
         .product-name {
@@ -645,14 +755,14 @@ export default {
     
     .divider {
       height: 1px;
-      background: linear-gradient(90deg, transparent 0%, #e9ecef 50%, transparent 100%);
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 182, 193, 0.3) 50%, transparent 100%);
       margin: 1.5rem 0;
     }
     
-    .email-section {
+    .userid-section {
       margin-bottom: 2rem;
       
-      .email-title {
+      .userid-title {
         color: #000000;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
@@ -665,20 +775,88 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #dc3545;
+          color: #ff69b4;
         }
       }
       
-      .email-display {
-        background: rgba(220, 53, 69, 0.05);
-        border-radius: 12px;
+      .userid-display {
+        background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+        border: 2px solid rgba(255, 182, 193, 0.2);
+        border-radius: 16px;
         padding: 1rem;
+        box-shadow: 0 4px 15px rgba(255, 182, 193, 0.1);
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(255, 182, 193, 0.15);
+          border-color: rgba(255, 182, 193, 0.3);
+        }
         
-        .email-text {
-          color: #000000;
-          font-family: 'MiSansMU', sans-serif;
-          font-weight: 500;
-          font-size: 1rem;
+        .line-profile {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          
+          .line-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+            
+            &:hover {
+              transform: scale(1.05);
+            }
+          }
+          
+          .line-avatar-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(135, 206, 235, 0.2) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            
+            .placeholder-icon {
+              width: 24px;
+              height: 24px;
+              color: #ff69b4;
+            }
+            
+            &:hover {
+              transform: scale(1.05);
+            }
+          }
+          
+          .line-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            
+            .line-name {
+              color: #000000;
+              font-family: 'MiSansMU', sans-serif;
+              font-weight: 600;
+              font-size: 1.1rem;
+              line-height: 1.3;
+            }
+            
+            .line-id {
+              color: #666666;
+              font-family: 'MiSansMU', sans-serif;
+              font-weight: 400;
+              font-size: 0.9rem;
+              line-height: 1.2;
+              word-break: break-all;
+              word-wrap: break-word;
+              max-width: 200px;
+            }
+          }
         }
       }
     }
@@ -699,16 +877,25 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #dc3545;
+          color: #ff69b4;
         }
       }
       
       .bank-info {
         display: flex;
         align-items: center;
-        background: rgba(220, 53, 69, 0.05);
-        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+        border: 2px solid rgba(255, 182, 193, 0.2);
+        border-radius: 20px;
         padding: 1.5rem;
+        box-shadow: 0 8px 25px rgba(255, 182, 193, 0.15);
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 35px rgba(255, 182, 193, 0.25);
+          border-color: rgba(255, 182, 193, 0.3);
+        }
         
         .bank-logo {
           margin-right: 1.5rem;
@@ -716,8 +903,13 @@ export default {
           .bank-icon {
             width: 80px;
             height: 80px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+
+            &:hover {
+              transform: scale(1.05);
+            }
           }
         }
         
@@ -733,7 +925,7 @@ export default {
           }
           
           .bank-account {
-            color: #dc3545;
+            color: #ff69b4;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 500;
             font-size: 1.1rem;
@@ -767,7 +959,7 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #dc3545;
+          color: #ff69b4;
         }
       }
       
@@ -786,28 +978,29 @@ export default {
           margin-top: 1rem;
           
           .delete-btn {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
             border: none !important;
-            border-radius: 8px !important;
+            border-radius: 12px !important;
             padding: 0.5rem 1rem !important;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 500;
             font-size: 0.9rem;
             color: #ffffff !important;
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            
+
             .button-icon {
               width: 14px;
               height: 14px;
               margin-right: 0.5rem;
             }
-            
+
             &:hover {
-              transform: translateY(-1px);
-              box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
+              transform: translateY(-2px);
+              box-shadow: 0 6px 20px rgba(255, 105, 180, 0.5) !important;
+              background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
             }
           }
         }
@@ -819,9 +1012,15 @@ export default {
         .file-input {
           margin-bottom: 1rem;
           padding: 0.5rem;
-          border: 2px dashed #dc3545;
-          border-radius: 8px;
-          background: rgba(220, 53, 69, 0.05);
+          border: 2px dashed #ff69b4;
+          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+          transition: all 0.3s ease;
+
+          &:hover {
+            border-color: #ff1493;
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.1) 100%);
+          }
         }
         
         .upload-hint {
@@ -840,7 +1039,7 @@ export default {
       text-align: center;
       
       .confirm-btn {
-        background: linear-gradient(135deg, #28c76f 0%, #20a55a 100%) !important;
+        background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%) !important;
         border: none !important;
         border-radius: 12px !important;
         padding: 0.875rem 2rem !important;
@@ -848,21 +1047,21 @@ export default {
         font-weight: 600;
         font-size: 1rem;
         color: #ffffff !important;
-        box-shadow: 0 4px 15px rgba(40, 199, 111, 0.3);
+        box-shadow: 0 4px 15px rgba(152, 251, 152, 0.4);
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
         margin: 0 auto;
-        
+
         .button-icon {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
         }
-        
+
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(40, 199, 111, 0.4) !important;
+          box-shadow: 0 8px 25px rgba(152, 251, 152, 0.5) !important;
         }
       }
     }
@@ -878,7 +1077,7 @@ export default {
         .correct-icon {
           width: 64px;
           height: 64px;
-          color: #28c76f;
+          color: #98fb98;
           margin-bottom: 1.5rem;
         }
         
@@ -913,9 +1112,17 @@ export default {
     border-radius: 20px !important;
   }
   
-  .logo-section .brand-text {
-    font-size: 1.5rem;
-  }
+  // .logo-section {
+  //   .logo-image {
+  //     width: 100px;
+  //     height: 100px;
+  //     border-radius: 50%;
+  //   }
+
+  //   .brand-text {
+  //     font-size: 1.5rem;
+  //   }
+  // }
   
   .content-section .main-content .payment-section .bank-info {
     flex-direction: column;
@@ -935,9 +1142,17 @@ export default {
     border-radius: 16px !important;
   }
   
-  .logo-section .brand-text {
-    font-size: 1.3rem;
-  }
+  // .logo-section {
+  //   .logo-image {
+  //     width: 80px;
+  //     height: 80px;
+  //     border-radius: 50%;
+  //   }
+
+  //   .brand-text {
+  //     font-size: 1.3rem;
+  //   }
+  // }
   
   .content-section .main-content .product-info-section .section-title {
     font-size: 1.1rem;
