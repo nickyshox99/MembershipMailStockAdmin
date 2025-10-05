@@ -198,6 +198,23 @@
             }" theme="polar-bear">
               <template slot="table-row" slot-scope="props">
 
+                <span v-if="props.column.field === 'user_id2'"> 
+                  <b-badge v-if="props.row.user_id!=null && props.row.user_id!=''"
+                    pill
+                    :variant="resolveStatusVariant(0)"
+                    class="text-capitalize"
+                  >
+                    {{t(props.row.user_id)}}
+                  </b-badge> 
+                  <b-badge v-if="props.row.user_id==null || props.row.user_id==''"
+                    pill
+                    :variant="resolveStatusVariant(1)"
+                    class="text-capitalize"
+                  >
+                    ว่าง
+                  </b-badge>                    
+                </span>
+
                 <span v-if="props.column.field === 'action'">
                     <b-badge  style="cursor: pointer; margin-right:2px" variant="info" @click="editMemberData(props.row)">
                       <feather-icon icon="EditIcon" size="16" class="mr-0 mr-sm-50" />
@@ -303,6 +320,13 @@ export default {
     Ripple,
   },
   computed: {   
+    resolveStatusVariant() {      
+        const statusColor = {                    
+          1: 'light-success',
+          0: 'light-danger',          
+        }
+        return data => statusColor[data]
+    },
     direction() {
       if (store.state.appConfig.isRTL) {
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
@@ -330,9 +354,13 @@ export default {
           field: 'email',
         },
         {
+          label: t('Free/Used',),
+          field: 'user_id2',
+        },
+        {
           label: t('Action'),
           field: 'action',
-          width: '5%',
+          width: '15%',
         },
       ];
     return {
@@ -751,7 +779,7 @@ export default {
         this.editingMemberId = memberRow.id;
         this.editingEmail = memberRow.email;
         this.editingPassword = memberRow.password || '';
-        this.editingLineUserId = memberRow.line_user_id || '';
+        this.editingLineUserId = memberRow.user_id || '';
     },
     saveMemberEdit() {
         console.log('saveMemberEdit');
@@ -786,7 +814,7 @@ export default {
             id: this.editingMemberId,
             email: this.editingEmail,
             password: this.editingPassword,
-            line_user_id: this.editingLineUserId,
+            user_id: this.editingLineUserId,
             page_name: this.$route.name,
         }
 

@@ -101,7 +101,7 @@
                   {{ formatDateAssigned(props.row.update_at)}}
                 </span>           
             </span>
-
+         
             <span v-if="props.column.field === 'expire_date2'">        
                   <b-badge
                       v-if="props.row.diffDay==null"
