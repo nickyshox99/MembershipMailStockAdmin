@@ -22,7 +22,7 @@ const router = new VueRouter({
     return { x: 0, y: 0 }
   },
   routes: [
-    { path: '/', redirect: { name: 'apps-members-manage' } },
+    { path: '/', redirect: { name: 'order-wait-payment' } },
     ...apps,
     ...dashboard,    
     ...pages,      
@@ -128,7 +128,7 @@ const router = new VueRouter({
 
   // Redirect if logged in
   if (to.meta.redirectIfLoggedIn && isLoggedIn) {
-    next({name: 'apps-members-manage'});
+    next({name: 'order-wait-payment'});
   }
 
   return next()
