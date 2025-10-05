@@ -418,6 +418,7 @@ export default {
       console.log(this.userid);
       formData.append("token", "-");
       formData.append("line_id", this.sourceUserId);
+      console.log(this.sourceUserId);
       formData.append("email", this.selectedSubScribeEmail);
       formData.append("product_id", this.product.id);
       formData.append("note", "");
@@ -428,6 +429,8 @@ export default {
       const response = await this.CreateAndApproveSubScribeOrder(formData)
 
       if (response.data.status == 'success') {
+
+
         this.$toast(
           {
             component: ToastificationContent,
@@ -438,23 +441,23 @@ export default {
             },
           });
 
-        // Get order ID from response
-        const orderId = response.data.order_id || response.data.data?.id;
-        console.log('Order created with ID:', orderId);
-        console.log('Full response:', response.data);
-        
+
+        // const orderId = response.data.orderId || response.data.data?.id || '';
+        const orderId = response.data.order_id || '';
+        console.log('orderId:', orderId);
         if (orderId) {
-          this.$router.replace({
-            name: 'confirm-payment',
-            query: { 
-              id: String(orderId),
-              user_id: String(this.userid)
-            }
-          });
-        } else {
-          console.log('No order ID found, showing complete dialog');
-          this.showCompleteDialog = true;
+          this.$router.replace(
+            {
+              name: 'confirm-payment',
+              query: { user_id: String(this.sourceUserId), id: String(orderId) }
+            })
         }
+
+
+
+
+        this.showCompleteDialog = true;
+
       }
       else {
         this.$toast(

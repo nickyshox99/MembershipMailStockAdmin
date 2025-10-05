@@ -3,7 +3,7 @@
     <div class="confirm-payment-background">
       <div class="background-overlay"></div>
     </div>
-    
+
     <div class="auth-wrapper auth-v1">
       <div class="auth-inner">
         <b-card class="confirm-payment-card mb-0">
@@ -27,7 +27,7 @@
             <!-- Main Content -->
             <div v-if="!showErrorParam" class="main-content">
               <!-- Product Info -->
-              <div v-if="orderData.id!=0" class="product-info-section">
+              <div v-if="orderData.id != 0" class="product-info-section">
                 <h3 class="section-title">สินค้าที่ซื้อ</h3>
                 <div class="product-display">
                   <img :src="orderData.subscription_img" class="product-image" />
@@ -36,6 +36,7 @@
               </div>
 
               <div class="divider"></div>
+
 
               <!-- LINE Profile Info -->
               <div class="userid-section">
@@ -54,6 +55,7 @@
                       <span class="line-id">{{ orderData.user_id }}</span>
                     </div>
                   </div>
+
                 </div>
               </div>
 
@@ -65,10 +67,10 @@
                   <feather-icon icon="CreditCardIcon" class="title-icon" />
                   ชำระเงินโดยโอนเข้าบัญชี
                 </h4>
-                
+
                 <div class="bank-info">
                   <div class="bank-logo">
-                    <img :src="'/images/bank_bg/'+bankData.bank_ico" class="bank-icon" />
+                    <img :src="'/images/bank_bg/' + bankData.bank_ico" class="bank-icon" />
                   </div>
                   <div class="bank-details">
                     <h5 class="bank-name">{{ bankData.bank_name }}</h5>
@@ -86,7 +88,7 @@
                   <feather-icon icon="UploadIcon" class="title-icon" />
                   อัปโหลดสลิปการโอนเงิน
                 </h4>
-                
+
                 <div v-if="slip_file_url != ''" class="slip-display">
                   <img :src="slip_file_url" class="slip-image" alt="Slip Image" />
                   <div class="slip-actions">
@@ -96,8 +98,8 @@
                     </b-button>
                   </div>
                 </div>
-                
-                <div v-if="slip_file_url==''" class="slip-upload">
+
+                <div v-if="slip_file_url == ''" class="slip-upload">
                   <input type="file" @change="uploadFile('slip')" ref="slip" class="file-input" accept="image/*" />
                   <p class="upload-hint">กรุณาเลือกไฟล์รูปภาพ (JPG, PNG) ขนาดไม่เกิน 5MB</p>
                 </div>
@@ -148,9 +150,11 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton,BCard,BAvatar
+  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, BCard, BAvatar
 } from 'bootstrap-vue'
+
 import { required, user_id } from '@validations'
+
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -185,15 +189,15 @@ export default {
   },
   mixins: [togglePasswordVisibility],
   setup(props, {
-        emit
-    }) {
+    emit
+  }) {
 
-        const { t } = useI18nUtils();
+    const { t } = useI18nUtils();
 
-        return {            
-            t,
-        }
-    }, 
+    return {
+      t,
+    }
+  },
   data() {
     return {
       status: '',
@@ -203,11 +207,13 @@ export default {
       sideImg: require('@/assets/images/pages/login-v3.png'),
       // validation rulesimport store from '@/store/index'
       required,
+
       user_id:'',
       lineId:'',
+
       avatarImgUrl: require('@/assets/images/avatars/4.png'),
-      displayName:'',
-      errorMessage:'',
+      displayName: '',
+      errorMessage: '',
       showErrorParam: false,
       showCompleteDialog: false,
       showSlipCorrect: false,
@@ -231,9 +237,12 @@ export default {
     },
   },
   async created() {
-    this.getOrderData();
+    // this.getOrderData();
+    const { id, user_id } = this.$route.query || {};
+    if (!id || !user_id) { this.showErrorParam = true; return; }
+    await this.getOrderData();
   },
-  methods: {    
+  methods: {
     ...mapActions(["GetOrderData"]),
     ...mapActions(["PaymentOrderWithSlip"]),
     ...mapActions(["UploadFileAndDeleteOldFile"]),
@@ -241,7 +250,7 @@ export default {
     async validationForm() {
 
     },
-    async getOrderData(){
+    async getOrderData() {
       console.log('getOrderData');
 
       const formData = new FormData();
@@ -250,7 +259,7 @@ export default {
       formData.append("page_name", this.$route.name);
       formData.append("id", this.$route.query.id || "");
       formData.append("user_id", this.$route.query.user_id || "");
-      
+    
       const response = await this.GetOrderData(formData);
       console.log('API Response:', response);
       
@@ -292,14 +301,16 @@ export default {
                 variant: 'error',
               },
             });
+
       }
     },
-    async uploadFile(type){
+    async uploadFile(type) {
       console.log('uploadFile', type);
-      
+
       const fileInput = this.$refs[type];
       if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
+
         
         // Check if file exists and is valid
         if (!file || !file.name) {
@@ -314,6 +325,7 @@ export default {
           return;
         }
         
+
         // Validate file type (only images)
         if (!file.type.startsWith('image/')) {
           this.$toast({
@@ -326,7 +338,7 @@ export default {
           });
           return;
         }
-        
+
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
           this.$toast({
@@ -339,13 +351,13 @@ export default {
           });
           return;
         }
-        
+
         await this.submitFile(type, file);
       }
     },
-    async submitFile(type, file){
+    async submitFile(type, file) {
       console.log('submitFile', type, file);
-      
+
       // Validate file before processing
       if (!file || !file.name || !file.size) {
         this.$toast({
@@ -359,11 +371,12 @@ export default {
         return;
       }
       
+
       try {
         // Generate safe filename
         const fileExtension = file.name.split('.').pop().toLowerCase();
         const safeFilename = `slip_${this.orderData.id}_${Date.now()}.${fileExtension}`;
-        
+
         const formData = new FormData();
         formData.append("userid", "-");
         formData.append("token", "-");
@@ -372,20 +385,22 @@ export default {
         formData.append("tofilename", safeFilename);
         formData.append("file", file);
         formData.append("oldFilePath", this.slip_file_url || "");
-        
+
         console.log('Uploading file:', {
           originalName: file.name,
           safeFilename: safeFilename,
           fileSize: file.size,
           fileType: file.type
         });
-        
+
         const response = await this.UploadFileAndDeleteOldFile(formData);
+
         console.log('Upload response:', response);
         
+
         if (response && response.data && response.data.status === 'success') {
           this.slip_file_url = response.data.url;
-          
+
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -421,7 +436,7 @@ export default {
         });
       }
     },
-    async confirmPayment(){
+    async confirmPayment() {
       console.log('confirmPayment');
 
       // Check if slip is uploaded
@@ -443,15 +458,16 @@ export default {
       formData.append("order_id", this.orderData.id);
       formData.append("user_id", this.orderData.user_id);
       formData.append("slip_file_url", this.slip_file_url);
-      
+
       console.log('Sending payment confirmation with:', {
         order_id: this.orderData.id,
         user_id: this.orderData.user_id,
         slip_file_url: this.slip_file_url
       });
-      
+
       const response = await this.PaymentOrderWithSlip(formData);
       console.log('Payment confirmation response:', response);
+
       
       if (response && response.data && response.data.status=='success') 
       {         
@@ -481,11 +497,13 @@ export default {
                 variant: 'error',
               },
             });
+ain
       }
     },
-    async deleteSlip(){
+    async deleteSlip() {
       console.log('deleteSlip');
       console.log('Current slip_file_url:', this.slip_file_url);
+
       
       // Check if there's a file to delete
       if (!this.slip_file_url || this.slip_file_url === '') {
@@ -500,13 +518,14 @@ export default {
         return;
       }
       
+
       // Store the current URL for API call
       const currentSlipUrl = this.slip_file_url;
-      
+
       // Clear the UI immediately for better UX
       this.slip_file_url = '';
       console.log('Slip file URL cleared immediately');
-      
+
       try {
         const formData = new FormData();
         formData.append("userid", "-");
@@ -514,16 +533,16 @@ export default {
         formData.append("order_id", this.orderData.id);
         formData.append("user_id", this.orderData.user_id);
         formData.append("oldFilePath", currentSlipUrl);
-        
+
         console.log('Sending delete request with:', {
           order_id: this.orderData.id,
           user_id: this.orderData.user_id,
           oldFilePath: currentSlipUrl
         });
-        
+
         const response = await this.CustomerDeleteOldFile(formData);
         console.log('Delete response:', response);
-        
+
         if (response && response.data && response.data.status === 'success') {
           this.$toast({
             component: ToastificationContent,
@@ -537,11 +556,13 @@ export default {
           console.error('Delete failed:', response);
           // Restore the URL if delete failed
           this.slip_file_url = currentSlipUrl;
+
           
           const errorMessage = (response && response.data && response.data.message) || 
                               (response && response.message) || 
                               'ลบสลิปล้มเหลว';
           
+
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -555,7 +576,7 @@ export default {
         console.error('Delete error:', error);
         // Restore the URL if delete failed
         this.slip_file_url = currentSlipUrl;
-        
+
         this.$toast({
           component: ToastificationContent,
           props: {
@@ -601,8 +622,10 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
+
   background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
               radial-gradient(circle at 70% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%);
+
   z-index: 2;
 }
 
@@ -628,6 +651,7 @@ export default {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -637,6 +661,7 @@ export default {
 .logo-section {
   text-align: center;
   margin-bottom: 2rem;
+
 
   .logo-image {
     width: 120px;
@@ -656,6 +681,7 @@ export default {
     }
   }
   
+
   .brand-text {
     color: #ff69b4 !important;
     font-family: 'MiSansMU', sans-serif;
@@ -671,7 +697,7 @@ export default {
   .error-section {
     text-align: center;
     padding: 2rem 0;
-    
+
     .error-content {
       .error-icon {
         width: 64px;
@@ -679,7 +705,7 @@ export default {
         color: #ff69b4;
         margin-bottom: 1.5rem;
       }
-      
+
       .error-title {
         color: #ff69b4;
         font-family: 'MiSansMU', sans-serif;
@@ -687,7 +713,7 @@ export default {
         font-size: 1.4rem;
         margin-bottom: 1rem;
       }
-      
+
       .error-message {
         color: #666666;
         font-family: 'MiSansMU', sans-serif;
@@ -698,11 +724,11 @@ export default {
       }
     }
   }
-  
+
   .main-content {
     .product-info-section {
       margin-bottom: 2rem;
-      
+
       .section-title {
         color: #87ceeb;
         font-family: 'MiSansMU', sans-serif;
@@ -711,7 +737,7 @@ export default {
         margin-bottom: 1.5rem;
         text-align: center;
       }
-      
+
       .product-display {
         display: flex;
         flex-direction: column;
@@ -720,6 +746,7 @@ export default {
         border: 2px solid rgba(255, 182, 193, 0.2);
         border-radius: 20px;
         padding: 1.5rem;
+
         box-shadow: 0 8px 25px rgba(255, 182, 193, 0.15);
         transition: all 0.3s ease;
 
@@ -729,6 +756,7 @@ export default {
           border-color: rgba(255, 182, 193, 0.3);
         }
         
+
         .product-image {
           width: 80px;
           height: 80px;
@@ -741,7 +769,7 @@ export default {
             transform: scale(1.05);
           }
         }
-        
+
         .product-name {
           color: #000000;
           font-family: 'MiSansMU', sans-serif;
@@ -752,16 +780,18 @@ export default {
         }
       }
     }
-    
+
     .divider {
       height: 1px;
       background: linear-gradient(90deg, transparent 0%, rgba(255, 182, 193, 0.3) 50%, transparent 100%);
       margin: 1.5rem 0;
     }
+
     
     .userid-section {
       margin-bottom: 2rem;
       
+
       .userid-title {
         color: #000000;
         font-family: 'MiSansMU', sans-serif;
@@ -770,7 +800,7 @@ export default {
         margin-bottom: 1rem;
         display: flex;
         align-items: center;
-        
+
         .title-icon {
           width: 18px;
           height: 18px;
@@ -778,6 +808,7 @@ export default {
           color: #ff69b4;
         }
       }
+
       
       .userid-display {
         background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
@@ -857,13 +888,14 @@ export default {
               max-width: 200px;
             }
           }
+
         }
       }
     }
-    
+
     .payment-section {
       margin-bottom: 2rem;
-      
+
       .payment-title {
         color: #000000;
         font-family: 'MiSansMU', sans-serif;
@@ -872,7 +904,7 @@ export default {
         margin-bottom: 1.5rem;
         display: flex;
         align-items: center;
-        
+
         .title-icon {
           width: 18px;
           height: 18px;
@@ -880,7 +912,7 @@ export default {
           color: #ff69b4;
         }
       }
-      
+
       .bank-info {
         display: flex;
         align-items: center;
@@ -888,6 +920,7 @@ export default {
         border: 2px solid rgba(255, 182, 193, 0.2);
         border-radius: 20px;
         padding: 1.5rem;
+
         box-shadow: 0 8px 25px rgba(255, 182, 193, 0.15);
         transition: all 0.3s ease;
 
@@ -897,9 +930,10 @@ export default {
           border-color: rgba(255, 182, 193, 0.3);
         }
         
+
         .bank-logo {
           margin-right: 1.5rem;
-          
+
           .bank-icon {
             width: 80px;
             height: 80px;
@@ -912,10 +946,10 @@ export default {
             }
           }
         }
-        
+
         .bank-details {
           flex: 1;
-          
+
           .bank-name {
             color: #000000;
             font-family: 'MiSansMU', sans-serif;
@@ -923,7 +957,7 @@ export default {
             font-size: 1.2rem;
             margin-bottom: 0.5rem;
           }
-          
+
           .bank-account {
             color: #ff69b4;
             font-family: 'MiSansMU', sans-serif;
@@ -931,7 +965,7 @@ export default {
             font-size: 1.1rem;
             margin-bottom: 0.25rem;
           }
-          
+
           .bank-holder {
             color: #666666;
             font-family: 'MiSansMU', sans-serif;
@@ -942,10 +976,10 @@ export default {
         }
       }
     }
-    
+
     .slip-section {
       margin-bottom: 2rem;
-      
+
       .slip-title {
         color: #000000;
         font-family: 'MiSansMU', sans-serif;
@@ -954,7 +988,7 @@ export default {
         margin-bottom: 1.5rem;
         display: flex;
         align-items: center;
-        
+
         .title-icon {
           width: 18px;
           height: 18px;
@@ -962,10 +996,10 @@ export default {
           color: #ff69b4;
         }
       }
-      
+
       .slip-display {
         text-align: center;
-        
+
         .slip-image {
           max-width: 100%;
           max-height: 400px;
@@ -973,10 +1007,10 @@ export default {
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
           margin-bottom: 1rem;
         }
-        
+
         .slip-actions {
           margin-top: 1rem;
-          
+
           .delete-btn {
             background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
             border: none !important;
@@ -1005,10 +1039,10 @@ export default {
           }
         }
       }
-      
+
       .slip-upload {
         text-align: center;
-        
+
         .file-input {
           margin-bottom: 1rem;
           padding: 0.5rem;
@@ -1022,7 +1056,7 @@ export default {
             background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.1) 100%);
           }
         }
-        
+
         .upload-hint {
           color: #666666;
           font-family: 'MiSansMU', sans-serif;
@@ -1034,10 +1068,10 @@ export default {
         }
       }
     }
-    
+
     .action-section {
       text-align: center;
-      
+
       .confirm-btn {
         background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%) !important;
         border: none !important;
@@ -1065,14 +1099,15 @@ export default {
         }
       }
     }
-    
+
     .complete-section,
     .slip-correct-section {
       text-align: center;
       padding: 2rem 0;
-      
+
       .complete-content,
       .slip-correct-content {
+
         .complete-icon,
         .correct-icon {
           width: 64px;
@@ -1080,7 +1115,7 @@ export default {
           color: #98fb98;
           margin-bottom: 1.5rem;
         }
-        
+
         .complete-title,
         .correct-title {
           color: #000000;
@@ -1089,7 +1124,7 @@ export default {
           font-size: 1.4rem;
           margin-bottom: 1rem;
         }
-        
+
         .complete-message,
         .correct-message {
           color: #666666;
@@ -1127,7 +1162,7 @@ export default {
   .content-section .main-content .payment-section .bank-info {
     flex-direction: column;
     text-align: center;
-    
+
     .bank-logo {
       margin-right: 0;
       margin-bottom: 1rem;
