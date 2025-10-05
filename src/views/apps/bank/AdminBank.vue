@@ -2,8 +2,11 @@
 
   <div>
 
-    <admin-bank-edit :isEditFormActive="isEditFormActive" :pRowData="selectedDataRow" :isModeEdit="isModeEdit"
+    <AdminBankEdit :isEditFormActive="isEditFormActive" :pRowData="selectedDataRow" :isModeEdit="isModeEdit"
       @refetch-data="search" @close-edit-form="closeEditForm" />
+
+    <AdminBankQRUpload :isActive="isQRModalActive" :rowData="selectedRowForQR" @refetch-data="search"
+      @close="closeQRModal" />
 
 
     <Transition name="fade" mode="out-in">
@@ -13,23 +16,21 @@
           <b-row>
             <b-col cols="4" md="3" class="d-flex align-items-center justify-content-start">
               <b-button variant="primary" @click="search">
-              <feather-icon
-                icon="SearchIcon"              
-              />            
-              {{t('Load')}}
+                <feather-icon icon="SearchIcon" />
+                {{ t('Load') }}
               </b-button>
 
-               &nbsp;
+              &nbsp;
               <b-button variant="success" @click="addnew">
                 <feather-icon icon="PlusCircleIcon" />
-                {{t('Add')}}
-                 </b-button>
+                {{ t('Add') }}
+              </b-button>
 
               &nbsp;
               <b-button variant="danger" @click="confirmDelete">
                 <feather-icon icon="TrashIcon" />
-                {{t('Delete')}}
-                 </b-button>
+                {{ t('Delete') }}
+              </b-button>
 
             </b-col>
 
@@ -52,20 +53,20 @@
         <!-- table -->
         <vue-good-table ref="my-table" :columns="columns" :rows="rows" :rtl="direction" :line-numbers="true"
           :search-options="{
-  enabled: false,
-  externalQuery: searchTerm
-}" :select-options="{
-  enabled: true,
-  selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
-  selectionInfoClass: 'custom-class',
-  selectionText: 'rows selected',
-  clearSelectionText: 'clear',
-  disableSelectInfo: true, // disable the select info panel on top
-  selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-}" :pagination-options="{
-  enabled: true,
-  perPage: pageLength
-}" theme="polar-bear">
+            enabled: false,
+            externalQuery: searchTerm
+          }" :select-options="{
+            enabled: true,
+            selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
+            selectionInfoClass: 'custom-class',
+            selectionText: 'rows selected',
+            clearSelectionText: 'clear',
+            disableSelectInfo: true, // disable the select info panel on top
+            selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
+          }" :pagination-options="{
+            enabled: true,
+            perPage: pageLength
+          }" theme="polar-bear">
           <template slot="table-row" slot-scope="props">
 
             <!-- Column: Name -->
@@ -80,10 +81,21 @@
 
             <!-- </span> -->
 
+            <!-- Column: QR Code -->
+            <span v-else-if="props.column.field === 'qr_code'">
+              <img 
+                v-if="props.row.qr" 
+                :src="getQRImageUrl(props.row.qr)" 
+                alt="QR Code" 
+                style="max-width: 50px; max-height: 50px; border: 1px solid #ddd; padding: 2px;"
+              />
+              <span v-else class="text-muted">No QR</span>
+            </span>
+
             <!-- Column: Status -->
             <span v-else-if="props.column.field === 'status2'">
-              <b-badge :variant="statusVariant(props.row.status==1?'Success':'Warning')">
-                {{ t(props.row.status==1?'On':'Off')}}
+              <b-badge :variant="statusVariant(props.row.status == 1 ? 'Success' : 'Warning')">
+                {{ t(props.row.status == 1 ? 'On' : 'Off') }}
               </b-badge>
             </span>
 
@@ -94,15 +106,20 @@
                   <template v-slot:button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="text-body align-middle mr-25" />
                   </template>
-                  
+
                   <b-dropdown-item @click="edititem(props.row)">
                     <feather-icon icon="Edit2Icon" class="mr-50" />
-                    <span>{{t('Edit')}}</span>
+                    <span>{{ t('Edit') }}</span>
+                  </b-dropdown-item>
+
+                  <b-dropdown-item @click="addQR(props.row)">
+                    <feather-icon icon="ImageIcon" class="mr-50" />
+                    <span>{{ t('Add QR') }}</span>
                   </b-dropdown-item>
 
                   <b-dropdown-item @click="deleteitem(props.row)">
                     <feather-icon icon="TrashIcon" class="mr-50" />
-                    <span>{{t('Delete')}}</span>
+                    <span>{{ t('Delete') }}</span>
                   </b-dropdown-item>
                 </b-dropdown>
               </span>
@@ -119,11 +136,11 @@
             <div class="d-flex justify-content-between flex-wrap">
               <div class="d-flex align-items-center mb-0 mt-1">
                 <span class="text-nowrap ">
-                  {{t("Showing") +" 1 " + t("to") }}
+                  {{ t("Showing") + " 1 " + t("to") }}
                 </span>
                 <b-form-select v-model="pageLength" :options="['3', '5', '10', '20', '50', '100']" class="mx-1"
                   @input="(value) => props.perPageChanged({ currentPerPage: value })" />
-                <span class="text-nowrap"> {{t('of')}} {{ props.total }} {{t('entries')}} </span>
+                <span class="text-nowrap"> {{ t('of') }} {{ props.total }} {{ t('entries') }} </span>
               </div>
               <div>
                 <b-pagination :value="1" :total-rows="props.total" :per-page="pageLength" first-number last-number
@@ -161,13 +178,16 @@ import axios from "axios";
 import { ref, onUnmounted } from '@vue/composition-api'
 
 import AdminBankEdit from './AdminBankEdit.vue';
+import AdminBankQRUpload from './AdminBankQRUpload.vue'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 import { useUtils as useI18nUtils } from '@core/libs/i18n'
 
 export default {
+  name: 'AdminBank',
   components: {
     AdminBankEdit,
+    AdminBankQRUpload,
     BRow,
     BCol,
     VueGoodTable,
@@ -196,36 +216,40 @@ export default {
       return formattedDate.getFullYear() + '-' + ('0' + (formattedDate.getMonth() + 1)).slice(-2) + '-' + ('0' + (formattedDate.getDate())).slice(-2) + ' ' + formattedDate.toLocaleTimeString('th-TH', { hour12: false });
     };
 
-    let columns =  [
-        {
-          label: t('Bank Name'),
-          field: 'bank_name2',
-        },
-        
-        {
-          label: t('Bank Account Name'),
-          field: 'bank_acc_name',
-        },
-        {
-          label: t('Bank Account Number'),
-          field: 'bank_acc_number',
-        },
-        {
-          label: t('Status'),
-          field: 'status2',
-        },
-        {
-          label: t('Action'),
-          field: 'action',
-          width: '5%',
-        },
-      ];
-    
+    let columns = [
+      {
+        label: t('Bank Name'),
+        field: 'bank_name2',
+      },
+
+      {
+        label: t('Bank Account Name'),
+        field: 'bank_acc_name',
+      },
+      {
+        label: t('Bank Account Number'),
+        field: 'bank_acc_number',
+      },
+      {
+        label: t('QR Code'),
+        field: 'qr_code',
+      },
+      {
+        label: t('Status'),
+        field: 'status2',
+      },
+      {
+        label: t('Action'),
+        field: 'action',
+        width: '5%',
+      },
+    ];
+
 
     return {
       t,
       columns,
-      
+
     }
   },
 
@@ -245,7 +269,7 @@ export default {
       // fromDate: fDate,
       // toDate: tDate,
       pageLength: 10,
-      dir: false,            
+      dir: false,
       rows: [],
       searchTerm: '',
       AgentSelected: '',
@@ -256,12 +280,15 @@ export default {
       isEditFormActive: false,
       selectedDataRow: blankData,
       isModeEdit: false,
+      // olm เพิ่มครับ
+      isQRModalActive: false,
+      selectedRowForQR: null,
     }
   },
   computed: {
     statusVariant() {
       const statusColor = {
-        Success: 'light-success',        
+        Success: 'light-success',
         Warning: 'light-warning',
         Info: 'light-info',
       }
@@ -517,11 +544,31 @@ export default {
 
 
     },
+    //solm add
+    addQR(row) {
+      console.log('Add QR for account:', row.bank_acc_number);
+      this.selectedRowForQR = row;
+      this.isQRModalActive = true;
+    },
+    closeQRModal() {
+      this.isQRModalActive = false;
+      this.selectedRowForQR = null;
+    },
+    getQRImageUrl(qrPath) {
+      if (!qrPath) return '';
+      // If it's already a full URL, return as is
+      if (qrPath.startsWith('http')) return qrPath;
+      // Get API URL from vue config
+      const vueconfig = require('../../../../config/vue.config');
+      const apiUrl = vueconfig.BASE_API_URL;
+      return `${apiUrl}getfile/${qrPath}`;
+    },
+
   },
 }
 </script>
 
-<style lang="scss" >
+<style lang="scss">
 @import '@core/scss/vue/libs/vue-good-table.scss';
 
 .myavatar {

@@ -80,6 +80,28 @@
                 </div>
               </div>
 
+              <!-- QR Code Section -->
+              <div v-if="bankData.qr && !showCompleteDialog && !showSlipCorrect" class="qr-section">
+                <h4 class="qr-title">
+                  <feather-icon icon="QrCodeIcon" class="title-icon" />
+                  QR Code สำหรับโอนเงิน
+                </h4>
+                
+                <div class="qr-display">
+                  <div class="qr-container" @click="openQRModal">
+                    <img 
+                      :src="getQRImageUrl(bankData.qr)" 
+                      alt="QR Code" 
+                      class="qr-image"
+                    />
+                    <div class="qr-overlay">
+                      <feather-icon icon="MaximizeIcon" class="qr-icon" />
+                      <span class="qr-text">คลิกเพื่อดูขนาดใหญ่</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- <div class="divider"></div> -->
 
               <!-- Slip Upload -->
@@ -141,6 +163,25 @@
         </b-card>
       </div>
     </div>
+
+    <!-- QR Code Modal -->
+    <b-modal
+      :visible="showQRModal"
+      title="QR Code สำหรับโอนเงิน"
+      hide-footer
+      @hidden="closeQRModal"
+      size="sm"
+      centered
+    >
+      <div class="qr-modal-content">
+        <img 
+          :src="getQRImageUrl(bankData.qr)" 
+          alt="QR Code" 
+          class="qr-modal-image"
+        />
+        <p class="qr-modal-text">สแกน QR Code เพื่อโอนเงิน</p>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -218,9 +259,10 @@ export default {
       showCompleteDialog: false,
       showSlipCorrect: false,
       orderData: { id: 0, product_name: '', user_id: '', subscription_img: '' },
-      bankData: { bank_name: '', bank_acc_number: '', bank_acc_name: '', bank_ico: '' },
+      bankData: { bank_name: '', bank_acc_number: '', bank_acc_name: '', bank_ico: '', qr: '' },
       slip_file_url: '',
       lineProfile: { display_name: '', picture_url: '' },
+      showQRModal: false,
     }
   },
   computed: {
@@ -586,6 +628,21 @@ ain
           },
         });
       }
+    },
+    openQRModal() {
+      this.showQRModal = true;
+    },
+    closeQRModal() {
+      this.showQRModal = false;
+    },
+    getQRImageUrl(qrPath) {
+      if (!qrPath) return '';
+      // If it's already a full URL, return as is
+      if (qrPath.startsWith('http')) return qrPath;
+      // Get API URL from vue config
+      const vueconfig = require('../../../../config/vue.config');
+      const apiUrl = vueconfig.BASE_API_URL;
+      return `${apiUrl}getfile/${qrPath}`;
     }
   },
 }
@@ -977,6 +1034,91 @@ ain
       }
     }
 
+    .qr-section {
+      margin-bottom: 2rem;
+
+      .qr-title {
+        color: #000000;
+        font-family: 'MiSansMU', sans-serif;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+
+        .title-icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 0.5rem;
+          color: #ff69b4;
+        }
+      }
+
+      .qr-display {
+        text-align: center;
+
+        .qr-container {
+          display: inline-block;
+          position: relative;
+          cursor: pointer;
+          transition: transform 0.3s ease;
+
+          &:hover {
+            transform: scale(1.05);
+          }
+
+          .qr-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 3px solid rgba(255, 182, 193, 0.2);
+            transition: all 0.3s ease;
+
+            &:hover {
+              box-shadow: 0 12px 35px rgba(255, 182, 193, 0.3);
+              border-color: rgba(255, 182, 193, 0.4);
+            }
+          }
+
+          .qr-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 105, 180, 0.8);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+
+            .qr-icon {
+              width: 24px;
+              height: 24px;
+              color: #ffffff;
+              margin-bottom: 0.5rem;
+            }
+
+            .qr-text {
+              color: #ffffff;
+              font-family: 'MiSansMU', sans-serif;
+              font-weight: 500;
+              font-size: 0.9rem;
+              text-align: center;
+            }
+
+            &:hover {
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+
     .slip-section {
       margin-bottom: 2rem;
 
@@ -1139,6 +1281,31 @@ ain
   }
 }
 
+// QR Modal Styling
+.qr-modal-content {
+  text-align: center;
+  padding: 1.5rem;
+
+  .qr-modal-image {
+    width: 280px;
+    height: 280px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    border: 3px solid rgba(255, 182, 193, 0.25);
+    margin-bottom: 1.2rem;
+    background: #ffffff;
+    padding: 12px;
+  }
+
+  .qr-modal-text {
+    color: #ff69b4;
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 0;
+  }
+}
+
 // Responsive Design
 @media (max-width: 768px) {
   .confirm-payment-card {
@@ -1168,6 +1335,16 @@ ain
       margin-bottom: 1rem;
     }
   }
+
+  .content-section .main-content .qr-section .qr-display .qr-container .qr-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  .qr-modal-content .qr-modal-image {
+    width: 260px;
+    height: 260px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1191,6 +1368,20 @@ ain
   
   .content-section .main-content .product-info-section .section-title {
     font-size: 1.1rem;
+  }
+
+  .content-section .main-content .qr-section .qr-display .qr-container .qr-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .qr-modal-content {
+    padding: 1rem;
+
+    .qr-modal-image {
+      width: 220px;
+      height: 220px;
+    }
   }
 }
 </style>

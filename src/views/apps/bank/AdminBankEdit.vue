@@ -164,6 +164,26 @@
             </b-form-group>
           </b-col>
 
+          <b-col md="6">
+            <b-form-group
+              :label="t('QR Code')"
+              label-for="qr-display"
+            >
+              <div v-if="currentQRPath">
+                <img 
+                  :src="getQRImageUrl(currentQRPath)" 
+                  alt="Current QR Code" 
+                  style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; padding: 10px;"
+                />
+                <br>
+                <small class="text-muted">{{ t('Current QR Code') }}</small>
+              </div>
+              <div v-else class="text-muted">
+                {{ t('No QR Code uploaded') }}
+              </div>
+            </b-form-group>
+          </b-col>
+
           <b-col cols="1">
 
         </b-col>
@@ -352,6 +372,7 @@
   import { useUtils as useI18nUtils } from '@core/libs/i18n'
   
   export default {
+    name: 'AdminBankEdit',
     components: {
       BCardCode,
       BRow,
@@ -394,7 +415,8 @@
     data() {
       return {
         // codeMultipleColumn,
-        showBreakBank:false
+        showBreakBank:false,
+        currentQRPath: ''
       }
     }, 
     model: {      
@@ -478,6 +500,9 @@
             {
               this.showBreakBank=false;
             }
+
+            // Set QR code path
+            this.currentQRPath = newVal.qr || '';
 
         },
         isModeEdit: function(newVal, oldVal)
@@ -717,6 +742,7 @@
               bank_break_enable : this.bankBreakSelected,
               deposit_decimal : this.bankDecimalSelected,
               statusActive : this.statusActive,
+              parent: 0
           }
       
           // console.log(body);
@@ -836,6 +862,15 @@
                 });                
           }
         
+        },
+        getQRImageUrl(qrPath) {
+          if (!qrPath) return '';
+          // If it's already a full URL, return as is
+          if (qrPath.startsWith('http')) return qrPath;
+          // Get API URL from vue config
+          const vueconfig = require('../../../../config/vue.config');
+          const apiUrl = vueconfig.BASE_API_URL;
+          return `${apiUrl}getfile/${qrPath}`;
         },
     },
   }
