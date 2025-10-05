@@ -81,6 +81,17 @@
 
             <!-- </span> -->
 
+            <!-- Column: QR Code -->
+            <span v-else-if="props.column.field === 'qr_code'">
+              <img 
+                v-if="props.row.qr" 
+                :src="getQRImageUrl(props.row.qr)" 
+                alt="QR Code" 
+                style="max-width: 50px; max-height: 50px; border: 1px solid #ddd; padding: 2px;"
+              />
+              <span v-else class="text-muted">No QR</span>
+            </span>
+
             <!-- Column: Status -->
             <span v-else-if="props.column.field === 'status2'">
               <b-badge :variant="statusVariant(props.row.status == 1 ? 'Success' : 'Warning')">
@@ -218,6 +229,10 @@ export default {
       {
         label: t('Bank Account Number'),
         field: 'bank_acc_number',
+      },
+      {
+        label: t('QR Code'),
+        field: 'qr_code',
       },
       {
         label: t('Status'),
@@ -538,6 +553,15 @@ export default {
     closeQRModal() {
       this.isQRModalActive = false;
       this.selectedRowForQR = null;
+    },
+    getQRImageUrl(qrPath) {
+      if (!qrPath) return '';
+      // If it's already a full URL, return as is
+      if (qrPath.startsWith('http')) return qrPath;
+      // Get API URL from vue config
+      const vueconfig = require('../../../../config/vue.config');
+      const apiUrl = vueconfig.BASE_API_URL;
+      return `${apiUrl}getfile/${qrPath}`;
     },
 
   },
