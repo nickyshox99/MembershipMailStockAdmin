@@ -70,6 +70,20 @@
                     </b-form-group>
                 </b-col>
 
+                <b-col md="6">
+                    <b-form-group label="QR Code System">
+                        <b-form-checkbox v-model="localOptions.enableAutoGenerateQR">
+                            ใช้ระบบ Auto Generate QR Code
+                        </b-form-checkbox>
+                        <small class="text-muted d-block mt-1">
+                            {{ localOptions.enableAutoGenerateQR ? 
+                                'ระบบจะสร้าง QR Code อัตโนมัติ' : 
+                                'ใช้ระบบอัพโหลด QR Code แบบเดิม' 
+                            }}
+                        </small>
+                    </b-form-group>
+                </b-col>
+
                 <b-col cols="12">
                     <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mt-1 mr-1"
                         @click="updateSetting" :disabled="readOnlyControl">
@@ -145,6 +159,7 @@ export default {
                 enableSkipApproval: !!base.enableSkipApproval,
                 enableAutoExpireMessage: !!base.enableAutoExpireMessage,
                 expireMessageRepeat: Number.isFinite(+base.expireMessageRepeat) ? +base.expireMessageRepeat : 1,
+                enableAutoGenerateQR: !!base.enableAutoGenerateQR, // เพิ่มใหม่สำหรับ QR Code System
                 // ถ้ามี field อื่น ๆ ใน setting ก็ spread มาด้วย
             },
         }
@@ -164,6 +179,7 @@ export default {
                     enableSkipApproval: !!v.enableSkipApproval,
                     enableAutoExpireMessage: !!v.enableAutoExpireMessage,
                     expireMessageRepeat: Number.isFinite(+v.expireMessageRepeat) ? +v.expireMessageRepeat : (this.localOptions.expireMessageRepeat ?? 1),
+                    enableAutoGenerateQR: !!v.enableAutoGenerateQR, // เพิ่มใหม่สำหรับ QR Code System
                 }
             }
         }
@@ -180,6 +196,7 @@ export default {
                 enableExpireOnlyOnce: !!v.enableExpireOnlyOnce,
                 enableAutoExpireMessage: !!v.enableAutoExpireMessage,
                 expireMessageRepeat: Number.isFinite(+v.expireMessageRepeat) ? +v.expireMessageRepeat : 1,
+                enableAutoGenerateQR: !!v.enableAutoGenerateQR, // เพิ่มใหม่สำหรับ QR Code System
             }
         },
         // async updateSetting() {

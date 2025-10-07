@@ -81,25 +81,53 @@
               </div>
 
               <!-- QR Code Section -->
-              <div v-if="bankData.qr && !showCompleteDialog && !showSlipCorrect" class="qr-section">
-                <h4 class="qr-title">
-                  <feather-icon icon="QrCodeIcon" class="title-icon" />
-                  QR Code สำหรับโอนเงิน
-                </h4>
-                
-                <div class="qr-display">
-                  <div class="qr-container" @click="openQRModal">
-                    <img 
-                      :src="getQRImageUrl(bankData.qr)" 
-                      alt="QR Code" 
-                      class="qr-image"
-                    />
-                    <div class="qr-overlay">
-                      <feather-icon icon="MaximizeIcon" class="qr-icon" />
-                      <span class="qr-text">คลิกเพื่อดูขนาดใหญ่</span>
+              <div v-if="!showCompleteDialog && !showSlipCorrect" class="qr-section">
+                <!-- Auto Generated QR Code (PromptPay) -->
+                <template v-if="enableAutoGenerateQR && generatedQRCode">
+                  <h4 class="qr-title">
+                    <feather-icon icon="QrCodeIcon" class="title-icon" />
+                    QR Code สำหรับโอนเงิน (PromptPay)
+                  </h4>
+                  
+                  <div class="qr-display">
+                    <div class="qr-container" @click="openQRModal">
+                      <img 
+                        :src="generatedQRCode" 
+                        alt="PromptPay QR Code" 
+                        class="qr-image"
+                      />
+                      <div class="qr-overlay">
+                        <feather-icon icon="MaximizeIcon" class="qr-icon" />
+                        <span class="qr-text">คลิกเพื่อดูขนาดใหญ่</span>
+                      </div>
+                    </div>
+                    <div class="qr-info">
+                      <p class="qr-amount">ยอดชำระ: ฿{{ productPrice.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
                     </div>
                   </div>
-                </div>
+                </template>
+                
+                <!-- Uploaded QR Code (เดิม) -->
+                <template v-else-if="bankData.qr">
+                  <h4 class="qr-title">
+                    <feather-icon icon="QrCodeIcon" class="title-icon" />
+                    QR Code สำหรับโอนเงิน
+                  </h4>
+                  
+                  <div class="qr-display">
+                    <div class="qr-container" @click="openQRModal">
+                      <img 
+                        :src="getQRImageUrl(bankData.qr)" 
+                        alt="QR Code" 
+                        class="qr-image"
+                      />
+                      <div class="qr-overlay">
+                        <feather-icon icon="MaximizeIcon" class="qr-icon" />
+                        <span class="qr-text">คลิกเพื่อดูขนาดใหญ่</span>
+                      </div>
+                    </div>
+                  </div>
+                </template>
               </div>
 
               <!-- <div class="divider"></div> -->
@@ -167,7 +195,7 @@
     <!-- QR Code Modal -->
     <b-modal
       :visible="showQRModal"
-      title="QR Code สำหรับโอนเงิน"
+      :title="enableAutoGenerateQR && generatedQRCode ? 'QR Code สำหรับโอนเงิน (PromptPay)' : 'QR Code สำหรับโอนเงิน'"
       hide-footer
       @hidden="closeQRModal"
       size="sm"
@@ -175,11 +203,14 @@
     >
       <div class="qr-modal-content">
         <img 
-          :src="getQRImageUrl(bankData.qr)" 
+          :src="enableAutoGenerateQR && generatedQRCode ? generatedQRCode : getQRImageUrl(bankData.qr)" 
           alt="QR Code" 
           class="qr-modal-image"
         />
         <p class="qr-modal-text">สแกน QR Code เพื่อโอนเงิน</p>
+        <p v-if="enableAutoGenerateQR && generatedQRCode" class="qr-modal-amount">
+          ยอดชำระ: ฿{{ productPrice.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+        </p>
       </div>
     </b-modal>
   </div>
@@ -206,6 +237,10 @@ import useJwt from '@/auth/jwt/useJwt'
 
 import { AbilityBuilder } from '@casl/ability';
 import { useUtils as useI18nUtils } from '@core/libs/i18n'
+
+import generatePayload from 'promptpay-qr'
+import QRCode from 'qrcode'
+import axios from 'axios'
 
 export default {
   components: {
@@ -263,6 +298,9 @@ export default {
       slip_file_url: '',
       lineProfile: { display_name: '', picture_url: '' },
       showQRModal: false,
+      enableAutoGenerateQR: false,
+      generatedQRCode: '',
+      productPrice: 0,
     }
   },
   computed: {
@@ -282,6 +320,7 @@ export default {
     // this.getOrderData();
     const { id, user_id } = this.$route.query || {};
     if (!id || !user_id) { this.showErrorParam = true; return; }
+    await this.loadSetting();
     await this.getOrderData();
   },
   methods: {
@@ -289,6 +328,8 @@ export default {
     ...mapActions(["PaymentOrderWithSlip"]),
     ...mapActions(["UploadFileAndDeleteOldFile"]),
     ...mapActions(["CustomerDeleteOldFile"]),
+    ...mapActions(["GetActiveProductSetting"]),
+    ...mapActions(["GetBankInfo"]),
     async validationForm() {
 
     },
@@ -309,8 +350,48 @@ export default {
       {         
           if (response.data.data && response.data.data.length > 0) {
             this.orderData = response.data.data[0];
-            this.bankData = response.data.bank_data || {};
+            
+            // ถ้าเปิดใช้ Auto Generate QR ให้ดึงธนาคาร status=1 อันแรก
+            // ถ้าไม่เปิดใช้ ให้ใช้ bank_data ที่ API ส่งมา (สำหรับ QR ที่ upload)
+            if (this.enableAutoGenerateQR) {
+              console.log('Using active bank (status=1) for Auto Generate QR');
+              const activeBank = await this.getActiveBankAccount();
+              this.bankData = activeBank || response.data.bank_data || {};
+            } else {
+              console.log('Using bank_data from API (for uploaded QR)');
+              this.bankData = response.data.bank_data || {};
+            }
+            
             this.slip_file_url = response.data.slip_file_url || '';
+            
+            // Log ข้อมูลทั้งหมดเพื่อ debug
+            console.log('=== FULL ORDER DATA ===');
+            console.log('Order Data (all fields):', JSON.stringify(this.orderData, null, 2));
+            console.log('Order Data Keys:', Object.keys(this.orderData));
+            
+            // ตรวจสอบ field ราคาแต่ละตัว
+            console.log('Price field checks:');
+            console.log('  - product_price:', this.orderData.product_price);
+            console.log('  - price:', this.orderData.price);
+            console.log('  - use_credit:', this.orderData.use_credit);
+            console.log('  - amount:', this.orderData.amount);
+            console.log('  - total_price:', this.orderData.total_price);
+            
+            // Try multiple fields for price
+            let priceValue = this.orderData.product_price || 
+                              this.orderData.price || 
+                              this.orderData.use_credit || 
+                              this.orderData.amount ||
+                              this.orderData.total_price ||
+                              0;
+            
+            // ถ้าไม่มีราคาใน orderData ให้ดึงจาก product_id
+            if (!priceValue && this.orderData.product_id) {
+              console.log('No price in orderData, fetching from product...');
+              priceValue = await this.getProductPrice(this.orderData.product_id);
+            }
+            
+            this.productPrice = parseFloat(priceValue) || 0;
             
             // Extract LINE profile data from order data
             this.lineProfile = {
@@ -323,6 +404,16 @@ export default {
             console.log('LINE Profile:', this.lineProfile);
             console.log('LINE Display Name:', this.orderData.line_display_name);
             console.log('LINE Picture URL:', this.orderData.line_profile_url);
+            console.log('Product Price (from use_credit/price/etc):', this.productPrice);
+            console.log('Enable Auto Generate QR:', this.enableAutoGenerateQR);
+            
+            // Generate PromptPay QR if enabled
+            if (this.enableAutoGenerateQR && this.productPrice > 0) {
+              console.log('Generating PromptPay QR with price:', this.productPrice);
+              await this.generatePromptPayQR();
+            } else {
+              console.log('QR generation skipped - enableAutoGenerateQR:', this.enableAutoGenerateQR, 'productPrice:', this.productPrice);
+            }
           } else {
             this.showErrorParam = true;
           }
@@ -643,6 +734,175 @@ ain
       const vueconfig = require('../../../../config/vue.config');
       const apiUrl = vueconfig.BASE_API_URL;
       return `${apiUrl}getfile/${qrPath}`;
+    },
+    async loadSetting() {
+      try {
+        const userData = JSON.parse(localStorage.getItem('userData')) || {}
+        const res = await axios.get("api/adminsetting/getadminsetting", {
+          headers: {
+            'Content-Type': 'application/json',
+            'userid': userData.username || '-',
+            'token': userData.token || '-',
+          }
+        })
+        const list = res?.data?.data || []
+        const lineToken = list.find(x => x.meta === 'line_token')
+        if (lineToken?.value) {
+          const val = JSON.parse(lineToken.value)
+          // แปลง enable เป็น boolean
+          Object.keys(val).forEach(k => {
+            if (k.toLowerCase().includes('enable')) val[k] = val[k] === 1 || val[k] === true
+          })
+          this.enableAutoGenerateQR = !!val.enableAutoGenerateQR
+        }
+      } catch (e) {
+        console.error('Error loading setting:', e)
+        this.enableAutoGenerateQR = false
+      }
+    },
+    async getProductPrice(productId) {
+      try {
+        console.log('getProductPrice for product_id:', productId);
+        
+        const formData = new FormData();
+        formData.append("userid", "");
+        formData.append("token", "");
+        formData.append("page_name", "");
+
+        const response = await this.GetActiveProductSetting(formData);
+        
+        if (response && response.data && response.data.status === 'success') {
+          const productList = response.data.data || [];
+          console.log('Product list:', productList);
+          
+          const product = productList.find(p => p.id === productId);
+          
+          if (product) {
+            const price = parseFloat(product.use_credit || product.price || 0);
+            console.log('Found product price:', price, 'from product:', product);
+            return price;
+          } else {
+            console.warn('Product not found with id:', productId);
+            return 0;
+          }
+        } else {
+          console.error('Failed to get product list:', response);
+          return 0;
+        }
+      } catch (error) {
+        console.error('Error getting product price:', error);
+        return 0;
+      }
+    },
+    async getActiveBankAccount() {
+      try {
+        console.log('getActiveBankAccount - fetching bank with status = 1');
+        
+        const formData = new FormData();
+        formData.append("userid", "-");
+        formData.append("token", "-");
+        formData.append("searchWord", "");
+
+        const response = await this.GetBankInfo(formData);
+        
+        if (response && response.data && response.data.status === 'success') {
+          const bankList = response.data.data || [];
+          console.log('Bank list:', bankList);
+          
+          // หาธนาคารที่ status = 1 อันแรก
+          const activeBank = bankList.find(bank => bank.status === 1 || bank.status === '1');
+          
+          if (activeBank) {
+            console.log('Found active bank:', activeBank);
+            console.log('PromptPay Number:', activeBank.promptpay_number);
+            return {
+              bank_name: activeBank.bank_name,
+              bank_acc_number: activeBank.bank_acc_number,
+              bank_acc_name: activeBank.bank_acc_name,
+              bank_ico: activeBank.bank_ico,
+              qr: activeBank.qr || '',
+              promptpay_number: activeBank.promptpay_number || ''
+            };
+          } else {
+            console.warn('No active bank found (status = 1)');
+            return null;
+          }
+        } else {
+          console.error('Failed to get bank list:', response);
+          return null;
+        }
+      } catch (error) {
+        console.error('Error getting active bank:', error);
+        return null;
+      }
+    },
+    async generatePromptPayQR() {
+      try {
+        console.log('=== Starting generatePromptPayQR ===');
+        console.log('bankData:', this.bankData);
+        console.log('productPrice:', this.productPrice);
+        
+        // ใช้เบอร์โทรพร้อมเพย์แทนเลขบัญชี
+        let promptpayNumber = this.bankData.promptpay_number || ''
+        console.log('PromptPay Number from bankData:', promptpayNumber);
+        
+        // ถ้าไม่มี PromptPay Number ให้แจ้งเตือน
+        if (!promptpayNumber || !this.productPrice) {
+          console.error('Missing PromptPay number or price:', {
+            promptpayNumber,
+            productPrice: this.productPrice
+          });
+          
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: `ไม่สามารถสร้าง QR Code ได้: ${!promptpayNumber ? 'กรุณาตั้งค่าเบอร์พร้อมเพย์ในหน้า Bank Admin' : 'ไม่มีราคา'}`,
+              icon: 'AlertCircleIcon',
+              variant: 'warning',
+            },
+          })
+          return
+        }
+
+        // ตรวจสอบว่าเป็นเบอร์โทรศัพท์ 10 หลัก
+        if (!/^0\d{9}$/.test(promptpayNumber)) {
+          console.error('Invalid PromptPay number format:', promptpayNumber);
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'เบอร์พร้อมเพย์ไม่ถูกต้อง ต้องเป็น 10 หลัก เช่น 0812345678',
+              icon: 'AlertCircleIcon',
+              variant: 'error',
+            },
+          })
+          return
+        }
+
+        console.log('Generating PromptPay QR with:', {
+          promptpayNumber,
+          amount: this.productPrice
+        });
+
+        // Generate PromptPay payload
+        const payload = generatePayload(promptpayNumber, { amount: this.productPrice })
+        console.log('PromptPay payload generated:', payload);
+        
+        // Generate QR code as data URL
+        this.generatedQRCode = await QRCode.toDataURL(payload)
+        console.log('QR Code data URL generated, length:', this.generatedQRCode.length);
+        
+        console.log('✅ Generated PromptPay QR Code successfully');
+      } catch (error) {
+        console.error('❌ Error generating PromptPay QR:', error)
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'ไม่สามารถสร้าง QR Code ได้: ' + error.message,
+            icon: 'AlertCircleIcon',
+            variant: 'error',
+          },
+        })
+      }
     }
   },
 }
@@ -1302,7 +1562,34 @@ ain
     font-family: 'MiSansMU', sans-serif;
     font-weight: 500;
     font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .qr-modal-amount {
+    color: #000000;
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
     margin-bottom: 0;
+  }
+}
+
+// QR Info Styling
+.qr-info {
+  text-align: center;
+  margin-top: 1rem;
+
+  .qr-amount {
+    color: #000000;
+    font-family: 'MiSansMU', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.1) 100%);
+    border-radius: 12px;
+    border: 2px solid rgba(255, 182, 193, 0.2);
   }
 }
 

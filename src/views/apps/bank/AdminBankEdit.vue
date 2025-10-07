@@ -52,6 +52,21 @@
             </b-form-group>
           </b-col>
 
+          <b-col md="6">
+            <b-form-group              
+              :label="t('PromptPay Number (Phone)')"
+              label-for="promptpay-number"
+            >
+              <b-form-input
+                id="promptpay-number"
+                placeholder="0812345678"
+                v-model="promptpayNumber"
+                maxlength="10"
+              />
+              <small class="text-muted">เบอร์โทร 10 หลัก สำหรับ Auto Generate QR</small>
+            </b-form-group>
+          </b-col>
+
           <b-col md="6" v-if="false">
             <b-form-group              
               :label="t('Work Type')"
@@ -440,6 +455,7 @@
       ],
       bankAccountName:"",
       bankAccountNumber:"",
+      promptpayNumber:"",
       workTypeSelected: "IBK",
       workTypeOptions:[
       ],
@@ -477,6 +493,7 @@
             this.depWitSelected = newVal.bank_type;
             this.bankAccountName = newVal.bank_acc_name;
             this.bankAccountNumber = newVal.bank_acc_number;
+            this.promptpayNumber = newVal.promptpay_number || "";
             this.workTypeSelected = newVal.work_type;
             this.showTypeSelected = newVal.show_type;
             this.statusActive = newVal.status;
@@ -640,6 +657,7 @@
               bank_type : this.depWitSelected,
               bank_acc_name : this.bankAccountName,
               bank_acc_number : this.bankAccountNumber,
+              promptpay_number : this.promptpayNumber || "",
               work_type : this.workTypeSelected,
               show_type : this.showTypeSelected,
 
@@ -731,6 +749,7 @@
               bank_type : this.depWitSelected?this.depWitSelected:'BOTH',
               bank_acc_name : this.bankAccountName?this.bankAccountName:' ',
               bank_acc_number : this.bankAccountNumber?this.bankAccountNumber:' ',
+              promptpay_number : this.promptpayNumber || "",
               work_type : this.workTypeSelected?this.workTypeSelected:'IBK',
               show_type : this.showTypeSelected?this.showTypeSelected:'ALL',
 
