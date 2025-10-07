@@ -231,6 +231,10 @@ export default {
         field: 'bank_acc_number',
       },
       {
+        label: t('PromptPay Number'),
+        field: 'promptpay_number',
+      },
+      {
         label: t('QR Code'),
         field: 'qr_code',
       },
