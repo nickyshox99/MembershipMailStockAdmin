@@ -36,49 +36,67 @@
         </b-col> -->
 
                 <b-col md="6">
-                    <b-form-group label-for="setneardate" label="Near Expire Days">
+                    <b-form-group label-for="setneardate" label="จำนวนวันใกล้หมดอายุ">
                         <b-form-input id="setneardate" v-model="localOptions.SetNearDate" type="number"
                             placeholder="3" />
+                        <small class="text-muted d-block mt-1">
+                            ระบุจำนวนวันที่จะแจ้งเตือนก่อนหมดอายุ (เช่น 3 = แจ้งเตือนเมื่อเหลือ 3 วัน)
+                        </small>
                     </b-form-group>
                 </b-col>
 
                 <b-col md="6">
-                    <b-form-group label="Near-expire send">
+                    <b-form-group label="การแจ้งเตือนใกล้หมดอายุ">
                         <b-form-checkbox v-model="localOptions.enableExpireOnlyOnce">
-                            ส่งแจ้งเตือนครั้งเดียว (แทนการส่งเรื่อย ๆ ตาม Near Expire Days)
+                            ส่งแจ้งเตือนครั้งเดียว
                         </b-form-checkbox>
+                        <small class="text-muted d-block mt-1">
+                            {{ localOptions.enableExpireOnlyOnce ? 
+                                'ส่งแจ้งเตือนครั้งเดียวเมื่อถึงวันที่กำหนด' : 
+                                'ส่งแจ้งเตือนทุกวันจนกว่าจะหมดอายุ' 
+                            }}
+                        </small>
                     </b-form-group>
                 </b-col>
 
                 <b-col md="6">
-                    <b-form-group label="Approval Step">
+                    <b-form-group label="ขั้นตอนการอนุมัติ">
                         <b-form-checkbox v-model="localOptions.enableSkipApproval">
-                            Skip approval step
+                            ข้ามขั้นตอนการอนุมัติ
                         </b-form-checkbox>
+                        <small class="text-muted d-block mt-1">
+                            {{ localOptions.enableSkipApproval ? 
+                                'อนุมัติอัตโนมัติทันที' : 
+                                'ต้องรอการอนุมัติจากแอดมิน' 
+                            }}
+                        </small>
                     </b-form-group>
                 </b-col>
 
                 <b-col md="6">
-                    <b-form-group label="Auto message on expired">
+                    <b-form-group label="การแจ้งเตือนเมื่อหมดอายุ">
                         <b-form-checkbox v-model="localOptions.enableAutoExpireMessage">
-                            Send auto message
+                            ส่งข้อความอัตโนมัติเมื่อหมดอายุ
                         </b-form-checkbox>
 
                         <b-form-input v-if="localOptions.enableAutoExpireMessage"
                             v-model="localOptions.expireMessageRepeat" type="number"
-                            placeholder="จำนวนครั้งที่จะส่ง เช่น 3" class="mt-1" />
+                            placeholder="จำนวนครั้งที่จะส่ง เช่น 2" class="mt-1" />
+                        <small v-if="localOptions.enableAutoExpireMessage" class="text-muted d-block mt-1">
+                            จำนวนครั้งที่จะส่งข้อความหลังจากหมดอายุ (เช่น 2 = ส่งในวันหมดอายุ + วันถัดไป)
+                        </small>
                     </b-form-group>
                 </b-col>
 
                 <b-col md="6">
-                    <b-form-group label="QR Code System">
+                    <b-form-group label="ระบบ QR Code">
                         <b-form-checkbox v-model="localOptions.enableAutoGenerateQR">
-                            ใช้ระบบ Auto Generate QR Code
+                            ใช้ระบบสร้าง QR Code อัตโนมัติ
                         </b-form-checkbox>
                         <small class="text-muted d-block mt-1">
                             {{ localOptions.enableAutoGenerateQR ? 
-                                'ระบบจะสร้าง QR Code อัตโนมัติ' : 
-                                'ใช้ระบบอัพโหลด QR Code แบบเดิม' 
+                                'สร้าง QR Code จากหมายเลข PromptPay อัตโนมัติ' : 
+                                'ใช้ QR Code ที่อัพโหลดไว้' 
                             }}
                         </small>
                     </b-form-group>
