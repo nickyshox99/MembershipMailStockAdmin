@@ -2,7 +2,7 @@
 
   <div>
 
-    <group-sub-edit :isEditFormActive="isEditFormActive" :pRowData="selectedDataRow" 
+    <group-create-edit :isEditFormActive="isEditFormActive" :pRowData="selectedDataRow" 
     :isModeEdit="isModeEdit"
       @refetch-data="search" @close-edit-form="closeEditForm" />
 
@@ -209,7 +209,7 @@ import axios from "axios";
 
 import { ref, onUnmounted } from '@vue/composition-api'
 
-import GroupSubEdit from './GroupSubEdit.vue';
+import GroupCreateEdit from './GroupCreateEdit.vue';
 import GroupSubNote from './GroupSubNote.vue';
 import GroupMemberEdit from './GroupMemberEdit.vue';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -218,7 +218,7 @@ import { useUtils as useI18nUtils } from '@core/libs/i18n'
 
 export default {
   components: {
-    GroupSubEdit,
+    GroupCreateEdit,
     GroupSubNote,
     GroupMemberEdit,
     BRow,
