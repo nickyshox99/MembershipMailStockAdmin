@@ -199,13 +199,26 @@
               <template slot="table-row" slot-scope="props">
 
                 <span v-if="props.column.field === 'user_id2'"> 
-                  <b-badge v-if="props.row.user_id!=null && props.row.user_id!=''"
-                    pill
-                    :variant="resolveStatusVariant(0)"
-                    class="text-capitalize"
-                  >
-                    {{t(props.row.user_id)}}
-                  </b-badge> 
+                  <div v-if="props.row.user_id!=null && props.row.user_id!=''" class="d-flex align-items-center">
+                    <b-img 
+                      v-if="props.row.line_profile_url"
+                      :src="props.row.line_profile_url" 
+                      rounded="circle" 
+                      width="32" 
+                      height="32"
+                      class="mr-50"
+                      alt="Line Profile"
+                    />
+                    <feather-icon 
+                      v-else
+                      icon="UserIcon" 
+                      size="32" 
+                      class="mr-50 text-secondary"
+                    />
+                    <span class="font-weight-bold">
+                      {{ props.row.line_display_name || props.row.user_id }}
+                    </span>
+                  </div>
                   <b-badge v-if="props.row.user_id==null || props.row.user_id==''"
                     pill
                     :variant="resolveStatusVariant(1)"
@@ -354,7 +367,7 @@ export default {
           field: 'email',
         },
         {
-          label: t('Free/Used',),
+          label: t('Line User',),
           field: 'user_id2',
         },
         {

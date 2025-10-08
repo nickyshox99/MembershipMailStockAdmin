@@ -225,86 +225,82 @@ export default {
         User.append("otp", this.otp);
 
         try {
-          // const time = Math.floor(Date.now() / 1000 / 30);
-          // console.log(time);
-          // let response3 = await this.GetGoogleAuthen(User);
-          // console.log(response3.data);
-          // return;
+          // Skip Google Authen check (not in use currently)
+          // let response2 = await this.CheckGoogleAuthen(User);
+          
+          let response = await this.LogIn(User);
+          console.log('Login response:', response);
+          
+          // Check if response exists and has data
+          if (!response || !response.data) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+                icon: 'AlertCircleIcon',
+                variant: 'error',
+              },
+            });
+            return;
+          }
 
-          let response2 = await this.CheckGoogleAuthen(User);
-          if (response2.data.status == 'success') {
-            let response = await this.LogIn(User);
-            // console.log(response);          
+          if (response.data.status == 'success') {
 
-            if (response.data.status == 'success') {
+            const { can, rules } = new AbilityBuilder();
+            can('manage', 'all');
 
-              const { can, rules } = new AbilityBuilder();
-              can('manage', 'all');
+            this.$ability.update(rules);
 
-              this.$ability.update(rules);
+            const userData = {
+              id: response.data.id,
+              email: this.username,
+              username: this.username,
+              fullName: response.data.fullName,
+              token: response.data.token,
+              creatAt: response.data.createAt,
+              expireAt: response.data.expireAt,
+              am_rank: response.data.am_rank,
+              am_group: response.data.am_group,
+              role: response.data.am_group_name,
+              ability: rules,
+              avatar: "/img/13-small.d796bffd.png",
+              extras: {
+                eCommerceCartItemsCount: 0
+              },
+              defaultPage: response.data.defaultPage ?? ''
+            };
 
-              const userData = {
-                id: response.data.id,
-                email: this.username,
-                username: this.username,
-                fullName: response.data.fullName,
-                token: response.data.token,
-                creatAt: response.data.createAt,
-                expireAt: response.data.expireAt,
-                am_rank: response.data.am_rank,
-                am_group: response.data.am_group,
-                role: response.data.am_group_name,
-                ability: rules,
-                avatar: "/img/13-small.d796bffd.png",
-                extras: {
-                  eCommerceCartItemsCount: 0
-                },
-                defaultPage: response.data.defaultPage ?? ''
-              };
+            localStorage.setItem('userData', JSON.stringify(userData));
+            localStorage.setItem(useJwt.jwtConfig.storageTokenKeyName, JSON.stringify({ token: response.data.token }));
+            localStorage.setItem(useJwt.jwtConfig.storageRefreshTokenKeyName, JSON.stringify({ token: response.data.token }));
 
-              localStorage.setItem('userData', JSON.stringify(userData));
-              localStorage.setItem(useJwt.jwtConfig.storageTokenKeyName, JSON.stringify({ token: response.data.token }));
-              localStorage.setItem(useJwt.jwtConfig.storageRefreshTokenKeyName, JSON.stringify({ token: response.data.token }));
-
-              this.$toast({
-                component: ToastificationContent,
-                position: 'top-right',
-                props: {
-                  title: `Welcome ${userData.fullName || userData.username}`,
-                  icon: 'CoffeeIcon',
-                  variant: 'success',
-                  text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`,
-                },
-                autoHideDelay: 3000,
-              })
+            this.$toast({
+              component: ToastificationContent,
+              position: 'top-right',
+              props: {
+                title: `Welcome ${userData.fullName || userData.username}`,
+                icon: 'CoffeeIcon',
+                variant: 'success',
+                text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`,
+              },
+              autoHideDelay: 3000,
+            })
 
 
-              if (response.data.defaultPage != '') {
-                await this.$router.push({ path: '/apps/orders/ordercheckedpayment' });
-              }
-              else {
-                await this.$router.push({ path: '/apps/orders/ordercheckedpayment' });
-              }
-
+            if (response.data.defaultPage != '') {
+              await this.$router.push({ path: '/apps/orders/ordercheckedpayment' });
             }
             else {
-              this.$toast(
-                {
-                  component: ToastificationContent,
-                  props: {
-                    title: response.data.message,
-                    icon: 'EditIcon',
-                    variant: 'error',
-                  },
-                });
+              await this.$router.push({ path: '/apps/orders/ordercheckedpayment' });
             }
+
           }
           else {
             this.$toast(
               {
                 component: ToastificationContent,
                 props: {
-                  title: 'Google Auth is incorrect.',
+                  title: response.data.message || 'เข้าสู่ระบบไม่สำเร็จ',
                   icon: 'EditIcon',
                   variant: 'error',
                 },
