@@ -58,7 +58,7 @@
       </b-card>
     </Transition>
     <Transition name="fade" mode="out-in">
-      <b-card :title="t('Group Subscription')" v-if="!(isEditFormActive)&&!(isNoteFormActive)&&!(isMemberFormActive)">
+      <b-card :title="groupSubscriptionTitle" v-if="!(isEditFormActive)&&!(isNoteFormActive)&&!(isMemberFormActive)">
         <vue-good-table ref="my-table" :columns="columns" :rows="sortedRows" :rtl="direction" :line-numbers="true"
           :sort-options="{ enabled: true }"
           @on-sort-change="handleSortChange"
@@ -127,6 +127,12 @@
                   >                                                                 
                       {{ t('Remaining') }} {{props.row.diffDay}} {{t('Day')}}
                   </b-badge> 
+            </span>
+
+            <span v-if="props.column.field === 'memberCountDisplay'">
+                <span class="member-count-display">
+                    {{ (props.row.CountUsedMember || 0) }}/{{ (props.row.CountMember || 0) }}
+                </span>
             </span>
 
             <span v-if="props.column.field === 'action'">
@@ -272,11 +278,11 @@ export default {
         },
         {
           label: t('Member Count'),
-          field: 'CountMember',
+          field: 'memberCountDisplay',
           sortable: true,
           sortFn: (a, b, order) => {
-          const valA = a;
-          const valB = b;
+          const valA = a.CountUsedMember || 0;
+          const valB = b.CountUsedMember || 0;
           return order === 'asc' ? valA - valB : valB - valA;
           }
         },
@@ -334,6 +340,11 @@ export default {
     }
   },
   computed: {
+    groupSubscriptionTitle() {
+      const totalUsedMembers = this.rows.reduce((sum, row) => sum + (row.CountUsedMember || 0), 0);
+      const totalMembers = this.rows.reduce((sum, row) => sum + (row.CountMember || 0), 0);
+      return `Group Subscription (${totalUsedMembers}/${totalMembers})`;
+    },
     resolveStatusVariant() {      
         const statusColor = {                    
           1: 'light-success',
@@ -705,6 +716,15 @@ export default {
   width: 30px;
   height: 30px;
   border-radius: 50%;
+}
+
+.member-count-display {
+  font-weight: 600;
+  color: #2c3e50;
+  background-color: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
 }
 
 .bounce-enter-active {
