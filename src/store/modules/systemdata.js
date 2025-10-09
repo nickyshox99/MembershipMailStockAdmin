@@ -1925,9 +1925,10 @@ async GetActiveAdminBank({commit}, search) {
         email: inputData.get("email"),
         product_id: inputData.get("product_id"),
         note: inputData.get("note"),
+        purchase_type: inputData.get("purchase_type"),
     }
 
-    // console.log(body);
+    console.log('CreateAndApproveSubScribeOrder - body:', body);
 
     let response;
     await axios.post("api/product/CreateAndApproveSubScribeOrder",body,
