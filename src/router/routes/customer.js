@@ -39,4 +39,12 @@ export default [
       layout: 'full',            
     },
   },
+  {
+    path: '/UserRegis',
+    name: 'user-regis',
+    component: () => import('@/views/pages/customer/UserRegis.vue'),
+    meta: {
+      layout: 'full',            
+    },
+  },
 ]
