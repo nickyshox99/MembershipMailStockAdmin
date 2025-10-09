@@ -1,7 +1,5 @@
 <template>
-
   <div>
-
     <group-create-edit :isEditFormActive="isEditFormActive" :pRowData="selectedDataRow" 
     :isModeEdit="isModeEdit"
       @refetch-data="search" @close-edit-form="closeEditForm" />
@@ -14,13 +12,10 @@
     :isModeMemberEdit="isModeMemberEdit"
       @refetch-data="search" @close-edit-form="closeEditForm" />
 
-
     <Transition name="fade" mode="out-in">
       <b-card v-if="!(isEditFormActive)&&!(isNoteFormActive)&&!(isMemberFormActive)">
         <div class="m-2">
-          
           <b-row>
-
             <b-col cols="10" md="10" class="d-flex align-items-center justify-content-start">
               <b-button variant="primary" @click="search">
               <feather-icon
@@ -317,7 +312,6 @@ export default {
       // toDate: tDate,
       pageLength: 10,
       dir: false,      
-      
       rows: [],
       searchTerm: '',            
       isEditFormActive: false,
@@ -619,8 +613,8 @@ export default {
         listId: listId,
       }
 
-      // console.log(body);
 
+      // console.log(body);
       let response;
       await axios.post("api/subscriptiongroup/deleteById/", body,
         {

@@ -31,4 +31,12 @@ export default [
       layout: 'full',            
     },
   },
+  {
+    path: '/SelectTopic',
+    name: 'select-topic',
+    component: () => import('@/views/pages/customer/SelectTopic.vue'),
+    meta: {
+      layout: 'full',            
+    },
+  },
 ]
