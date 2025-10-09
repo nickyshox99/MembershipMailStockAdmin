@@ -174,6 +174,13 @@ export default {
       passwordFieldType: 'password',
       confirmPasswordFieldType: 'password',
       errorMessage: '',
+      sourceUserId: null, // รับมาจาก LINE
+    }
+  },
+  mounted() {
+    // รับ sourceUserId จาก query parameters
+    if (this.$route.query.sourceUserId) {
+      this.sourceUserId = this.$route.query.sourceUserId
     }
   },
   computed: {
@@ -234,17 +241,26 @@ export default {
         },
       })
 
-      // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email
+      // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email และ sourceUserId
+      const query = { 
+        type: 'personal',
+        email: this.email 
+      }
+      if (this.sourceUserId) {
+        query.sourceUserId = this.sourceUserId
+      }
       this.$router.push({
         name: 'buy-product',
-        query: { 
-          type: 'personal',
-          email: this.email 
-        }
+        query
       })
     },
     goBack() {
-      this.$router.push({ name: 'select-topic' })
+      // กลับไปหน้า SelectTopic พร้อมส่ง sourceUserId
+      const query = {}
+      if (this.sourceUserId) {
+        query.sourceUserId = this.sourceUserId
+      }
+      this.$router.push({ name: 'select-topic', query })
     },
   },
 }

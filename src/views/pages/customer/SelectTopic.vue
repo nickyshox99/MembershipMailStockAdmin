@@ -3,7 +3,7 @@
     <div class="select-background">
       <div class="background-overlay"></div>
     </div>
-    
+
     <div class="auth-wrapper auth-v1 px-2">
       <div class="auth-inner py-2">
         <b-card class="select-card mb-0">
@@ -22,11 +22,7 @@
           <div class="options-section">
             <b-row>
               <b-col cols="12" md="6" class="mb-3 mb-md-0">
-                <div 
-                  class="option-card"
-                  :class="{ 'selected': selectedType === 'shop' }"
-                  @click="selectType('shop')"
-                >
+                <div class="option-card" :class="{ 'selected': selectedType === 'shop' }" @click="selectType('shop')">
                   <div class="option-icon">
                     <feather-icon icon="ShoppingBagIcon" size="48" />
                   </div>
@@ -41,11 +37,8 @@
               </b-col>
 
               <b-col cols="12" md="6">
-                <div 
-                  class="option-card"
-                  :class="{ 'selected': selectedType === 'personal' }"
-                  @click="selectType('personal')"
-                >
+                <div class="option-card" :class="{ 'selected': selectedType === 'personal' }"
+                  @click="selectType('personal')">
                   <div class="option-icon">
                     <feather-icon icon="UserIcon" size="48" />
                   </div>
@@ -62,13 +55,7 @@
           </div>
 
           <div class="submit-section mt-3">
-            <b-button
-              variant="primary"
-              block
-              class="submit-button"
-              :disabled="!selectedType"
-              @click="handleConfirm"
-            >
+            <b-button variant="primary" block class="submit-button" :disabled="!selectedType" @click="handleConfirm">
               <feather-icon icon="ArrowRightIcon" class="button-icon" />
               ดำเนินการต่อ
             </b-button>
@@ -98,6 +85,13 @@ export default {
   data() {
     return {
       selectedType: null, // 'shop' หรือ 'personal'
+      sourceUserId: null, // รับมาจาก LINE
+    }
+  },
+  mounted() {
+    // รับ sourceUserId จาก query parameters
+    if (this.$route.query.sourceUserId) {
+      this.sourceUserId = this.$route.query.sourceUserId
     }
   },
   methods: {
@@ -106,11 +100,19 @@ export default {
     },
     handleConfirm() {
       if (this.selectedType === 'shop') {
-        // นำไปหน้าซื้อแบบรหัสร้าน
-        this.$router.push({ name: 'buy-product', query: { type: 'shop' } })
+        // นำไปหน้าซื้อแบบรหัสร้าน พร้อมส่ง sourceUserId
+        const query = { type: 'shop' }
+        if (this.sourceUserId) {
+          query.sourceUserId = this.sourceUserId
+        }
+        this.$router.push({ name: 'buy-product', query })
       } else if (this.selectedType === 'personal') {
-        // นำไปหน้าลงทะเบียนด้วยรหัสตัวเอง
-        this.$router.push({ name: 'user-regis' })
+        // นำไปหน้าลงทะเบียนด้วยรหัสตัวเอง พร้อมส่ง sourceUserId
+        const query = { type: 'personal' }
+        if (this.sourceUserId) {
+          query.sourceUserId = this.sourceUserId
+        }
+        this.$router.push({ name: 'user-regis', query })
       }
     },
   },
@@ -174,6 +176,7 @@ export default {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -266,11 +269,11 @@ export default {
   &:hover {
     border-color: #ff69b4;
     transform: translateY(-5px) scale(1.02);
-    box-shadow: 
+    box-shadow:
       0 15px 35px rgba(255, 105, 180, 0.2),
       0 5px 15px rgba(255, 105, 180, 0.1);
     background: rgba(255, 255, 255, 0.95);
-    
+
     &::before {
       background: linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(135, 206, 235, 0.1) 100%);
     }
@@ -279,11 +282,11 @@ export default {
   &.selected {
     background: linear-gradient(135deg, rgba(255, 182, 193, 0.25) 0%, rgba(135, 206, 235, 0.15) 100%);
     border-color: #ff69b4;
-    box-shadow: 
+    box-shadow:
       0 10px 30px rgba(255, 105, 180, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-    
+
     &::before {
       background: linear-gradient(135deg, rgba(255, 182, 193, 0.3) 0%, rgba(135, 206, 235, 0.2) 100%);
     }
@@ -295,7 +298,7 @@ export default {
   color: #ff69b4;
   position: relative;
   z-index: 1;
-  
+
   .selected & {
     color: #ff69b4;
   }
@@ -333,6 +336,7 @@ export default {
   from {
     transform: scale(0);
   }
+
   to {
     transform: scale(1);
   }
@@ -452,4 +456,3 @@ export default {
   }
 }
 </style>
-
