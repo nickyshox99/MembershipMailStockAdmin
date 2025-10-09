@@ -109,8 +109,8 @@ export default {
         // นำไปหน้าซื้อแบบรหัสร้าน
         this.$router.push({ name: 'buy-product', query: { type: 'shop' } })
       } else if (this.selectedType === 'personal') {
-        // นำไปหน้าซื้อแบบรหัสตัวเอง
-        this.$router.push({ name: 'buy-product', query: { type: 'personal' } })
+        // นำไปหน้าลงทะเบียนด้วยรหัสตัวเอง
+        this.$router.push({ name: 'user-regis' })
       }
     },
   },
