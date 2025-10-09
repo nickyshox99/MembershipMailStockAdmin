@@ -41,7 +41,7 @@ const router = new VueRouter({
   // console.log("Is login");  
   // console.log(isLoggedIn);
 
-  if (to.name=="recommend-join-family"||to.name=="registeremail"||to.name=="buy-product"||to.name=="confirm-payment" ) {
+  if (to.name=="recommend-join-family"||to.name=="registeremail"||to.name=="buy-product"||to.name=="confirm-payment"||to.name=="select-topic"||to.name=="user-regis" ) {
     return next()
   }
   
