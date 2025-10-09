@@ -812,7 +812,7 @@ export default {
     text-align: center;
 
     .confirm-btn {
-      background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%) !important;
+      background: linear-gradient(135deg, #028902 0%, #028902 100%) !important;
       border: none !important;
       border-radius: 12px !important;
       padding: 0.875rem 2rem !important;

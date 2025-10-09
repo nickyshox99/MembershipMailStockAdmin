@@ -131,17 +131,60 @@
                     :label="t('Line User ID')"
                     label-for="edit-line-user-id"
                   >
-                    <b-form-input
+                    <v-select
                       id="edit-line-user-id"
-                      :placeholder="editingLineUserId ? 'Enter Line User ID' : 'Empty - No Line ID'"
-                      v-model="editingLineUserId"
-                      :class="editingLineUserId ? '' : 'text-muted'"
-                    />
-                    <small class="text-info" v-if="editingLineUserId">
-                      Line ID: {{ editingLineUserId }}
+                      v-model="selectedLineContact"
+                      :options="lineContacts"
+                      :reduce="contact => contact.user_id"
+                      label="display_name"
+                      :placeholder="t('Search and select Line Contact')"
+                      :loading="isLoadingLineContacts"
+                      :filterable="true"
+                      @search="onSearchLineContacts"
+                      :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    >
+                      <template #option="{ display_name, user_id, alias_userid, picture_url }">
+                        <div class="d-flex align-items-center">
+                          <b-avatar
+                            :src="picture_url || require('@/assets/images/avatars/1.png')"
+                            size="36"
+                            class="mr-2"
+                          />
+                          <div>
+                            <strong>{{ display_name }}</strong>
+                            <br>
+                            <small class="text-muted">{{ user_id }}</small>
+                            <small v-if="alias_userid" class="text-info ml-1">({{ alias_userid }})</small>
+                          </div>
+                        </div>
+                      </template>
+                      <template #selected-option="{ display_name, user_id, picture_url }">
+                        <div class="d-flex align-items-center">
+                          <b-avatar
+                            :src="picture_url || require('@/assets/images/avatars/1.png')"
+                            size="28"
+                            class="mr-2"
+                          />
+                          <div>
+                            <strong>{{ display_name }}</strong>
+                            <small class="text-muted ml-1">{{ user_id }}</small>
+                          </div>
+                        </div>
+                      </template>
+                      <template #no-options="{ search, searching }">
+                        <span v-if="searching">
+                          {{ t('No results found for') }} "{{ search }}"
+                        </span>
+                        <span v-else>
+                          {{ t('Start typing to search Line Contacts') }}
+                        </span>
+                      </template>
+                    </v-select>
+                    <small class="text-info d-block mt-1" v-if="editingLineUserId">
+                      {{ t('Selected Line ID') }}: {{ editingLineUserId }}
                     </small>
-                    <small class="text-muted" v-else>
-                      No Line ID assigned
+                    <small class="text-muted d-block mt-1" v-else>
+                      {{ t('No Line ID assigned') }}
                     </small>
                   </b-form-group>
                 </b-col>
@@ -197,6 +240,36 @@
               perPage: pageLength
             }" theme="polar-bear">
               <template slot="table-row" slot-scope="props">
+
+                <span v-if="props.column.field === 'user_id2'"> 
+                  <div v-if="props.row.user_id!=null && props.row.user_id!=''" class="d-flex align-items-center">
+                    <b-img 
+                      v-if="props.row.line_profile_url"
+                      :src="props.row.line_profile_url" 
+                      rounded="circle" 
+                      width="32" 
+                      height="32"
+                      class="mr-50"
+                      alt="Line Profile"
+                    />
+                    <feather-icon 
+                      v-else
+                      icon="UserIcon" 
+                      size="32" 
+                      class="mr-50 text-secondary"
+                    />
+                    <span class="font-weight-bold">
+                      {{ props.row.line_display_name || props.row.user_id }}
+                    </span>
+                  </div>
+                  <b-badge v-if="props.row.user_id==null || props.row.user_id==''"
+                    pill
+                    :variant="resolveStatusVariant(1)"
+                    class="text-capitalize"
+                  >
+                    ว่าง
+                  </b-badge>                    
+                </span>
 
                 <span v-if="props.column.field === 'action'">
                     <b-badge  style="cursor: pointer; margin-right:2px" variant="info" @click="editMemberData(props.row)">
@@ -265,8 +338,11 @@ import {
   BFormDatepicker,
   BPagination,
   BBadge,
+  BAvatar,
 } from "bootstrap-vue";
 import { ref } from "@vue/composition-api";
+import vSelect from 'vue-select';
+import _ from 'lodash';
 
 import Ripple from "vue-ripple-directive";
 
@@ -298,11 +374,20 @@ export default {
     VueGoodTable,
     BPagination,
     BBadge,
+    BAvatar,
+    vSelect,
   },
   directives: {
     Ripple,
   },
   computed: {   
+    resolveStatusVariant() {      
+        const statusColor = {                    
+          1: 'light-success',
+          0: 'light-danger',          
+        }
+        return data => statusColor[data]
+    },
     direction() {
       if (store.state.appConfig.isRTL) {
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
@@ -330,9 +415,13 @@ export default {
           field: 'email',
         },
         {
+          label: t('Line User',),
+          field: 'user_id2',
+        },
+        {
           label: t('Action'),
           field: 'action',
-          width: '5%',
+          width: '15%',
         },
       ];
     return {
@@ -371,6 +460,11 @@ export default {
       showEditPassword: false,
       editingLineUserId: '',
       
+      // Line Contact dropdown
+      lineContacts: [],
+      selectedLineContact: null,
+      isLoadingLineContacts: false,
+      
     };
   },
   model: {
@@ -408,6 +502,10 @@ export default {
     },
   },
   watch: {
+    selectedLineContact: function (newVal, oldVal) {
+      console.log('selectedLineContact changed:', newVal);
+      this.editingLineUserId = newVal || '';
+    },
     pRowData: function (newVal, oldVal) {
       this.statusActive = newVal.status;
       this.subscribeTypeSelected = newVal.subscription_type_id; 
@@ -427,6 +525,7 @@ export default {
     this.titleCard = this.$t("Add Mail To Stock");
 
     await this.getPagePermission();
+    await this.fetchLineContacts();
     
   },
   methods: {
@@ -434,6 +533,57 @@ export default {
     ...mapActions(["UploadFileAndDeleteOldFile"]),  
     ...mapActions(["DeleteOldFile"]),     
     ...mapActions(["GetSubscribeMemberByGroupById"]),
+    async fetchLineContacts(searchQuery = '') {
+        try {
+            this.isLoadingLineContacts = true;
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            const body = {
+                searchword: searchQuery,
+                page: 1,
+                perPage: 50
+            };
+
+            const response = await axios.post('/api/linecontact/getlinecontact/', body, {
+                headers: {
+                    'Authorization': `Bearer ${userData.token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.data.status === 'success') {
+                this.lineContacts = response.data.data;
+            } else {
+                console.error('Failed to fetch line contacts:', response.data.message);
+                this.lineContacts = [];
+            }
+        } catch (error) {
+            console.error('Error fetching line contacts:', error);
+            this.$toast({
+                component: ToastificationContent,
+                props: {
+                    title: 'Error loading Line Contacts',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'danger',
+                    text: error.message || 'Failed to load Line Contacts'
+                },
+            });
+            this.lineContacts = [];
+        } finally {
+            this.isLoadingLineContacts = false;
+        }
+    },
+    onSearchLineContacts(search, loading) {
+        if (search.length > 0) {
+            loading(true);
+            this.searchLineContacts(search, loading);
+        }
+    },
+    searchLineContacts: _.debounce(function(search, loading) {
+        this.fetchLineContacts(search).then(() => {
+            loading(false);
+        });
+    }, 350),
     getCurrentTimeString(ctime) {
       return ctime;
       // const ctime2 = new Date(ctime);
@@ -751,7 +901,8 @@ export default {
         this.editingMemberId = memberRow.id;
         this.editingEmail = memberRow.email;
         this.editingPassword = memberRow.password || '';
-        this.editingLineUserId = memberRow.line_user_id || '';
+        this.editingLineUserId = memberRow.user_id || '';
+        this.selectedLineContact = memberRow.user_id || null;
     },
     saveMemberEdit() {
         console.log('saveMemberEdit');
@@ -786,7 +937,7 @@ export default {
             id: this.editingMemberId,
             email: this.editingEmail,
             password: this.editingPassword,
-            line_user_id: this.editingLineUserId,
+            user_id: this.editingLineUserId,
             page_name: this.$route.name,
         }
 
@@ -857,7 +1008,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+@import '@core/scss/vue/libs/vue-select.scss';
+
 .bounce-enter-active {
   animation: bounce-in 0.5s;
 }
