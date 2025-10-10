@@ -279,6 +279,25 @@ const actions = {
 
     return response;
   },
+  async UpdateStatusRegis({commit}, formData) {
+    console.log('UpdateStatusRegis action');
+    
+    let response;
+    await axios.post("api/usersemail/updatestatus", formData, {
+      headers: {            
+        'Content-Type': 'application/json'
+      }
+    }).then(
+      resp => {
+        response = resp;
+      }
+    ).catch(error => {
+      console.error('UpdateStatusRegis error:', error);
+      response = error.response || { data: { status: 'error', message: error.message } };
+    });
+
+    return response;
+  },
 };
 
 const mutations = {
