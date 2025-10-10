@@ -231,7 +231,7 @@ import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 import useJwt from '@/auth/jwt/useJwt'
 
@@ -304,6 +304,8 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('userRegistration', ['getEmail', 'getPassword', 'hasRegistrationData']),
+    
     passwordToggleIcon() {
       return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
     },
@@ -330,6 +332,7 @@ export default {
     ...mapActions(["CustomerDeleteOldFile"]),
     ...mapActions(["GetActiveProductSetting"]),
     ...mapActions(["GetBankInfo"]),
+    ...mapActions(["InsertUserEmail"]),
     async validationForm() {
 
     },
@@ -604,6 +607,9 @@ export default {
       
       if (response && response.data && response.data.status=='success') 
       {         
+          // Insert user email data after payment confirmation success
+          await this.insertUserEmailData();
+          
           this.showCompleteDialog = true;
           this.$toast(
             {
@@ -630,7 +636,6 @@ export default {
                 variant: 'error',
               },
             });
-ain
       }
     },
     async deleteSlip() {
@@ -902,6 +907,58 @@ ain
             variant: 'error',
           },
         })
+      }
+    },
+    async insertUserEmailData() {
+      try {
+        console.log('=== insertUserEmailData ===');
+        
+        // Check if we have registration data from store
+        if (!this.hasRegistrationData) {
+          console.log('No registration data in store, skipping insert');
+          return;
+        }
+
+        const email = this.getEmail;
+        const password = this.getPassword;
+        const { id, user_id } = this.$route.query || {};
+
+        console.log('Registration data:', { email, password: '***', user_id, order_id: id });
+
+        // Validate data
+        if (!user_id || !id || !email || !password) {
+          console.log('Missing required data for insert:', { user_id, order_id: id, email: !!email, password: !!password });
+          return;
+        }
+
+        // Prepare data
+        const data = {
+          user_id: user_id,
+          order_id: parseInt(id),
+          email: email,
+          password: password,
+          status_regis: 0,
+        };
+
+        console.log('Inserting user email data:', { ...data, password: '***' });
+
+        // Call API
+        const response = await this.InsertUserEmail(data);
+
+        console.log('Insert response:', response);
+
+        if (response && response.data && response.data.status === 'success') {
+          console.log('✅ User email inserted successfully');
+          // ไม่แสดง toast เพราะจะซ้ำกับ toast ของการยืนยันชำระเงิน
+        } else {
+          const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
+          console.error('Insert user email failed:', errorMessage);
+          // Silent error - ไม่แสดง error toast เพราะไม่ต้องการให้รบกวน flow หลัก
+        }
+
+      } catch (error) {
+        console.error('❌ Error in insertUserEmailData:', error);
+        // Silent error - ไม่แสดง error toast เพื่อไม่ให้รบกวน flow การชำระเงิน
       }
     }
   },
