@@ -153,6 +153,7 @@ import {
   BInputGroupAppend,
 } from 'bootstrap-vue'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'UserRegis',
@@ -212,13 +213,15 @@ export default {
     },
   },
   methods: {
+    ...mapActions('userRegistration', ['setRegistrationData']),
+    
     togglePasswordVisibility() {
       this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password'
     },
     toggleConfirmPasswordVisibility() {
       this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password'
     },
-    handleSubmit() {
+    async handleSubmit() {
       if (!this.isFormValid) {
         this.errorMessage = 'กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง'
         return
@@ -226,11 +229,18 @@ export default {
 
       this.errorMessage = ''
 
-      // TODO: เรียก API สำหรับลงทะเบียน
+      // บันทึกข้อมูลลง store
+      await this.setRegistrationData({
+        email: this.email,
+        password: this.password,
+        sourceUserId: this.sourceUserId || null,
+      })
+
       console.log('Register with:', {
         email: this.email,
         password: this.password,
       })
+      console.log('Data saved to store!')
 
       this.$toast({
         component: ToastificationContent,
