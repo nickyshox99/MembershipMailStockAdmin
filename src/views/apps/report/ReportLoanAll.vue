@@ -264,20 +264,20 @@
         </b-badge>
       </div>
 
-      <!-- Top Seller Card -->
-      <div v-if="bestSellingProducts.length > 0" class="top-seller-card mb-4">
-        <div class="d-flex align-items-center justify-content-center flex-column text-center">
-          <div class="d-flex align-items-center mb-2">
-            <feather-icon icon="AwardIcon" size="24" class="text-pink me-2" />
-            <h6 class="text-pink fw-bold mb-0">Top Seller</h6>
-          </div>
-          <h4 class="fw-bold text-dark mb-2">{{ bestSellingProducts[0].subscription_name }}</h4>
-          <div class="text-muted">
-            <span class="fw-bold text-primary">{{ bestSellingProducts[0].total_orders }} ครั้ง</span> • 
-            <span class="fw-bold text-success">{{ bestSellingProducts[0].unique_customers }} ลูกค้า</span>
-          </div>
-        </div>
-      </div>
+       <!-- Top Seller Card -->
+       <div v-if="bestSellingProducts.length > 0" class="top-seller-card mb-4">
+         <div class="d-flex align-items-center justify-content-center flex-column text-center">
+           <div class="d-flex align-items-center mb-2">
+             <feather-icon icon="AwardIcon" size="24" class="text-danger me-2" />
+             <h6 class="text-danger fw-bold mb-0">Top Seller</h6>
+           </div>
+           <h4 class="fw-bold text-dark mb-2">{{ bestSellingProducts[0].subscription_name }}</h4>
+           <div class="text-dark">
+             <span class="fw-bold text-dark">{{ bestSellingProducts[0].total_orders }} ครั้ง</span> • 
+             <span class="fw-bold text-dark">{{ bestSellingProducts[0].unique_customers }} ลูกค้า</span>
+           </div>
+         </div>
+       </div>
 
       <!-- Best Selling Products Table -->
       <b-table
@@ -306,21 +306,17 @@
           </div>
         </template>
         
-        <template #cell(total_orders)="data">
-          <div class="text-center">
-            <b-badge variant="light-info" class="px-3 py-2">
-              {{ data.item.total_orders }} Orders
-            </b-badge>
-          </div>
-        </template>
-        
-        <template #cell(unique_customers)="data">
-          <div class="text-center">
-            <b-badge variant="light-success" class="px-3 py-2">
-              {{ data.item.unique_customers }} Customers
-            </b-badge>
-          </div>
-        </template>
+         <template #cell(total_orders)="data">
+           <div class="text-center">
+             <span class="fw-bold">{{ data.item.total_orders }}</span>
+           </div>
+         </template>
+         
+         <template #cell(unique_customers)="data">
+           <div class="text-center">
+             <span class="fw-bold">{{ data.item.unique_customers }}</span>
+           </div>
+         </template>
       </b-table>
     </b-card>
 
@@ -960,15 +956,15 @@ export default {
 }
 
 .top-seller-card {
-  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
-  border: 1px solid #f48fb1;
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border: 1px solid #dc3545;
   border-radius: 8px;
   padding: 2rem;
   position: relative;
   overflow: hidden;
   
   h6 {
-    color: #e91e63 !important;
+    color: #dc3545 !important;
   }
   
   h4 {
@@ -979,16 +975,12 @@ export default {
     color: #6c757d !important;
   }
   
-  .text-primary {
-    color: #e91e63 !important;
+  .text-danger {
+    color: #dc3545 !important;
   }
   
   .text-success {
     color: #28a745 !important;
-  }
-  
-  .text-pink {
-    color: #e91e63 !important;
   }
   
 }
