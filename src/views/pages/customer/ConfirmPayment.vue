@@ -140,7 +140,7 @@
                 </h4>
 
                 <div v-if="slip_file_url != ''" class="slip-display">
-                  <img :src="slip_file_url" class="slip-image" alt="Slip Image" />
+                  <img :src="getSlipImageUrl(slip_file_url)" class="slip-image" alt="Slip Image" />
                   <div class="slip-actions">
                     <b-button variant="danger" size="sm" class="delete-btn" @click="deleteSlip()">
                       <feather-icon icon="TrashIcon" class="button-icon" />
@@ -367,6 +367,9 @@ export default {
             
             this.slip_file_url = response.data.slip_file_url || '';
             
+            console.log('=== Slip File URL from API ===');
+            console.log('slip_file_url:', this.slip_file_url);
+            
             // Log ข้อมูลทั้งหมดเพื่อ debug
             console.log('=== FULL ORDER DATA ===');
             console.log('Order Data (all fields):', JSON.stringify(this.orderData, null, 2));
@@ -536,6 +539,10 @@ export default {
 
         if (response && response.data && response.data.status === 'success') {
           this.slip_file_url = response.data.url;
+          
+          console.log('=== Upload Success ===');
+          console.log('slip_file_url set to:', this.slip_file_url);
+          console.log('response.data:', response.data);
 
           this.$toast({
             component: ToastificationContent,
@@ -739,6 +746,28 @@ export default {
       const vueconfig = require('../../../../config/vue.config');
       const apiUrl = vueconfig.BASE_API_URL;
       return `${apiUrl}getfile/${qrPath}`;
+    },
+    getSlipImageUrl(slipPath) {
+      console.log('=== getSlipImageUrl ===');
+      console.log('Input slipPath:', slipPath);
+      
+      if (!slipPath) return '';
+      
+      // If it's already a full URL, return as is
+      if (slipPath.startsWith('http')) {
+        console.log('Already full URL:', slipPath);
+        return slipPath;
+      }
+      
+      // Get API URL from vue config
+      const vueconfig = require('../../../../config/vue.config');
+      const apiUrl = vueconfig.BASE_API_URL;
+      const fullUrl = `${apiUrl}getslipfile/${slipPath}`;
+      
+      console.log('BASE_API_URL:', apiUrl);
+      console.log('Full URL:', fullUrl);
+      
+      return fullUrl;
     },
     async loadSetting() {
       try {
