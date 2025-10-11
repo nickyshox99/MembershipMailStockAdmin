@@ -108,6 +108,12 @@ export default [
     name: 'apps-group-sub',
     component: () => import('@/views/apps/members/GroupSub.vue'),
   },
+  
+  {
+    path: '/apps/members/personalemail',
+    name: 'apps-personal-email-manage',
+    component: () => import('@/views/apps/members/PersonalEmailManage.vue'),
+  },
 
   {
     path: '/apps/orders/orderwaitapprove',
