@@ -735,5 +735,6 @@
   "Success Rate":"อัตราความสำเร็จ",
   "Loading":"กำลังโหลด",
   "Daily Revenue Trend":"แนวโน้มรายได้รายวัน",
-  "Average Order Value":"มูลค่าเฉลี่ยต่อคำสั่งซื้อ"
+  "Average Order Value":"มูลค่าเฉลี่ยต่อคำสั่งซื้อ",
+  "type_purchase":"ประเภทการสั่งซื้อ"
 }

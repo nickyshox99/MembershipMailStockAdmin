@@ -69,6 +69,47 @@
         theme="polar-bear"
       >
         <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field === 'type_purchase'">
+            <b-badge
+              v-if="props.row.purchase_type === 'shop'"
+              pill
+              variant="info"
+              class="text-capitalize"
+            >
+              Shop
+            </b-badge>
+            <div v-if="props.row.purchase_type === 'personal'">
+              <b-badge
+                pill
+                variant="warning"
+                class="text-capitalize"
+              >
+                Personal
+              </b-badge>
+              <br/>
+              <b-badge
+                v-if="props.row.personal_email_status === 0"
+                pill
+                variant="light-danger"
+                class="text-capitalize mt-1"
+                style="font-size: 10px;"
+              >
+                ยังไม่ได้สมัครสมาชิก
+              </b-badge>
+              <b-badge
+                v-if="props.row.personal_email_status === 1"
+                pill
+                variant="light-success"
+                class="text-capitalize mt-1"
+                style="font-size: 10px;"
+              >
+                สมัครสมาชิกแล้ว
+              </b-badge>
+            </div>
+            <span v-if="!props.row.purchase_type || (props.row.purchase_type !== 'shop' && props.row.purchase_type !== 'personal')">
+              -
+            </span>
+          </span>
           <span v-if="props.column.field === 'line_name'">
             <div style="font-size: 14px;">
               <b-img
@@ -180,12 +221,13 @@
             </b-badge>
             <b-badge
               v-if="props.row.wait_check_payment==1"
-              style="cursor: pointer; margin-right: 2px"
-              variant="success"
-              @click="inspectApprove(props.row)"
+              :style="(props.row.purchase_type === 'personal' && props.row.personal_email_status === 0) ? 'cursor: not-allowed; margin-right: 2px; opacity: 0.6' : 'cursor: pointer; margin-right: 2px'"
+              :variant="(props.row.purchase_type === 'personal' && props.row.personal_email_status === 0) ? 'secondary' : 'success'"
+              @click="(props.row.purchase_type === 'personal' && props.row.personal_email_status === 0) ? null : inspectApprove(props.row)"
             >
               <feather-icon icon="CheckIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Correct Slip") }}</span>
+              <span v-if="props.row.purchase_type === 'personal' && props.row.personal_email_status === 0" class="d-none d-sm-inline" style="font-size: 9px;"> (รอสมัครสมาชิก)</span>
             </b-badge>
             <b-badge
               v-if="props.row.wait_check_payment==1"
@@ -204,6 +246,24 @@
             >
               <feather-icon icon="MailIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Send Payment") }}</span>
+            </b-badge>
+            <b-badge
+              v-if="props.row.purchase_type === 'personal'"
+              style="cursor: pointer; margin-right: 2px"
+              variant="primary"
+              @click="updateEmailStatus(props.row)"
+            >
+              <feather-icon icon="RefreshCwIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Update Status") }}</span>
+            </b-badge>
+            <b-badge
+              v-if="props.row.purchase_type === 'personal'"
+              style="cursor: pointer; margin-right: 2px"
+              variant="info"
+              @click="handlePersonalAction(props.row)"
+            >
+              <feather-icon icon="UserIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Personal") }}</span>
             </b-badge>
           </span>
         </template>
@@ -437,6 +497,121 @@
 
         </b-modal>
 
+        <b-modal
+            id="modal-update-status"
+            ref="modalUpdateStatus"
+            v-model="showModalUpdateStatus"
+            :title="t('Confirm Update Status')"
+            @show="resetModalUpdateStatus"        
+            @hidden="resetModalUpdateStatus"
+            @ok="handleOkUpdateStatus"      
+            size="sm"  
+            :hideHeaderClose="false"            
+            ok-variant="primary"
+            :okTitle="t('YES')"
+            buttonSize="sm"
+            :cancelTitle="t('NO')"
+            footerClass="p-2"
+        >
+            <b-row>
+                <b-col md="12">
+                    <p>{{ t('คุณต้องการยืนยันการเปลี่ยนสถานะ การสมัครของเมลนี้ใช่หรือไม่') }}</p>
+                    <p v-if="updateStatusItem && updateStatusItem.email" style="font-weight: bold; color: #7367f0;">
+                      Email: {{ updateStatusItem.email }}
+                    </p>
+                </b-col>
+            </b-row>
+        </b-modal>
+
+        <!-- Personal Email Modal -->
+        <b-modal
+            id="modal-personal-email"
+            ref="modalPersonalEmail"
+            v-model="showModalPersonalEmail"
+            :title="t('Personal Email Information')"
+            @show="resetModalPersonalEmail"        
+            @hidden="resetModalPersonalEmail"
+            @ok="handleOkPersonalEmail"      
+            size="lg"  
+            :hideHeaderClose="false"            
+            ok-variant="primary"
+            :okTitle="t('Close')"
+            buttonSize="sm"
+            hide-footer
+        >
+            <div v-if="loadingPersonalEmail" class="text-center">
+                <b-spinner variant="primary" label="Loading..."></b-spinner>
+                <p class="mt-2">{{ t("Loading...") }}</p>
+            </div>
+            
+            <div v-else-if="personalEmailData && personalEmailData.length > 0">
+                <div v-for="email in personalEmailData" :key="email.id" class="personal-email-card">
+                    <div class="text-center mb-4">
+                        <feather-icon icon="MailIcon" size="48" class="text-primary mb-2" />
+                        <h5 class="mb-1">{{ t("Personal Email Account") }}</h5>
+                        <p class="text-muted">{{ t("Order ID") }}: {{ email.order_id }}</p>
+                    </div>
+                    
+                    <div class="email-info-container">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <feather-icon icon="MailIcon" size="16" />
+                                {{ t("Email Address") }}
+                            </div>
+                            <div class="info-value email-value">{{ email.email }}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <feather-icon icon="LockIcon" size="16" />
+                                {{ t("Password") }}
+                            </div>
+                            <div class="info-value password-value">{{ email.password }}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <feather-icon icon="UserIcon" size="16" />
+                                {{ t("User ID") }}
+                            </div>
+                            <div class="info-value userid-value">{{ email.user_id }}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <feather-icon icon="ActivityIcon" size="16" />
+                                {{ t("Status") }}
+                            </div>
+                            <div class="info-value">
+                                <b-badge 
+                                    :variant="email.status_regis == 1 ? 'success' : 'danger'"
+                                    pill
+                                    class="status-badge"
+                                >
+                                    {{ email.status_regis == 1 ? t("Active") : t("Inactive") }}
+                                </b-badge>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <b-button 
+                            variant="outline-primary" 
+                            size="sm"
+                            @click="copyToClipboard(email.email + '\n' + email.password)"
+                        >
+                            <feather-icon icon="CopyIcon" size="14" />
+                            {{ t("Copy Credentials") }}
+                        </b-button>
+                    </div>
+                </div>
+            </div>
+            
+            <div v-else class="text-center">
+                <p class="text-muted">{{ t("No personal email data found for this order") }}</p>
+            </div>
+        </b-modal>
+
   </div>
 
 </template>
@@ -464,6 +639,7 @@ import {
   BFormTextarea,
   BMedia,
   BLink,
+  BSpinner,
 } from "bootstrap-vue";
 import { VueGoodTable } from "vue-good-table";
 import store from "@/store/index";
@@ -507,6 +683,7 @@ export default {
     LoanInformation,
     BMedia,
     BLink,
+    BSpinner,
     LoanAssignStaff,
     LoanKeyPayment,
     LoanKeyFine,
@@ -518,8 +695,8 @@ export default {
 
     const columnsOrderHistory =  [
             {
-            label: t('Email'),
-            field: 'email',  
+            label: t('type_purchase'),
+            field: 'type_purchase',  
             width: '10%',          
             },
             {
@@ -621,6 +798,15 @@ export default {
       showModalImage:false,
       imageModal : "",
       selectImageData : {},
+      
+      showModalUpdateStatus:false,
+      updateStatusItem: {},
+      
+      // Personal Email Modal
+      showModalPersonalEmail: false,
+      personalEmailData: [],
+      loadingPersonalEmail: false,
+      selectedOrderId: null,
 
     };
   },
@@ -673,6 +859,9 @@ export default {
     ...mapActions(["GetHistorySubScribeOrderWaitCheckPayment"]),
     ...mapActions(["VerifySlipOrder"]),
     ...mapActions(["SentPaymentMessageOrder"]),
+    ...mapActions(["UpdatePersonalEmailStatus"]),
+    ...mapActions(["GetPersonalEmailStatusByOrderId"]),
+    ...mapActions(["GetPersonalEmailByOrderId"]),
     
     
     formatDateAssigned(value) {
@@ -711,15 +900,16 @@ export default {
 
           const response = await this.GetHistorySubScribeOrderWaitCheckPayment(form);
           if (response.data.status == 'success') {           
-              this.rowsOrderHistory = response.data.data;                
-              // for (let index = 0; index < this.rowsOrderHistory.length; index++) {
-              //     const element = this.rowsOrderHistory[index];
-              //     if (element.end_date!=null) {
-              //         let diffDay = new Date(element.end_date).getTime() - new Date().getTime();
-              //         diffDay = Math.ceil(diffDay / (1000 * 3600 * 24)); // days
-              //         this.rowsOrderHistory[index]['diffDay'] = diffDay;
-              //     }
-              // }
+              this.rowsOrderHistory = response.data.data;
+              
+              // Fetch personal email status for personal orders
+              for (let index = 0; index < this.rowsOrderHistory.length; index++) {
+                  const element = this.rowsOrderHistory[index];
+                  
+                  if (element.purchase_type === 'personal') {
+                      await this.fetchPersonalEmailStatus(element.id, index);
+                  }
+              }
           } else {
               this.$toast(
               {
@@ -732,6 +922,27 @@ export default {
               });
           }
       },
+    async fetchPersonalEmailStatus(orderId, rowIndex) {
+        try {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const form = new FormData();
+            
+            form.append("userid", userData.username);
+            form.append("token", userData.token);
+            form.append("orderId", orderId);
+            
+            const response = await this.GetPersonalEmailStatusByOrderId(form);
+            
+            if (response.data.status === 'success' && response.data.data.length > 0) {
+                this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', response.data.data[0].status_regis);
+            } else {
+                this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
+            }
+        } catch (error) {
+            console.error('Error fetching personal email status:', error);
+            this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
+        }
+    },
     async getPagePermission() {
       console.log("getPagePermission");
 
@@ -1044,6 +1255,149 @@ export default {
             });
             
         }
+    },
+    async updateEmailStatus(item)
+    {
+        this.updateStatusItem = item;
+        this.showModalUpdateStatus = true;
+    },
+    resetModalUpdateStatus()
+    {
+        
+    },
+    async handleOkUpdateStatus()
+    {
+        console.log("handleOkUpdateStatus");
+
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);
+        form.append("orderId", this.updateStatusItem.id);
+        form.append("status", 1);
+        
+        const response = await this.UpdatePersonalEmailStatus(form);
+        if (response.data.status == "success") {
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Update Email Status`,
+                    icon: 'CheckIcon',
+                    variant: 'success',
+                    text: this.$t(`Update Status Successful`),
+                },
+                autoHideDelay: 3000,
+            });
+
+            this.search();
+        } else {
+            this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                    title: `Update Email Status`,
+                    icon: 'AlertTriangleIcon',
+                    variant: 'danger',
+                    text: this.$t('Update Status Unsuccessful') + ` ${response.data.message}`,
+                },
+                autoHideDelay: 3000,
+            });
+        }
+    },
+    async handlePersonalAction(itemData)
+    {
+      console.log("handlePersonalAction", itemData);
+      
+      this.selectedOrderId = itemData.id;
+      this.showModalPersonalEmail = true;
+      await this.loadPersonalEmailData(itemData.id);
+    },
+    
+    async loadPersonalEmailData(orderId) {
+      try {
+        this.loadingPersonalEmail = true;
+        this.personalEmailData = [];
+        
+        console.log('Loading personal email data for order ID:', orderId);
+        
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);
+        form.append("orderId", orderId);
+        form.append("username", userData.username);
+
+        const response = await this.GetPersonalEmailByOrderId(form);
+        
+        if (response.data.status === 'success') {
+          this.personalEmailData = response.data.data;
+          console.log('Personal email data loaded:', this.personalEmailData);
+        } else {
+          console.log('No personal email data found:', response.data.message);
+          this.personalEmailData = [];
+        }
+        
+      } catch (error) {
+        console.error('Error loading personal email data:', error);
+        this.personalEmailData = [];
+        
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Error`,
+            icon: 'AlertTriangleIcon',
+            variant: 'danger',
+            text: `Failed to load personal email data: ${error.message}`,
+          },
+          autoHideDelay: 5000,
+        });
+      } finally {
+        this.loadingPersonalEmail = false;
+      }
+    },
+    
+    resetModalPersonalEmail() {
+      this.personalEmailData = [];
+      this.selectedOrderId = null;
+      this.loadingPersonalEmail = false;
+    },
+    
+    handleOkPersonalEmail() {
+      this.showModalPersonalEmail = false;
+    },
+    
+    async copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: 'Copied!',
+            icon: 'CheckIcon',
+            variant: 'success',
+            text: 'Credentials copied to clipboard',
+          },
+          autoHideDelay: 2000,
+        });
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: 'Error',
+            icon: 'AlertTriangleIcon',
+            variant: 'danger',
+            text: 'Failed to copy credentials',
+          },
+          autoHideDelay: 3000,
+        });
+      }
     }
   },
 };
@@ -1051,4 +1405,69 @@ export default {
 
 <style lang="scss">
 @import "@core/scss/vue/libs/vue-good-table.scss";
+
+// Personal Email Modal Styles
+.personal-email-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px 0;
+  border: 1px solid #e9ecef;
+}
+
+.email-info-container {
+  .info-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #e9ecef;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      display: flex;
+      align-items: center;
+      min-width: 120px;
+      font-weight: 600;
+      color: #6c757d;
+      font-size: 14px;
+      
+      svg {
+        margin-right: 8px;
+        color: #007bff;
+      }
+    }
+    
+    .info-value {
+      flex: 1;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      color: #495057;
+      
+      &.email-value {
+        color: #007bff;
+        font-weight: 500;
+      }
+      
+      &.password-value {
+        color: #dc3545;
+        font-weight: 500;
+        letter-spacing: 1px;
+      }
+      
+      &.userid-value {
+        color: #6c757d;
+        font-size: 12px;
+        word-break: break-all;
+      }
+    }
+  }
+}
+
+.status-badge {
+  font-size: 12px;
+  padding: 4px 12px;
+}
 </style>
