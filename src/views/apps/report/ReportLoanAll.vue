@@ -176,6 +176,154 @@
       </b-table>
     </b-card> -->
 
+    <!-- Subscription Groups Overview -->
+    <b-card :title="$t('Subscription Groups Overview')" class="mt-3">
+      <!-- Stats Cards -->
+      <b-row class="mb-4">
+        <b-col cols="6" md="3">
+          <b-card class="text-center summary-card">
+            <h3 class="text-danger">{{ subscriptionGroupsStats.totalGroups }}</h3>
+            <p class="mb-0">Total Groups</p>
+          </b-card>
+        </b-col>
+        <b-col cols="6" md="3">
+          <b-card class="text-center summary-card">
+            <h3 class="text-primary">{{ subscriptionGroupsStats.totalSlots }}</h3>
+            <p class="mb-0">Total Slots</p>
+          </b-card>
+        </b-col>
+        <b-col cols="6" md="3">
+          <b-card class="text-center summary-card">
+            <h3 class="text-success">{{ subscriptionGroupsStats.usedSlots }}</h3>
+            <p class="mb-0">Used Slots</p>
+          </b-card>
+        </b-col>
+        <b-col cols="6" md="3">
+          <b-card class="text-center summary-card">
+            <h3 class="text-warning">{{ subscriptionGroupsStats.availableSlots }}</h3>
+            <p class="mb-0">Available Slots</p>
+          </b-card>
+        </b-col>
+      </b-row>
+
+      <!-- Groups Table -->
+      <b-table
+        :items="subscriptionGroupsData"
+        :fields="subscriptionGroupsFields"
+        striped
+        hover
+        responsive
+        class="mb-0"
+      >
+        <template #cell(group_name)="data">
+          <div class="d-flex align-items-center">
+            <div class="group-icon-clean">
+              <feather-icon 
+                :icon="getGroupIcon(data.item.subscription_name)" 
+                size="16"
+                :class="getGroupIconClass(data.index)"
+              />
+            </div>
+            <div class="ms-3">
+              <div class="fw-bold text-dark ml-2">{{ data.item.group_name }}</div>
+              <small class="text-muted ml-2">{{ data.item.subscription_name }}</small>
+            </div>
+          </div>
+        </template>
+        
+        <template #cell(CountMember)="data">
+          <b-badge variant="primary" class="fs-6">
+            {{ data.item.CountMember }}
+          </b-badge>
+        </template>
+        
+        <template #cell(CountUsedMember)="data">
+          <b-badge variant="success" class="fs-6">
+            {{ data.item.CountUsedMember }}
+          </b-badge>
+        </template>
+        
+        <template #cell(available_slots)="data">
+          <b-badge variant="warning" class="fs-6">
+            {{ data.item.CountMember - data.item.CountUsedMember }}
+          </b-badge>
+        </template>
+      </b-table>
+    </b-card>
+
+    <!-- Best Selling Products -->
+    <b-card class="mt-3">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center">
+          <feather-icon icon="TrendingUpIcon" size="20" class="text-success me-2" />
+          <h5 class="mb-0 fw-bold ml-2">Best Selling Products</h5>
+        </div>
+        <b-badge variant="light-success" class="px-3 py-2">
+          <feather-icon icon="CheckIcon" size="14" class="me-1" />
+          Confirmed Orders Only
+        </b-badge>
+      </div>
+
+      <!-- Top Seller Card -->
+      <div v-if="bestSellingProducts.length > 0" class="top-seller-card mb-4">
+        <div class="d-flex align-items-center justify-content-center flex-column text-center">
+          <div class="d-flex align-items-center mb-2">
+            <feather-icon icon="AwardIcon" size="24" class="text-pink me-2" />
+            <h6 class="text-pink fw-bold mb-0">Top Seller</h6>
+          </div>
+          <h4 class="fw-bold text-dark mb-2">{{ bestSellingProducts[0].subscription_name }}</h4>
+          <div class="text-muted">
+            <span class="fw-bold text-primary">{{ bestSellingProducts[0].total_orders }} ครั้ง</span> • 
+            <span class="fw-bold text-success">{{ bestSellingProducts[0].unique_customers }} ลูกค้า</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Best Selling Products Table -->
+      <b-table
+        :items="bestSellingProducts"
+        :fields="bestSellingFields"
+        striped
+        hover
+        responsive
+        class="mb-0 best-selling-table"
+      >
+        <template #cell(rank)="data">
+          <div class="d-flex align-items-center">
+            <b-badge 
+              :variant="getRankBadgeVariant(data.index)"
+              class="rank-badge me-2"
+            >
+              {{ getRankText(data.index + 1) }}
+            </b-badge>
+          </div>
+        </template>
+        
+        <template #cell(subscription_name)="data">
+          <div>
+            <div class="fw-bold text-dark mb-1">{{ data.item.subscription_name }}</div>
+            <small class="text-muted">ขายได้ {{ data.item.total_orders }} ครั้ง</small>
+          </div>
+        </template>
+        
+        <template #cell(total_orders)="data">
+          <div class="text-center">
+            <b-badge variant="light-info" class="px-3 py-2">
+              {{ data.item.total_orders }} Orders
+            </b-badge>
+          </div>
+        </template>
+        
+        <template #cell(unique_customers)="data">
+          <div class="text-center">
+            <b-badge variant="light-success" class="px-3 py-2">
+              {{ data.item.unique_customers }} Customers
+            </b-badge>
+          </div>
+        </template>
+      </b-table>
+    </b-card>
+
     <!-- Monthly Revenue Report -->
     <b-card :title="$t('Monthly Revenue Report')" class="mt-3">
       <b-table
@@ -280,11 +428,31 @@ export default {
         { key: 'total_revenue', label: 'รายได้รวม' },
         { key: 'successful_orders', label: 'คำสั่งซื้อที่สำเร็จ' }
       ],
+      subscriptionGroupsFields: [
+        { key: 'group_name', label: 'ชื่อกลุ่ม' },
+        { key: 'CountMember', label: 'จำนวนสมาชิกทั้งหมด' },
+        { key: 'CountUsedMember', label: 'ใช้งานแล้ว' },
+        { key: 'available_slots', label: 'ว่าง' }
+      ],
+      bestSellingFields: [
+        { key: 'rank', label: 'อันดับ' },
+        { key: 'subscription_name', label: 'ชื่อสินค้า' },
+        { key: 'total_orders', label: 'ขายได้ (ครั้ง)' },
+        { key: 'unique_customers', label: 'ลูกค้า (คน)' }
+      ],
       summaryTableData: [],
       subscriptionTypeData: [],
       orderStatusTableData: [],
       monthlyRevenueData: [],
-      pendingApprovalData: []
+      pendingApprovalData: [],
+      subscriptionGroupsData: [],
+      subscriptionGroupsStats: {
+        totalGroups: 0,
+        totalSlots: 0,
+        usedSlots: 0,
+        availableSlots: 0
+      },
+      bestSellingProducts: []
     }
   },
   computed: {
@@ -301,7 +469,7 @@ export default {
     await this.search();  
   },
   methods: {
-    ...mapActions(["GetAccountSummaryReport", "GetSubscriptionTypeReport", "GetOrderStatusReport", "GetMonthlyRevenueReport", "TestOrderStatusData", "GetHistorySubScribeOrderNotApprove", "GetHistorySubScribeOrderWaitInvitation", "GetHistorySubScribeOrderWaitCheckPayment", "GetHistorySubScribeOrderCheckedPayment", "GetHistorySubScribeOrderAll"]),
+    ...mapActions(["GetAccountSummaryReport", "GetSubscriptionTypeReport", "GetOrderStatusReport", "GetMonthlyRevenueReport", "TestOrderStatusData", "GetHistorySubScribeOrderNotApprove", "GetHistorySubScribeOrderWaitInvitation", "GetHistorySubScribeOrderWaitCheckPayment", "GetHistorySubScribeOrderCheckedPayment", "GetHistorySubScribeOrderAll", "GetSubscriptionGroup"]),
     async search(){
       console.log('search all reports');
 
@@ -314,11 +482,12 @@ export default {
 
       try {
         // Load all reports in parallel
-        const [summaryResponse, subscriptionResponse, orderStatusResponse, revenueResponse] = await Promise.all([
+        const [summaryResponse, subscriptionResponse, orderStatusResponse, revenueResponse, subscriptionGroupsResponse] = await Promise.all([
           this.GetAccountSummaryReport(formData),
           this.GetSubscriptionTypeReport(formData),
           this.GetOrderStatusReport(formData),
-          this.GetMonthlyRevenueReport(formData)
+          this.GetMonthlyRevenueReport(formData),
+          this.GetSubscriptionGroup(formData)
         ]);
 
         // Process Account Summary Report
@@ -351,6 +520,15 @@ export default {
         if (revenueResponse.data.status == 'success') {
           this.monthlyRevenueData = revenueResponse.data.data || [];
         }
+
+        // Process Subscription Groups Report
+        if (subscriptionGroupsResponse.data.status == 'success') {
+          this.subscriptionGroupsData = subscriptionGroupsResponse.data.data || [];
+          this.updateSubscriptionGroupsStats();
+        }
+
+        // Process Best Selling Products
+        await this.loadBestSellingProducts();
 
       } catch (error) {
         console.error('Error fetching reports data:', error);
@@ -394,6 +572,20 @@ export default {
           { month_year: '2024-01', total_orders: 150, unique_customers: 120, total_revenue: 8500.00, successful_orders: 140 },
           { month_year: '2024-02', total_orders: 180, unique_customers: 150, total_revenue: 10200.00, successful_orders: 170 }
         ];
+        
+        // Mock data for subscription groups
+        this.subscriptionGroupsData = [
+          { 
+            group_name: 'Youtube กลุ่มที่ 1', 
+            subscription_name: 'Youtube premium',
+            CountMember: 3,
+            CountUsedMember: 2
+          }
+        ];
+        this.updateSubscriptionGroupsStats();
+        
+         // No mock data - use real API data only
+         console.log('Using real API data only - no fallback mock data');
       }
     },
     updateSummaryTable() {
@@ -612,6 +804,119 @@ export default {
           badgeVariant: 'success'
         }
       ];
+    },
+    updateSubscriptionGroupsStats() {
+      this.subscriptionGroupsStats.totalGroups = this.subscriptionGroupsData.length;
+      this.subscriptionGroupsStats.totalSlots = this.subscriptionGroupsData.reduce((total, group) => total + (group.CountMember || 0), 0);
+      this.subscriptionGroupsStats.usedSlots = this.subscriptionGroupsData.reduce((total, group) => total + (group.CountUsedMember || 0), 0);
+      this.subscriptionGroupsStats.availableSlots = this.subscriptionGroupsStats.totalSlots - this.subscriptionGroupsStats.usedSlots;
+    },
+    getGroupIconClass(index) {
+      const classes = [
+        'text-danger', // Red
+        'text-info',   // Blue
+        'text-success', // Green
+        'text-warning', // Orange
+        'text-primary', // Primary Blue
+        'text-secondary', // Gray
+        'text-dark'    // Dark
+      ];
+      return classes[index % classes.length];
+    },
+    getGroupIcon(subscriptionName) {
+      const name = (subscriptionName || '').toLowerCase();
+      if (name.includes('youtube') || name.includes('yt')) {
+        return 'YoutubeIcon';
+      } else if (name.includes('netflix')) {
+        return 'MonitorIcon';
+      } else if (name.includes('spotify')) {
+        return 'MusicIcon';
+      } else if (name.includes('viu')) {
+        return 'PlayIcon';
+      } else if (name.includes('wetv') || name.includes('we tv')) {
+        return 'TvIcon';
+      } else if (name.includes('disney')) {
+        return 'StarIcon';
+      } else {
+        return 'UsersIcon';
+      }
+    },
+     async loadBestSellingProducts() {
+       try {
+         const userData = JSON.parse(localStorage.getItem('userData'));
+         const formData = new FormData();
+         
+         formData.append("userid", userData.username);
+         formData.append("token", userData.token);
+         formData.append("page_name", "report_summary");
+
+         console.log('Loading best selling products from real API...');
+         
+         // Use GetHistorySubScribeOrderAll to get confirmed orders
+         const response = await this.GetHistorySubScribeOrderAll(formData);
+         
+         if (response.data.status === 'success' && response.data.data) {
+           console.log('Raw orders data:', response.data.data);
+           
+           // Process confirmed orders to get best selling products
+           const confirmedOrders = response.data.data.filter(order => 
+             order.approve_by && 
+             order.approve_by !== '' && 
+             order.canceled === 0 &&
+             order.slip_correct
+           );
+           
+           console.log('Confirmed orders:', confirmedOrders);
+           
+           // Group by subscription type and count
+           const productStats = {};
+           confirmedOrders.forEach(order => {
+             // Use product_name if available, fallback to subscription_name
+             const key = order.product_name || order.subscription_name || `Product ${order.subscription_type_id}`;
+             if (!productStats[key]) {
+               productStats[key] = {
+                 subscription_name: key,
+                 total_orders: 0,
+                 unique_customers: new Set()
+               };
+             }
+             productStats[key].total_orders++;
+             if (order.user_id) {
+               productStats[key].unique_customers.add(order.user_id);
+             }
+           });
+           
+           console.log('Product stats:', productStats);
+           
+           // Convert to array and sort by total orders
+           this.bestSellingProducts = Object.values(productStats)
+             .map(item => ({
+               ...item,
+               unique_customers: item.unique_customers.size
+             }))
+             .sort((a, b) => b.total_orders - a.total_orders);
+             
+           console.log('Best selling products:', this.bestSellingProducts);
+         } else {
+           console.log('API response failed or no data');
+           this.bestSellingProducts = [];
+         }
+       } catch (error) {
+         console.error('Error loading best selling products:', error);
+         this.bestSellingProducts = [];
+       }
+     },
+    getRankBadgeVariant(index) {
+      if (index === 0) return 'warning'; // 1st - Gold/Orange
+      if (index === 1) return 'secondary'; // 2nd - Silver/Gray
+      if (index === 2) return 'danger'; // 3rd - Bronze/Red
+      return 'light'; // Others
+    },
+    getRankText(rank) {
+      if (rank === 1) return '1st';
+      if (rank === 2) return '2nd';
+      if (rank === 3) return '3rd';
+      return `${rank}th`;
     }
   },
 }
@@ -626,5 +931,158 @@ export default {
   &:hover {
     transform: translateY(-2px);
   }
+}
+
+.group-icon-clean {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+  }
+  
+  svg {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+  
+  &:hover svg {
+    opacity: 1;
+  }
+}
+
+.top-seller-card {
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+  border: 1px solid #f48fb1;
+  border-radius: 8px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  
+  h6 {
+    color: #e91e63 !important;
+  }
+  
+  h4 {
+    color: #2c3e50 !important;
+  }
+  
+  .text-muted {
+    color: #6c757d !important;
+  }
+  
+  .text-primary {
+    color: #e91e63 !important;
+  }
+  
+  .text-success {
+    color: #28a745 !important;
+  }
+  
+  .text-pink {
+    color: #e91e63 !important;
+  }
+  
+}
+
+
+.rank-badge {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 12px !important;
+  padding: 0.5rem 1rem !important;
+}
+
+// Custom rank badge colors to match the image
+.badge-warning {
+  background-color: #ff9800 !important; // Orange for 1st
+  color: white !important;
+  border: 1px solid #ff9800 !important;
+}
+
+.badge-secondary {
+  background-color: #9e9e9e !important; // Gray for 2nd  
+  color: white !important;
+  border: 1px solid #9e9e9e !important;
+}
+
+.badge-danger {
+  background-color: #dc3545 !important; // Red for 3rd
+  color: white !important;
+  border: 1px solid #dc3545 !important;
+}
+
+.badge-light {
+  background-color: #f8f9fa !important; // Light gray for others
+  color: #6c757d !important;
+  border: 1px solid #dee2e6 !important;
+}
+
+// Theme colors for better integration
+.bg-primary { background-color: #dc3545 !important; }
+.bg-success { background-color: #28a745 !important; }
+.bg-warning { background-color: #ffc107 !important; }
+.bg-danger { background-color: #dc3545 !important; }
+.bg-info { background-color: #17a2b8 !important; }
+.bg-secondary { background-color: #6c757d !important; }
+
+.text-primary { color: #dc3545 !important; }
+.text-success { color: #28a745 !important; }
+.text-warning { color: #ffc107 !important; }
+.text-danger { color: #dc3545 !important; }
+.text-info { color: #17a2b8 !important; }
+.text-pink { color: #e91e63 !important; }
+
+// Table header styling to match the red theme
+.table-theme thead th {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border-color: #dc3545 !important;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+}
+
+// Best Selling Products table styling
+.best-selling-table thead th {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border-color: #dc3545 !important;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+}
+
+// Badge variants to match theme
+.badge-light-info {
+  background-color: #d1ecf1 !important;
+  color: #0c5460 !important;
+  border: 1px solid #bee5eb;
+}
+
+.badge-light-success {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+  border: 1px solid #c3e6cb;
+}
+
+.badge-light-warning {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+  border: 1px solid #ffeaa7;
+}
+
+.badge-light-secondary {
+  background-color: #e2e3e5 !important;
+  color: #383d41 !important;
+  border: 1px solid #d6d8db;
 }
 </style>

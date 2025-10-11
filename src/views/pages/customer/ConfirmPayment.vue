@@ -762,7 +762,7 @@ export default {
       // Get API URL from vue config
       const vueconfig = require('../../../../config/vue.config');
       const apiUrl = vueconfig.BASE_API_URL;
-      const fullUrl = `${apiUrl}getslipfile/${slipPath}`;
+      const fullUrl = `${apiUrl}getfile/${slipPath}`;
       
       console.log('BASE_API_URL:', apiUrl);
       console.log('Full URL:', fullUrl);
