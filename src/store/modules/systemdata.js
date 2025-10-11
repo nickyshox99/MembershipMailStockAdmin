@@ -2595,6 +2595,71 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async UpdatePersonalEmailStatus({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        orderId: inputData.get("orderId"),
+        status: inputData.get("status"),
+    }
+
+    let response;
+    await axios.put("api/personalemail/updatePersonalEmailStatusByOrderId", body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetPersonalEmailStatusByOrderId({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    const orderId = inputData.get("orderId");
+
+    let response;
+    await axios.get(`api/personalemail/getPersonalEmailStatusByOrderId/${orderId}`,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    ).catch(error => {
+        response = error.response || { data: { status: 'error', message: 'Network error' } };
+    });
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async SentPaymentMessageNearOrder({commit}, inputData) {
         
     var headers = {
@@ -2663,6 +2728,69 @@ async GetActiveAdminBank({commit}, search) {
     );
 
     console.log('SentPaymentMessageExpired - API Response:', response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetAllPersonalEmail({commit}, inputData) {
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    let response;
+    await axios.get("api/personalemail/getAllPersonalEmail/",
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    ).catch(error => {
+        response = error.response || { data: { status: 'error', message: 'Network error' } };
+    });
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetPersonalEmailByOrderId({commit}, inputData) {
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+    
+    const orderId = inputData.get("orderId");
+    const username = inputData.get("username");
+
+    let response;
+    await axios.get(`api/personalemail/getPersonalEmailByOrderId/${orderId}`,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userdata': JSON.stringify({
+          username: username
+        }),
+        'Authorization': `Bearer ${headers.token}`
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    ).catch(error => {
+        response = error.response || { data: { status: 'error', message: 'Network error' } };
+    });
+
     if (response.data.status=="success") 
     {
       

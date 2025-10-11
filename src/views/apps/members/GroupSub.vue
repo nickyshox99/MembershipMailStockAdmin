@@ -337,7 +337,7 @@ export default {
     groupSubscriptionTitle() {
       const totalUsedMembers = this.rows.reduce((sum, row) => sum + (row.CountUsedMember || 0), 0);
       const totalMembers = this.rows.reduce((sum, row) => sum + (row.CountMember || 0), 0);
-      return `Group Subscription (${totalUsedMembers}/${totalMembers})`;
+      return `Group Subscription (${totalUsedMembers}/${totalMembers}) Email stock`;
     },
     resolveStatusVariant() {      
         const statusColor = {                    
