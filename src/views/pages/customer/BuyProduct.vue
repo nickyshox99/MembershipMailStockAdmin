@@ -208,7 +208,8 @@ export default {
       userid: '',
       email: '',
       enableSkipApproval: false,
-      sourceUserId: ''
+      sourceUserId: '',
+      purchaseType: '' // 'shop' หรือ 'personal'
     }
   },
   computed: {
@@ -248,9 +249,16 @@ export default {
   // },
   async created() {
     await this.loadSetting()        // <— โหลดค่าก่อน
-    const params = new URLSearchParams(window.location.search);
-    this.sourceUserId = params.get('sourceUserId') || '';
-    this.email = params.get('email') || '';
+    
+    // รับค่าจาก Vue Router Query
+    this.sourceUserId = this.$route.query.sourceUserId || '';
+    this.email = this.$route.query.email || '';
+    this.purchaseType = this.$route.query.type || '';
+    
+    console.log('BuyProduct - sourceUserId:', this.sourceUserId);
+    console.log('BuyProduct - email:', this.email);
+    console.log('BuyProduct - purchaseType:', this.purchaseType);
+    
     await this.getSourceProfile();
 
     if (this.lineId == '') {
@@ -412,6 +420,7 @@ export default {
     },
     async createSubScribeOrder() {
       console.log('createSubScribeOrder');
+      console.log('purchase_type before send:', this.purchaseType);
 
       const formData = new FormData();
       formData.append("user_id", this.userid);
@@ -423,6 +432,7 @@ export default {
       formData.append("product_id", this.product.id);
       formData.append("note", "");
       formData.append("page_name", this.$route.name);
+      formData.append("purchase_type", this.purchaseType || ''); // เพิ่ม purchase_type
 
 
       formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"

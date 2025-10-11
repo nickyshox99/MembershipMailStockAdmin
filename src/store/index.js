@@ -10,6 +10,7 @@ import verticalMenu from './vertical-menu'
 import createPersistedState from "vuex-persistedstate";
 import auth from "./modules/auth";
 import systemdata from "./modules/systemdata";
+import userRegistration from "./modules/userRegistration";
 
 Vue.use(Vuex)
 
@@ -19,8 +20,10 @@ export default new Vuex.Store({
     app,
     appConfig,
     verticalMenu,
-    systemdata,    
+    systemdata,
+    userRegistration,
   },  
   plugins: [createPersistedState()],
   strict: process.env.DEV,
 })
+

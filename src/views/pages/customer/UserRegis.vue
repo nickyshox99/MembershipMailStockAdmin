@@ -153,6 +153,7 @@ import {
   BInputGroupAppend,
 } from 'bootstrap-vue'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'UserRegis',
@@ -174,6 +175,13 @@ export default {
       passwordFieldType: 'password',
       confirmPasswordFieldType: 'password',
       errorMessage: '',
+      sourceUserId: null, // รับมาจาก LINE
+    }
+  },
+  mounted() {
+    // รับ sourceUserId จาก query parameters
+    if (this.$route.query.sourceUserId) {
+      this.sourceUserId = this.$route.query.sourceUserId
     }
   },
   computed: {
@@ -205,13 +213,15 @@ export default {
     },
   },
   methods: {
+    ...mapActions('userRegistration', ['setRegistrationData']),
+    
     togglePasswordVisibility() {
       this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password'
     },
     toggleConfirmPasswordVisibility() {
       this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password'
     },
-    handleSubmit() {
+    async handleSubmit() {
       if (!this.isFormValid) {
         this.errorMessage = 'กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง'
         return
@@ -219,11 +229,18 @@ export default {
 
       this.errorMessage = ''
 
-      // TODO: เรียก API สำหรับลงทะเบียน
+      // บันทึกข้อมูลลง store
+      await this.setRegistrationData({
+        email: this.email,
+        password: this.password,
+        sourceUserId: this.sourceUserId || null,
+      })
+
       console.log('Register with:', {
         email: this.email,
         password: this.password,
       })
+      console.log('Data saved to store!')
 
       this.$toast({
         component: ToastificationContent,
@@ -234,17 +251,26 @@ export default {
         },
       })
 
-      // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email
+      // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email และ sourceUserId
+      const query = { 
+        type: 'personal',
+        email: this.email 
+      }
+      if (this.sourceUserId) {
+        query.sourceUserId = this.sourceUserId
+      }
       this.$router.push({
         name: 'buy-product',
-        query: { 
-          type: 'personal',
-          email: this.email 
-        }
+        query
       })
     },
     goBack() {
-      this.$router.push({ name: 'select-topic' })
+      // กลับไปหน้า SelectTopic พร้อมส่ง sourceUserId
+      const query = {}
+      if (this.sourceUserId) {
+        query.sourceUserId = this.sourceUserId
+      }
+      this.$router.push({ name: 'select-topic', query })
     },
   },
 }
