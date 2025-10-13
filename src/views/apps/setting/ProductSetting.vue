@@ -49,10 +49,11 @@
         </div>
       </b-card>
     </Transition>
+    
+    <!-- Family Type (0) -->
     <Transition name="fade" mode="out-in">
-      <b-card :title="t('Product Setting')" v-if="!(isEditFormActive)">
-        <!-- table -->
-        <vue-good-table ref="my-table" :columns="columns" :rows="rows" :rtl="direction" :line-numbers="true"
+      <b-card :title="t('YouTube Family (Admin Full Service)')" v-if="!(isEditFormActive)">
+        <vue-good-table ref="my-table-0" :columns="columns" :rows="rowsFamily" :rtl="direction" :line-numbers="true"
           :search-options="{
           enabled: false,
           externalQuery: searchTerm
@@ -139,6 +140,228 @@
                   <template #next-text>
                     <feather-icon icon="ChevronRightIcon" size="18" />
                   </template>
+                </b-pagination>
+              </div>
+            </div>
+          </template>
+        </vue-good-table>
+      </b-card>
+    </Transition>
+
+    <!-- Individual Type (1) -->
+    <Transition name="fade" mode="out-in">
+      <b-card :title="t('YouTube Individual (Admin Full Service)')" v-if="!(isEditFormActive)">
+        <vue-good-table ref="my-table-1" :columns="columns" :rows="rowsIndividual" :rtl="direction" :line-numbers="true"
+          :search-options="{
+          enabled: false,
+          externalQuery: searchTerm
+        }" :select-options="{
+          enabled: true,
+          selectOnCheckboxOnly: true,
+          selectionInfoClass: 'custom-class',
+          selectionText: 'rows selected',
+          clearSelectionText: 'clear',
+          disableSelectInfo: true,
+          selectAllByGroup: true,
+        }" :pagination-options="{
+          enabled: true,
+          perPage: pageLength
+        }" theme="polar-bear">
+          <template slot="table-row" slot-scope="props">
+            <span v-if="props.column.field === 'status2'">              
+                <b-badge pill :variant="resolveStatusVariant(props.row.status)" class="text-capitalize">
+                    {{t(resolveStatusText(props.row.status))}}
+                </b-badge>
+            </span>
+            <span v-if="props.column.field === 'subscription_name2'">                              
+                <b-img :src="props.row.subscription_img" fluid thumbnail style="height: 50px;"></b-img>                
+                <span>{{ props.row.subscription_name }}</span>
+            </span>
+            <span v-if="props.column.field === 'product_img2'">                              
+                <b-img :src="props.row.product_img" fluid thumbnail style="height: 50px;"></b-img>     
+                <span>{{ props.row.product_name }}</span>           
+            </span>
+            <span v-if="props.column.field === 'action'">
+              <span>
+                <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
+                  <template v-slot:button-content>
+                    <feather-icon icon="MoreVerticalIcon" size="16" class="text-body align-middle mr-25" />
+                  </template>
+                  <b-dropdown-item @click="edititem(props.row)">
+                    <feather-icon icon="Edit2Icon" class="mr-50" />
+                    <span>{{t('Edit')}}</span>
+                  </b-dropdown-item>
+                  <b-dropdown-item @click="deleteitem(props.row)">
+                    <feather-icon icon="TrashIcon" class="mr-50" />
+                    <span>{{t('Delete')}}</span>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </span>
+            </span>
+            <span>{{ props.formattedRow[props.column.field] }}</span>
+          </template>
+          <template slot="pagination-bottom" slot-scope="props">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-center mb-0 mt-1">
+                <span class="text-nowrap ">{{t("Showing") +" 1 " + t("to") }}</span>
+                <b-form-select v-model="pageLength" :options="['3', '5', '10', '20', '50', '100']" class="mx-1"
+                  @input="(value) => props.perPageChanged({ currentPerPage: value })" />
+                <span class="text-nowrap"> {{t('of')}} {{ props.total }} {{t('entries')}} </span>
+              </div>
+              <div>
+                <b-pagination :value="1" :total-rows="props.total" :per-page="pageLength" first-number last-number
+                  align="right" prev-class="prev-item" next-class="next-item" class="mt-1 mb-0"
+                  @input="(value) => props.pageChanged({ currentPage: value })">
+                  <template #prev-text><feather-icon icon="ChevronLeftIcon" size="18" /></template>
+                  <template #next-text><feather-icon icon="ChevronRightIcon" size="18" /></template>
+                </b-pagination>
+              </div>
+            </div>
+          </template>
+        </vue-good-table>
+      </b-card>
+    </Transition>
+
+    <!-- Email Provided Type (2) -->
+    <Transition name="fade" mode="out-in">
+      <b-card :title="t('Email Provided')" v-if="!(isEditFormActive)">
+        <vue-good-table ref="my-table-2" :columns="columns" :rows="rowsEmailProvided" :rtl="direction" :line-numbers="true"
+          :search-options="{
+          enabled: false,
+          externalQuery: searchTerm
+        }" :select-options="{
+          enabled: true,
+          selectOnCheckboxOnly: true,
+          selectionInfoClass: 'custom-class',
+          selectionText: 'rows selected',
+          clearSelectionText: 'clear',
+          disableSelectInfo: true,
+          selectAllByGroup: true,
+        }" :pagination-options="{
+          enabled: true,
+          perPage: pageLength
+        }" theme="polar-bear">
+          <template slot="table-row" slot-scope="props">
+            <span v-if="props.column.field === 'status2'">              
+                <b-badge pill :variant="resolveStatusVariant(props.row.status)" class="text-capitalize">
+                    {{t(resolveStatusText(props.row.status))}}
+                </b-badge>
+            </span>
+            <span v-if="props.column.field === 'subscription_name2'">                              
+                <b-img :src="props.row.subscription_img" fluid thumbnail style="height: 50px;"></b-img>                
+                <span>{{ props.row.subscription_name }}</span>
+            </span>
+            <span v-if="props.column.field === 'product_img2'">                              
+                <b-img :src="props.row.product_img" fluid thumbnail style="height: 50px;"></b-img>     
+                <span>{{ props.row.product_name }}</span>           
+            </span>
+            <span v-if="props.column.field === 'action'">
+              <span>
+                <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
+                  <template v-slot:button-content>
+                    <feather-icon icon="MoreVerticalIcon" size="16" class="text-body align-middle mr-25" />
+                  </template>
+                  <b-dropdown-item @click="edititem(props.row)">
+                    <feather-icon icon="Edit2Icon" class="mr-50" />
+                    <span>{{t('Edit')}}</span>
+                  </b-dropdown-item>
+                  <b-dropdown-item @click="deleteitem(props.row)">
+                    <feather-icon icon="TrashIcon" class="mr-50" />
+                    <span>{{t('Delete')}}</span>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </span>
+            </span>
+            <span>{{ props.formattedRow[props.column.field] }}</span>
+          </template>
+          <template slot="pagination-bottom" slot-scope="props">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-center mb-0 mt-1">
+                <span class="text-nowrap ">{{t("Showing") +" 1 " + t("to") }}</span>
+                <b-form-select v-model="pageLength" :options="['3', '5', '10', '20', '50', '100']" class="mx-1"
+                  @input="(value) => props.perPageChanged({ currentPerPage: value })" />
+                <span class="text-nowrap"> {{t('of')}} {{ props.total }} {{t('entries')}} </span>
+              </div>
+              <div>
+                <b-pagination :value="1" :total-rows="props.total" :per-page="pageLength" first-number last-number
+                  align="right" prev-class="prev-item" next-class="next-item" class="mt-1 mb-0"
+                  @input="(value) => props.pageChanged({ currentPage: value })">
+                  <template #prev-text><feather-icon icon="ChevronLeftIcon" size="18" /></template>
+                  <template #next-text><feather-icon icon="ChevronRightIcon" size="18" /></template>
+                </b-pagination>
+              </div>
+            </div>
+          </template>
+        </vue-good-table>
+      </b-card>
+    </Transition>
+
+    <!-- Account Provided Type (3) -->
+    <Transition name="fade" mode="out-in">
+      <b-card :title="t('Account Provided')" v-if="!(isEditFormActive)">
+        <vue-good-table ref="my-table-3" :columns="columns" :rows="rowsAccountProvided" :rtl="direction" :line-numbers="true"
+          :search-options="{
+          enabled: false,
+          externalQuery: searchTerm
+        }" :select-options="{
+          enabled: true,
+          selectOnCheckboxOnly: true,
+          selectionInfoClass: 'custom-class',
+          selectionText: 'rows selected',
+          clearSelectionText: 'clear',
+          disableSelectInfo: true,
+          selectAllByGroup: true,
+        }" :pagination-options="{
+          enabled: true,
+          perPage: pageLength
+        }" theme="polar-bear">
+          <template slot="table-row" slot-scope="props">
+            <span v-if="props.column.field === 'status2'">              
+                <b-badge pill :variant="resolveStatusVariant(props.row.status)" class="text-capitalize">
+                    {{t(resolveStatusText(props.row.status))}}
+                </b-badge>
+            </span>
+            <span v-if="props.column.field === 'subscription_name2'">                              
+                <b-img :src="props.row.subscription_img" fluid thumbnail style="height: 50px;"></b-img>                
+                <span>{{ props.row.subscription_name }}</span>
+            </span>
+            <span v-if="props.column.field === 'product_img2'">                              
+                <b-img :src="props.row.product_img" fluid thumbnail style="height: 50px;"></b-img>     
+                <span>{{ props.row.product_name }}</span>           
+            </span>
+            <span v-if="props.column.field === 'action'">
+              <span>
+                <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
+                  <template v-slot:button-content>
+                    <feather-icon icon="MoreVerticalIcon" size="16" class="text-body align-middle mr-25" />
+                  </template>
+                  <b-dropdown-item @click="edititem(props.row)">
+                    <feather-icon icon="Edit2Icon" class="mr-50" />
+                    <span>{{t('Edit')}}</span>
+                  </b-dropdown-item>
+                  <b-dropdown-item @click="deleteitem(props.row)">
+                    <feather-icon icon="TrashIcon" class="mr-50" />
+                    <span>{{t('Delete')}}</span>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </span>
+            </span>
+            <span>{{ props.formattedRow[props.column.field] }}</span>
+          </template>
+          <template slot="pagination-bottom" slot-scope="props">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-center mb-0 mt-1">
+                <span class="text-nowrap ">{{t("Showing") +" 1 " + t("to") }}</span>
+                <b-form-select v-model="pageLength" :options="['3', '5', '10', '20', '50', '100']" class="mx-1"
+                  @input="(value) => props.perPageChanged({ currentPerPage: value })" />
+                <span class="text-nowrap"> {{t('of')}} {{ props.total }} {{t('entries')}} </span>
+              </div>
+              <div>
+                <b-pagination :value="1" :total-rows="props.total" :per-page="pageLength" first-number last-number
+                  align="right" prev-class="prev-item" next-class="next-item" class="mt-1 mb-0"
+                  @input="(value) => props.pageChanged({ currentPage: value })">
+                  <template #prev-text><feather-icon icon="ChevronLeftIcon" size="18" /></template>
+                  <template #next-text><feather-icon icon="ChevronRightIcon" size="18" /></template>
                 </b-pagination>
               </div>
             </div>
@@ -273,6 +496,18 @@ export default {
     }
   },
   computed: {
+    rowsFamily() {
+      return this.rows.filter(row => row.shop_type === 0 || row.shop_type === null)
+    },
+    rowsIndividual() {
+      return this.rows.filter(row => row.shop_type === 1)
+    },
+    rowsEmailProvided() {
+      return this.rows.filter(row => row.shop_type === 2)
+    },
+    rowsAccountProvided() {
+      return this.rows.filter(row => row.shop_type === 3)
+    },
     resolveStatusVariant() {      
         const statusColor = {                    
           1: 'light-success',
@@ -286,7 +521,7 @@ export default {
           0: 'InActive',          
         }
         return data => statusActive[data]
-    },    
+    },
     statusVariant() {
       const statusColor = {
         /* eslint-disable key-spacing */
@@ -394,7 +629,13 @@ export default {
       return formattedDate.getFullYear() + '-' + ('0' + (formattedDate.getMonth() + 1)).slice(-2) + '-' + ('0' + (formattedDate.getDate())).slice(-2) + ' ' + formattedDate.toLocaleTimeString('th-TH', { hour12: false });
     },
     async confirmDelete() {
-      const selectedRow = this.$refs['my-table'].selectedRows;
+      // รวม selectedRows จาก 4 ตาราง
+      const selectedRow = [
+        ...(this.$refs['my-table-0']?.selectedRows || []),
+        ...(this.$refs['my-table-1']?.selectedRows || []),
+        ...(this.$refs['my-table-2']?.selectedRows || []),
+        ...(this.$refs['my-table-3']?.selectedRows || [])
+      ];
 
       if (selectedRow.length > 0) {
         this.boxTwo = '';
@@ -473,7 +714,8 @@ export default {
         subscription_img : '/images/Netflix.png',
         subscription_times : 1,
         status:1,
-        type : "credit"
+        type : "credit",
+        shop_type: 0
       };
       
       this.selectedDataRow = EmptyRow;
