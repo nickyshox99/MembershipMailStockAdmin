@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "cross-env NODE_OPTIONS=--openssl-legacy-provider --max-old-space-size=8192 PORT=9900 vue-cli-service serve",
+    "start": "serve -s dist -l 9900",
     "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider --max-old-space-size=8192 PORT=9900 vue-cli-service build",
     "lint": "cross-env NODE_OPTIONS=--openssl-legacy-provider --max-old-space-size=8192 PORT=9900 vue-cli-service lint"
   },
