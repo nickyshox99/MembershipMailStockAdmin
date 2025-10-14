@@ -40,6 +40,14 @@ export default [
     },
   },
   {
+    path: '/SelectPlanType',
+    name: 'select-plan-type',
+    component: () => import('@/views/pages/customer/SelectPlanType.vue'),
+    meta: {
+      layout: 'full',            
+    },
+  },
+  {
     path: '/UserRegis',
     name: 'user-regis',
     component: () => import('@/views/pages/customer/UserRegis.vue'),
