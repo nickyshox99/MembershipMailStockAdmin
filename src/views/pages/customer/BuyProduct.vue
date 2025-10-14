@@ -209,7 +209,8 @@ export default {
       email: '',
       enableSkipApproval: false,
       sourceUserId: '',
-      purchaseType: '' // 'shop' หรือ 'personal'
+      purchaseType: '',
+      shopType: '' // shop_type ที่รับมาจาก query
     }
   },
   computed: {
@@ -253,11 +254,13 @@ export default {
     // รับค่าจาก Vue Router Query
     this.sourceUserId = this.$route.query.sourceUserId || '';
     this.email = this.$route.query.email || '';
-    this.purchaseType = this.$route.query.type || '';
+    this.purchaseType = this.$route.query.purchase_type || this.$route.query.purchaseType || this.$route.query.type || '';
+    this.shopType = this.$route.query.shop_type || '';
     
     console.log('BuyProduct - sourceUserId:', this.sourceUserId);
     console.log('BuyProduct - email:', this.email);
     console.log('BuyProduct - purchaseType:', this.purchaseType);
+    console.log('BuyProduct - shopType:', this.shopType);
     
     await this.getSourceProfile();
 
@@ -370,7 +373,18 @@ export default {
 
       const response = await this.GetActiveProductSetting(User);
       if (response.data.status == 'success') {
-        this.productList = response.data.data;
+        // Filter ข้อมูลตาม shopType
+        let allProducts = response.data.data;
+        
+        if (this.shopType) {
+          // แสดงเฉพาะ shop_type ที่ระบุ
+          this.productList = allProducts.filter(product => product.shop_type == this.shopType);
+        } else {
+          // ถ้าไม่มี shopType ให้แสดงทั้งหมด
+          this.productList = allProducts;
+        }
+        
+        console.log('Filtered products for shop_type:', this.shopType, this.productList);
       } else {
 
       }
@@ -459,7 +473,12 @@ export default {
           this.$router.replace(
             {
               name: 'confirm-payment',
-              query: { user_id: String(this.sourceUserId), id: String(orderId) }
+              query: { 
+                user_id: String(this.sourceUserId), 
+                id: String(orderId),
+                purchase_type: this.purchaseType || '',
+                email: this.email || ''
+              }
             })
         }
 

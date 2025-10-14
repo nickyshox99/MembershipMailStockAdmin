@@ -301,6 +301,8 @@ export default {
       enableAutoGenerateQR: false,
       generatedQRCode: '',
       productPrice: 0,
+      purchaseType: '',
+      email: '',
     }
   },
   computed: {
@@ -320,8 +322,15 @@ export default {
   },
   async created() {
     // this.getOrderData();
-    const { id, user_id } = this.$route.query || {};
+    const { id, user_id, purchase_type, email } = this.$route.query || {};
     if (!id || !user_id) { this.showErrorParam = true; return; }
+    
+    // เก็บ purchase_type และ email ไว้ใช้
+    this.purchaseType = purchase_type || '';
+    this.email = email || '';
+    console.log('ConfirmPayment - purchase_type:', this.purchaseType);
+    console.log('ConfirmPayment - email:', this.email);
+    
     await this.loadSetting();
     await this.getOrderData();
   },
@@ -941,48 +950,62 @@ export default {
     async insertUserEmailData() {
       try {
         console.log('=== insertUserEmailData ===');
+        console.log('purchase_type:', this.purchaseType);
+        console.log('email:', this.email);
         
-        // Check if we have registration data from store
-        if (!this.hasRegistrationData) {
-          console.log('No registration data in store, skipping insert');
+        // เช็คว่ามี email หรือไม่
+        if (!this.email) {
+          console.log('No email provided, skipping insert');
           return;
         }
 
-        const email = this.getEmail;
-        const password = this.getPassword;
         const { id, user_id } = this.$route.query || {};
 
-        console.log('Registration data:', { email, password: '***', user_id, order_id: id });
+        console.log('Registration data:', { email: this.email, user_id, order_id: id });
 
         // Validate data
-        if (!user_id || !id || !email || !password) {
-          console.log('Missing required data for insert:', { user_id, order_id: id, email: !!email, password: !!password });
+        if (!user_id || !id || !this.email) {
+          console.log('Missing required data for insert:', { user_id, order_id: id, email: !!this.email });
           return;
         }
 
-        // Prepare data
+        // Prepare data (ไม่ใช้ password สำหรับ personal_email)
         const data = {
           user_id: user_id,
           order_id: parseInt(id),
-          email: email,
-          password: password,
+          email: this.email,
           status_regis: 0,
         };
 
-        console.log('Inserting user email data:', { ...data, password: '***' });
+        console.log('Inserting user email data:', data);
 
-        // Call API
-        const response = await this.InsertUserEmail(data);
-
-        console.log('Insert response:', response);
-
-        if (response && response.data && response.data.status === 'success') {
-          console.log('✅ User email inserted successfully');
-          // ไม่แสดง toast เพราะจะซ้ำกับ toast ของการยืนยันชำระเงิน
+        // เช็ค purchase_type และเลือก API ที่เหมาะสม
+        if (this.purchaseType === 'email') {
+          console.log('Inserting to personal_email table');
+          // เรียก API สำหรับ personal_email โดยตรง
+          console.log('Calling API with data:', data);
+          const response = await axios.post("api/personalemail/createPersonalEmail", data, {
+            headers: {            
+              'Content-Type': 'application/json'
+            }
+          }).catch(error => {
+            console.error('API Error:', error);
+            console.error('Error response:', error.response);
+            throw error;
+          });
+          
+          console.log('Insert response:', response);
+          
+          if (response && response.data && response.data.status === 'success') {
+            console.log('✅ Personal email inserted successfully');
+            // ไม่แสดง toast เพราะจะซ้ำกับ toast ของการยืนยันชำระเงิน
+          } else {
+            const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
+            console.error('Insert personal email failed:', errorMessage);
+            // Silent error - ไม่แสดง error toast เพราะไม่ต้องการให้รบกวน flow หลัก
+          }
         } else {
-          const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
-          console.error('Insert user email failed:', errorMessage);
-          // Silent error - ไม่แสดง error toast เพราะไม่ต้องการให้รบกวน flow หลัก
+          console.log('Unknown purchase_type, skipping insert:', this.purchaseType);
         }
 
       } catch (error) {
