@@ -117,6 +117,17 @@
                 </b-form-group>
               </b-col>
 
+              <b-col md="12">
+                <b-form-group :label="t('Shop Type')" label-for="shop-type">
+                  <b-input-group class="input-group-merge">
+                    <b-input-group-prepend is-text>
+                      <feather-icon icon="PackageIcon" />
+                    </b-input-group-prepend>
+                    <b-form-select v-model="shopTypeSelected" :options="shopTypeOptions"></b-form-select>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+
               <b-col cols="1" md="12">
                 <b-form-group :label="t('Active')" label-for="status-active">
                   <b-form-checkbox
@@ -199,6 +210,8 @@ import axios from "axios";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import { useUtils as useI18nUtils } from "@core/libs/i18n";
 
+const vueconfig = require('../../../../config/vue.config');
+
 export default {
   components: {
     BCardCode,
@@ -232,6 +245,14 @@ export default {
       showTimeInput: false,
       tmpFileUpload:[],
       pagePermission:[],
+      shopTypeSelected: 0,
+      shopTypeOptions: [
+        { value: 0, text: 'YouTube Family (Admin Full Service)' },
+        { value: 1, text: 'YouTube Individual (Admin Full Service)' },
+        { value: 2, text: 'Email Provided' },
+        { value: 3, text: 'Account Provided' }
+      ],
+      baseApiUrl: vueconfig.BASE_API_URL,
     };
   },
   model: {
@@ -269,7 +290,8 @@ export default {
   watch: {
     pRowData: function (newVal, oldVal) {
       this.statusActive = newVal.status;
-      this.subscribeTypeSelected = newVal.subscription_type_id;           
+      this.subscribeTypeSelected = newVal.subscription_type_id;
+      this.shopTypeSelected = newVal.shop_type || 0;
     },
     isModeEdit: function (newVal, oldVal) {
       if (newVal == true) {
@@ -379,6 +401,7 @@ export default {
       body.page_name = this.$route.name;
       body.status = this.statusActive ? this.statusActive : 1;
       body.subscription_type_id = this.subscribeTypeSelected?this.subscribeTypeSelected:0;
+      body.shop_type = this.shopTypeSelected || 0;
       
       //console.log(body);
 
@@ -444,6 +467,7 @@ export default {
       var body = this.pRowData;
       body.page_name = this.$route.name;
       body.subscription_type_id = this.subscribeTypeSelected?this.subscribeTypeSelected:0;
+      body.shop_type = this.shopTypeSelected || 0;
       
 
       let response;
@@ -544,13 +568,17 @@ export default {
         formData.append("token", userData.token);
 
         formData.append("file", this.tmpFileUpload[tmpName]);
-        formData.append("tofilename", tmpName);
-        formData.append("oldFilePath", this[tmpName]);
+        
+        // เพิ่ม extension จาก file ที่ upload
+        const fileExtension = this.tmpFileUpload[tmpName].name.split('.').pop();
+        formData.append("tofilename", tmpName + '.' + fileExtension);
+        formData.append("oldFilePath", this.pRowData[tmpName]);
         
         const response = await this.UploadFileAndDeleteOldFile(formData);
         if (response.data.status == 'success') 
         {                 
-            this.pRowData[tmpName] = response.data.url;
+            // API ส่ง filename กลับมา ต้องเอา path มาต่อ
+            this.pRowData[tmpName] = this.baseApiUrl + 'getfile/' + response.data.url;
             this.tmpFileUpload[tmpName] = null;
         }
         else {
