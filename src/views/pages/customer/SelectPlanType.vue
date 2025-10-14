@@ -1,5 +1,5 @@
 <template>
-  <div class="select-topic-container">
+  <div class="select-plan-container">
     <div class="select-background">
       <div class="background-overlay"></div>
     </div>
@@ -15,54 +15,38 @@
           </div>
 
           <div class="welcome-section">
-            <h3 class="welcome-title">เลือกประเภทการซื้อสินค้า</h3>
-            <p class="welcome-subtitle">กรุณาเลือกประเภทที่คุณต้องการ</p>
+            <h3 class="welcome-title">เลือกประเภทแพ็กเกจ</h3>
+            <p class="welcome-subtitle">กรุณาเลือกแพ็กเกจที่คุณต้องการ</p>
           </div>
 
-          <div class="options-section" v-if="!isLoading">
+          <div class="options-section">
             <b-row>
-              <b-col v-if="showShopCode" cols="12" :md="getColumnSize" class="mb-3 mb-md-0">
-                <div class="option-card" :class="{ 'selected': selectedType === 'shop' }" @click="selectType('shop')">
-                  <div class="option-icon">
-                    <feather-icon icon="ShoppingBagIcon" size="48" />
-                  </div>
-                  <h4 class="option-title">ซื้อแบบรหัสร้าน</h4>
-                  <p class="option-description">
-                    เหมาะสำหรับลูกค้าที่มีรหัสร้านจากทางเรา
-                  </p>
-                  <div class="check-icon" v-if="selectedType === 'shop'">
-                    <feather-icon icon="CheckCircleIcon" size="24" />
-                  </div>
-                </div>
-              </b-col>
-
-              <b-col v-if="showUserCode" cols="12" :md="getColumnSize" class="mb-3 mb-md-0">
-                <div class="option-card" :class="{ 'selected': selectedType === 'personal' }"
-                  @click="selectType('personal')">
+              <b-col cols="12" md="6" class="mb-3 mb-md-0">
+                <div class="option-card" :class="{ 'selected': selectedPlan === 'personal' }" @click="selectPlan('personal')">
                   <div class="option-icon">
                     <feather-icon icon="UserIcon" size="48" />
                   </div>
-                  <h4 class="option-title">รหัสตัวเอง</h4>
+                  <h4 class="option-title">Personal</h4>
                   <p class="option-description">
-                    ใช้รหัสส่วนตัวของคุณเองในการซื้อ
+                    แพ็กเกจสำหรับใช้งานส่วนบุคคล
                   </p>
-                  <div class="check-icon" v-if="selectedType === 'personal'">
+                  <div class="check-icon" v-if="selectedPlan === 'personal'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
                 </div>
               </b-col>
 
-              <b-col v-if="showUserEmail" cols="12" :md="getColumnSize">
-                <div class="option-card" :class="{ 'selected': selectedType === 'email' }"
-                  @click="selectType('email')">
+              <b-col cols="12" md="6">
+                <div class="option-card" :class="{ 'selected': selectedPlan === 'family' }"
+                  @click="selectPlan('family')">
                   <div class="option-icon">
-                    <feather-icon icon="MailIcon" size="48" />
+                    <feather-icon icon="UsersIcon" size="48" />
                   </div>
-                  <h4 class="option-title">เมลตัวเอง</h4>
+                  <h4 class="option-title">Family</h4>
                   <p class="option-description">
-                    ใช้อีเมลส่วนตัวของคุณในการซื้อ
+                    แพ็กเกจสำหรับใช้งานแบบครอบครัว
                   </p>
-                  <div class="check-icon" v-if="selectedType === 'email'">
+                  <div class="check-icon" v-if="selectedPlan === 'family'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
                 </div>
@@ -70,15 +54,22 @@
             </b-row>
           </div>
 
-          <div v-if="isLoading" class="loading-section text-center">
-            <b-spinner variant="primary" label="Loading..."></b-spinner>
-            <p class="mt-2">กำลังโหลด...</p>
-          </div>
-
           <div class="submit-section mt-3">
-            <b-button variant="primary" block class="submit-button" :disabled="!selectedType" @click="handleConfirm">
+            <b-button variant="primary" block class="submit-button" :disabled="!selectedPlan" @click="handleConfirm">
               <feather-icon icon="ArrowRightIcon" class="button-icon" />
               ดำเนินการต่อ
+            </b-button>
+          </div>
+
+          <div class="back-section mt-2">
+            <b-button
+              variant="outline-secondary"
+              block
+              class="back-button"
+              @click="goBack"
+            >
+              <feather-icon icon="ArrowLeftIcon" class="button-icon" />
+              กลับ
             </b-button>
           </div>
         </b-card>
@@ -93,97 +84,60 @@ import {
   BRow,
   BCol,
   BButton,
-  BSpinner,
 } from 'bootstrap-vue'
-import axios from 'axios'
 
 export default {
-  name: 'SelectTopic',
+  name: 'SelectPlanType',
   components: {
     BCard,
     BRow,
     BCol,
     BButton,
-    BSpinner,
   },
   data() {
     return {
-      selectedType: null, // 'shop', 'personal' หรือ 'email'
+      selectedPlan: null, // 'personal' หรือ 'family'
       sourceUserId: null, // รับมาจาก LINE
-      showShopCode: true, // แสดงปุ่มซื้อแบบรหัสร้าน
-      showUserCode: true, // แสดงปุ่มรหัสตัวเอง
-      showUserEmail: true, // แสดงปุ่มเมลตัวเอง
-      isLoading: true, // สถานะการโหลดข้อมูล
     }
-  },
-  computed: {
-    getColumnSize() {
-      // คำนวณขนาดคอลัมน์ตามจำนวนปุ่มที่แสดง
-      const visibleButtons = [this.showShopCode, this.showUserCode, this.showUserEmail].filter(Boolean).length
-      if (visibleButtons === 1) return 12
-      if (visibleButtons === 2) return 6
-      return 4 // 3 ปุ่ม
-    },
   },
   mounted() {
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
     }
-    // โหลดสถานะการแสดงปุ่ม
-    this.fetchButtonStatus()
   },
   methods: {
-    async fetchButtonStatus() {
-      try {
-        const response = await axios.get('/api/btnStatus/GetBtnStatus')
-        if (response.data.status === 'success' && response.data.data.length > 0) {
-          const btnStatus = response.data.data[0]
-          this.showShopCode = btnStatus.show_shop_code === 1
-          this.showUserCode = btnStatus.show_user_code === 1
-          this.showUserEmail = btnStatus.show_user_email === 1
-        }
-      } catch (error) {
-        console.error('Error fetching button status:', error)
-        // ถ้า error ให้แสดงปุ่มทั้งหมดตาม default
-      } finally {
-        this.isLoading = false
-      }
-    },
-    selectType(type) {
-      this.selectedType = type
+    selectPlan(plan) {
+      this.selectedPlan = plan
     },
     handleConfirm() {
-      if (this.selectedType === 'shop') {
-        // นำไปหน้าเลือกแพ็กเกจ (Personal/Family) พร้อมส่ง sourceUserId
-        const query = {}
+      if (this.selectedPlan) {
+        // นำไปหน้าซื้อสินค้าพร้อมส่ง plan type และ sourceUserId
+        const query = { 
+          type: 'shop',
+          plan: this.selectedPlan // 'personal' หรือ 'family'
+        }
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
-        this.$router.push({ name: 'select-plan-type', query })
-      } else if (this.selectedType === 'personal') {
-        // นำไปหน้าลงทะเบียนด้วยรหัสตัวเอง พร้อมส่ง sourceUserId
-        const query = { type: 'personal' }
-        if (this.sourceUserId) {
-          query.sourceUserId = this.sourceUserId
-        }
-        this.$router.push({ name: 'user-regis', query })
-      } else if (this.selectedType === 'email') {
-        // นำไปหน้ากรอกเมลตัวเอง พร้อมส่ง sourceUserId
-        const query = { type: 'email' }
-        if (this.sourceUserId) {
-          query.sourceUserId = this.sourceUserId
-        }
-        this.$router.push({ name: 'registeremail', query })
+        this.$router.push({ name: 'buy-product', query })
       }
+    },
+    goBack() {
+      // กลับไปหน้า SelectTopic พร้อมส่ง sourceUserId
+      const query = {}
+      if (this.sourceUserId) {
+        query.sourceUserId = this.sourceUserId
+      }
+      this.$router.push({ name: 'select-topic', query })
     },
   },
 }
 </script>
 
 <style lang="scss">
-// Pastel Theme - Matching BuyProduct.vue
-.select-topic-container {
+// Pastel Theme - Matching SelectTopic.vue
+.select-plan-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -219,7 +173,7 @@ export default {
   position: relative;
   z-index: 3;
   width: 100%;
-  max-width: 900px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -300,17 +254,6 @@ export default {
 
 .options-section {
   margin: 2rem 0;
-}
-
-.loading-section {
-  margin: 2rem 0;
-  padding: 3rem 0;
-
-  p {
-    color: #333333;
-    font-family: 'MiSansMU', sans-serif;
-    font-size: 1rem;
-  }
 }
 
 .option-card {
@@ -453,6 +396,32 @@ export default {
   }
 }
 
+.back-section {
+  .back-button {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px !important;
+    background: transparent !important;
+    border: 2px solid rgba(255, 182, 193, 0.5) !important;
+    color: #ff69b4 !important;
+    transition: all 0.3s ease;
+    font-family: 'MiSansMU', sans-serif;
+
+    &:hover {
+      background: rgba(255, 182, 193, 0.1) !important;
+      border-color: #ff69b4 !important;
+      transform: translateY(-1px);
+    }
+
+    .button-icon {
+      width: 18px;
+      height: 18px;
+      margin-right: 0.5rem;
+    }
+  }
+}
+
 // Responsive Design
 @media (max-width: 768px) {
   .select-card {
@@ -527,5 +496,12 @@ export default {
     font-size: 1rem;
     padding: 0.75rem 1.5rem !important;
   }
+
+  .back-button {
+    font-size: 0.9rem;
+    padding: 0.65rem 1.25rem !important;
+  }
 }
 </style>
+
+
