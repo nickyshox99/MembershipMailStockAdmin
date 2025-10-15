@@ -46,7 +46,8 @@
                 </h4>
                 <div class="userid-display">
                   <div class="line-profile">
-                    <img v-if="lineProfile.picture_url" :src="lineProfile.picture_url" class="line-avatar" alt="LINE Avatar" />
+                    <img v-if="lineProfile.picture_url" :src="lineProfile.picture_url" class="line-avatar"
+                      alt="LINE Avatar" />
                     <div v-else class="line-avatar-placeholder">
                       <feather-icon icon="UserIcon" class="placeholder-icon" />
                     </div>
@@ -88,39 +89,33 @@
                     <feather-icon icon="QrCodeIcon" class="title-icon" />
                     QR Code สำหรับโอนเงิน (PromptPay)
                   </h4>
-                  
+
                   <div class="qr-display">
                     <div class="qr-container" @click="openQRModal">
-                      <img 
-                        :src="generatedQRCode" 
-                        alt="PromptPay QR Code" 
-                        class="qr-image"
-                      />
+                      <img :src="generatedQRCode" alt="PromptPay QR Code" class="qr-image" />
                       <div class="qr-overlay">
                         <feather-icon icon="MaximizeIcon" class="qr-icon" />
                         <span class="qr-text">คลิกเพื่อดูขนาดใหญ่</span>
                       </div>
                     </div>
                     <div class="qr-info">
-                      <p class="qr-amount">ยอดชำระ: ฿{{ productPrice.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
+                      <p class="qr-amount">ยอดชำระ: ฿{{ productPrice.toLocaleString('th-TH', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2 }) }}</p>
                     </div>
                   </div>
                 </template>
-                
+
                 <!-- Uploaded QR Code (เดิม) -->
                 <template v-else-if="bankData.qr">
                   <h4 class="qr-title">
                     <feather-icon icon="QrCodeIcon" class="title-icon" />
                     QR Code สำหรับโอนเงิน
                   </h4>
-                  
+
                   <div class="qr-display">
                     <div class="qr-container" @click="openQRModal">
-                      <img 
-                        :src="getQRImageUrl(bankData.qr)" 
-                        alt="QR Code" 
-                        class="qr-image"
-                      />
+                      <img :src="getQRImageUrl(bankData.qr)" alt="QR Code" class="qr-image" />
                       <div class="qr-overlay">
                         <feather-icon icon="MaximizeIcon" class="qr-icon" />
                         <span class="qr-text">คลิกเพื่อดูขนาดใหญ่</span>
@@ -193,20 +188,12 @@
     </div>
 
     <!-- QR Code Modal -->
-    <b-modal
-      :visible="showQRModal"
+    <b-modal :visible="showQRModal"
       :title="enableAutoGenerateQR && generatedQRCode ? 'QR Code สำหรับโอนเงิน (PromptPay)' : 'QR Code สำหรับโอนเงิน'"
-      hide-footer
-      @hidden="closeQRModal"
-      size="sm"
-      centered
-    >
+      hide-footer @hidden="closeQRModal" size="sm" centered>
       <div class="qr-modal-content">
-        <img 
-          :src="enableAutoGenerateQR && generatedQRCode ? generatedQRCode : getQRImageUrl(bankData.qr)" 
-          alt="QR Code" 
-          class="qr-modal-image"
-        />
+        <img :src="enableAutoGenerateQR && generatedQRCode ? generatedQRCode : getQRImageUrl(bankData.qr)" alt="QR Code"
+          class="qr-modal-image" />
         <p class="qr-modal-text">สแกน QR Code เพื่อโอนเงิน</p>
         <p v-if="enableAutoGenerateQR && generatedQRCode" class="qr-modal-amount">
           ยอดชำระ: ฿{{ productPrice.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
@@ -284,8 +271,8 @@ export default {
       // validation rulesimport store from '@/store/index'
       required,
 
-      user_id:'',
-      lineId:'',
+      user_id: '',
+      lineId: '',
 
       avatarImgUrl: require('@/assets/images/avatars/4.png'),
       displayName: '',
@@ -301,11 +288,13 @@ export default {
       enableAutoGenerateQR: false,
       generatedQRCode: '',
       productPrice: 0,
+      purchaseType: '',
+      email: '',
     }
   },
   computed: {
     ...mapGetters('userRegistration', ['getEmail', 'getPassword', 'hasRegistrationData']),
-    
+
     passwordToggleIcon() {
       return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
     },
@@ -320,8 +309,15 @@ export default {
   },
   async created() {
     // this.getOrderData();
-    const { id, user_id } = this.$route.query || {};
+    const { id, user_id, purchase_type, email } = this.$route.query || {};
     if (!id || !user_id) { this.showErrorParam = true; return; }
+
+    // เก็บ purchase_type และ email ไว้ใช้
+    this.purchaseType = purchase_type || '';
+    this.email = email || '';
+    console.log('ConfirmPayment - purchase_type:', this.purchaseType);
+    console.log('ConfirmPayment - email:', this.email);
+
     await this.loadSetting();
     await this.getOrderData();
   },
@@ -333,6 +329,7 @@ export default {
     ...mapActions(["GetActiveProductSetting"]),
     ...mapActions(["GetBankInfo"]),
     ...mapActions(["InsertUserEmail"]),
+    ...mapActions(["InsertPersonalEmail"]),
     async validationForm() {
 
     },
@@ -345,101 +342,99 @@ export default {
       formData.append("page_name", this.$route.name);
       formData.append("id", this.$route.query.id || "");
       formData.append("user_id", this.$route.query.user_id || "");
-    
+
       const response = await this.GetOrderData(formData);
       console.log('API Response:', response);
-      
-      if (response && response.data && response.data.status=='success') 
-      {         
-          if (response.data.data && response.data.data.length > 0) {
-            this.orderData = response.data.data[0];
-            
-            // ถ้าเปิดใช้ Auto Generate QR ให้ดึงธนาคาร status=1 อันแรก
-            // ถ้าไม่เปิดใช้ ให้ใช้ bank_data ที่ API ส่งมา (สำหรับ QR ที่ upload)
-            if (this.enableAutoGenerateQR) {
-              console.log('Using active bank (status=1) for Auto Generate QR');
-              const activeBank = await this.getActiveBankAccount();
-              this.bankData = activeBank || response.data.bank_data || {};
-            } else {
-              console.log('Using bank_data from API (for uploaded QR)');
-              this.bankData = response.data.bank_data || {};
-            }
-            
-            this.slip_file_url = response.data.slip_file_url || '';
-            
-            console.log('=== Slip File URL from API ===');
-            console.log('slip_file_url:', this.slip_file_url);
-            
-            // Log ข้อมูลทั้งหมดเพื่อ debug
-            console.log('=== FULL ORDER DATA ===');
-            console.log('Order Data (all fields):', JSON.stringify(this.orderData, null, 2));
-            console.log('Order Data Keys:', Object.keys(this.orderData));
-            
-            // ตรวจสอบ field ราคาแต่ละตัว
-            console.log('Price field checks:');
-            console.log('  - product_price:', this.orderData.product_price);
-            console.log('  - price:', this.orderData.price);
-            console.log('  - use_credit:', this.orderData.use_credit);
-            console.log('  - amount:', this.orderData.amount);
-            console.log('  - total_price:', this.orderData.total_price);
-            
-            // Try multiple fields for price
-            let priceValue = this.orderData.product_price || 
-                              this.orderData.price || 
-                              this.orderData.use_credit || 
-                              this.orderData.amount ||
-                              this.orderData.total_price ||
-                              0;
-            
-            // ถ้าไม่มีราคาใน orderData ให้ดึงจาก product_id
-            if (!priceValue && this.orderData.product_id) {
-              console.log('No price in orderData, fetching from product...');
-              priceValue = await this.getProductPrice(this.orderData.product_id);
-            }
-            
-            this.productPrice = parseFloat(priceValue) || 0;
-            
-            // Extract LINE profile data from order data
-            this.lineProfile = {
-              display_name: this.orderData.line_display_name || '',
-              picture_url: this.orderData.line_profile_url || ''
-            };
-            
-            console.log('Order Data:', this.orderData);
-            console.log('Bank Data:', this.bankData);
-            console.log('LINE Profile:', this.lineProfile);
-            console.log('LINE Display Name:', this.orderData.line_display_name);
-            console.log('LINE Picture URL:', this.orderData.line_profile_url);
-            console.log('Product Price (from use_credit/price/etc):', this.productPrice);
-            console.log('Enable Auto Generate QR:', this.enableAutoGenerateQR);
-            
-            // Generate PromptPay QR if enabled
-            if (this.enableAutoGenerateQR && this.productPrice > 0) {
-              console.log('Generating PromptPay QR with price:', this.productPrice);
-              await this.generatePromptPayQR();
-            } else {
-              console.log('QR generation skipped - enableAutoGenerateQR:', this.enableAutoGenerateQR, 'productPrice:', this.productPrice);
-            }
+
+      if (response && response.data && response.data.status == 'success') {
+        if (response.data.data && response.data.data.length > 0) {
+          this.orderData = response.data.data[0];
+
+          // ถ้าเปิดใช้ Auto Generate QR ให้ดึงธนาคาร status=1 อันแรก
+          // ถ้าไม่เปิดใช้ ให้ใช้ bank_data ที่ API ส่งมา (สำหรับ QR ที่ upload)
+          if (this.enableAutoGenerateQR) {
+            console.log('Using active bank (status=1) for Auto Generate QR');
+            const activeBank = await this.getActiveBankAccount();
+            this.bankData = activeBank || response.data.bank_data || {};
           } else {
-            this.showErrorParam = true;
+            console.log('Using bank_data from API (for uploaded QR)');
+            this.bankData = response.data.bank_data || {};
           }
-      }
-      else
-      {
+
+          this.slip_file_url = response.data.slip_file_url || '';
+
+          console.log('=== Slip File URL from API ===');
+          console.log('slip_file_url:', this.slip_file_url);
+
+          // Log ข้อมูลทั้งหมดเพื่อ debug
+          console.log('=== FULL ORDER DATA ===');
+          console.log('Order Data (all fields):', JSON.stringify(this.orderData, null, 2));
+          console.log('Order Data Keys:', Object.keys(this.orderData));
+
+          // ตรวจสอบ field ราคาแต่ละตัว
+          console.log('Price field checks:');
+          console.log('  - product_price:', this.orderData.product_price);
+          console.log('  - price:', this.orderData.price);
+          console.log('  - use_credit:', this.orderData.use_credit);
+          console.log('  - amount:', this.orderData.amount);
+          console.log('  - total_price:', this.orderData.total_price);
+
+          // Try multiple fields for price
+          let priceValue = this.orderData.product_price ||
+            this.orderData.price ||
+            this.orderData.use_credit ||
+            this.orderData.amount ||
+            this.orderData.total_price ||
+            0;
+
+          // ถ้าไม่มีราคาใน orderData ให้ดึงจาก product_id
+          if (!priceValue && this.orderData.product_id) {
+            console.log('No price in orderData, fetching from product...');
+            priceValue = await this.getProductPrice(this.orderData.product_id);
+          }
+
+          this.productPrice = parseFloat(priceValue) || 0;
+
+          // Extract LINE profile data from order data
+          this.lineProfile = {
+            display_name: this.orderData.line_display_name || '',
+            picture_url: this.orderData.line_profile_url || ''
+          };
+
+          console.log('Order Data:', this.orderData);
+          console.log('Bank Data:', this.bankData);
+          console.log('LINE Profile:', this.lineProfile);
+          console.log('LINE Display Name:', this.orderData.line_display_name);
+          console.log('LINE Picture URL:', this.orderData.line_profile_url);
+          console.log('Product Price (from use_credit/price/etc):', this.productPrice);
+          console.log('Enable Auto Generate QR:', this.enableAutoGenerateQR);
+
+          // Generate PromptPay QR if enabled
+          if (this.enableAutoGenerateQR && this.productPrice > 0) {
+            console.log('Generating PromptPay QR with price:', this.productPrice);
+            await this.generatePromptPayQR();
+          } else {
+            console.log('QR generation skipped - enableAutoGenerateQR:', this.enableAutoGenerateQR, 'productPrice:', this.productPrice);
+          }
+        } else {
           this.showErrorParam = true;
-          const errorMessage = (response && response.data && response.data.message) || 
-                              (response && response.message) || 
-                              'ไม่พบข้อมูลคำสั่งซื้อ';
-          
-          this.$toast(
-            {
-              component: ToastificationContent,
-              props: {
-                title: errorMessage,
-                icon: 'EditIcon',
-                variant: 'error',
-              },
-            });
+        }
+      }
+      else {
+        this.showErrorParam = true;
+        const errorMessage = (response && response.data && response.data.message) ||
+          (response && response.message) ||
+          'ไม่พบข้อมูลคำสั่งซื้อ';
+
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: errorMessage,
+              icon: 'EditIcon',
+              variant: 'error',
+            },
+          });
 
       }
     },
@@ -450,7 +445,7 @@ export default {
       if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
 
-        
+
         // Check if file exists and is valid
         if (!file || !file.name) {
           this.$toast({
@@ -463,7 +458,7 @@ export default {
           });
           return;
         }
-        
+
 
         // Validate file type (only images)
         if (!file.type.startsWith('image/')) {
@@ -509,7 +504,7 @@ export default {
         });
         return;
       }
-      
+
 
       try {
         // Generate safe filename
@@ -535,11 +530,11 @@ export default {
         const response = await this.UploadFileAndDeleteOldFile(formData);
 
         console.log('Upload response:', response);
-        
+
 
         if (response && response.data && response.data.status === 'success') {
           this.slip_file_url = response.data.url;
-          
+
           console.log('=== Upload Success ===');
           console.log('slip_file_url set to:', this.slip_file_url);
           console.log('response.data:', response.data);
@@ -554,10 +549,10 @@ export default {
           });
         } else {
           console.error('Upload failed:', response);
-          const errorMessage = (response && response.data && response.data.message) || 
-                              (response && response.message) || 
-                              'อัปโหลดสลิปล้มเหลว';
-          
+          const errorMessage = (response && response.data && response.data.message) ||
+            (response && response.message) ||
+            'อัปโหลดสลิปล้มเหลว';
+
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -611,45 +606,49 @@ export default {
       const response = await this.PaymentOrderWithSlip(formData);
       console.log('Payment confirmation response:', response);
 
-      
-      if (response && response.data && response.data.status=='success') 
-      {         
-          // Insert user email data after payment confirmation success
-          await this.insertUserEmailData();
-          
-          this.showCompleteDialog = true;
-          this.$toast(
-            {
-              component: ToastificationContent,
-              props: {
-                title: 'ยืนยันการชำระเงินสำเร็จ',
-                icon: 'CheckIcon',
-                variant: 'success',
-              },
-            });
+
+      if (response && response.data && response.data.status == 'success') {
+        // Insert user email data after payment confirmation success
+        await this.insertUserEmailData();
+        // await this.insertPersonalEmailData();
+        // if (this.purchaseType === 'personal') {
+        //   await this.InsertPersonalEmail(data);
+        // } else if (this.purchaseType === 'email') {
+        //   await this.InsertPersonalEmail(data);
+        // }
+
+        this.showCompleteDialog = true;
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: 'ยืนยันการชำระเงินสำเร็จ',
+              icon: 'CheckIcon',
+              variant: 'success',
+            },
+          });
       }
-      else
-      {
-          const errorMessage = (response && response.data && response.data.message) || 
-                              (response && response.message) || 
-                              'ยืนยันการชำระเงินล้มเหลว';
-          
-          this.$toast(
-            {
-              component: ToastificationContent,
-              props: {
-                title: errorMessage,
-                icon: 'AlertCircleIcon',
-                variant: 'error',
-              },
-            });
+      else {
+        const errorMessage = (response && response.data && response.data.message) ||
+          (response && response.message) ||
+          'ยืนยันการชำระเงินล้มเหลว';
+
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: errorMessage,
+              icon: 'AlertCircleIcon',
+              variant: 'error',
+            },
+          });
       }
     },
     async deleteSlip() {
       console.log('deleteSlip');
       console.log('Current slip_file_url:', this.slip_file_url);
 
-      
+
       // Check if there's a file to delete
       if (!this.slip_file_url || this.slip_file_url === '') {
         this.$toast({
@@ -662,7 +661,7 @@ export default {
         });
         return;
       }
-      
+
 
       // Store the current URL for API call
       const currentSlipUrl = this.slip_file_url;
@@ -702,11 +701,11 @@ export default {
           // Restore the URL if delete failed
           this.slip_file_url = currentSlipUrl;
 
-          
-          const errorMessage = (response && response.data && response.data.message) || 
-                              (response && response.message) || 
-                              'ลบสลิปล้มเหลว';
-          
+
+          const errorMessage = (response && response.data && response.data.message) ||
+            (response && response.message) ||
+            'ลบสลิปล้มเหลว';
+
 
           this.$toast({
             component: ToastificationContent,
@@ -750,23 +749,23 @@ export default {
     getSlipImageUrl(slipPath) {
       console.log('=== getSlipImageUrl ===');
       console.log('Input slipPath:', slipPath);
-      
+
       if (!slipPath) return '';
-      
+
       // If it's already a full URL, return as is
       if (slipPath.startsWith('http')) {
         console.log('Already full URL:', slipPath);
         return slipPath;
       }
-      
+
       // Get API URL from vue config
       const vueconfig = require('../../../../config/vue.config');
       const apiUrl = vueconfig.BASE_API_URL;
       const fullUrl = `${apiUrl}getfile/${slipPath}`;
-      
+
       console.log('BASE_API_URL:', apiUrl);
       console.log('Full URL:', fullUrl);
-      
+
       return fullUrl;
     },
     async loadSetting() {
@@ -797,20 +796,20 @@ export default {
     async getProductPrice(productId) {
       try {
         console.log('getProductPrice for product_id:', productId);
-        
+
         const formData = new FormData();
         formData.append("userid", "");
         formData.append("token", "");
         formData.append("page_name", "");
 
         const response = await this.GetActiveProductSetting(formData);
-        
+
         if (response && response.data && response.data.status === 'success') {
           const productList = response.data.data || [];
           console.log('Product list:', productList);
-          
+
           const product = productList.find(p => p.id === productId);
-          
+
           if (product) {
             const price = parseFloat(product.use_credit || product.price || 0);
             console.log('Found product price:', price, 'from product:', product);
@@ -831,21 +830,21 @@ export default {
     async getActiveBankAccount() {
       try {
         console.log('getActiveBankAccount - fetching bank with status = 1');
-        
+
         const formData = new FormData();
         formData.append("userid", "-");
         formData.append("token", "-");
         formData.append("searchWord", "");
 
         const response = await this.GetBankInfo(formData);
-        
+
         if (response && response.data && response.data.status === 'success') {
           const bankList = response.data.data || [];
           console.log('Bank list:', bankList);
-          
+
           // หาธนาคารที่ status = 1 อันแรก
           const activeBank = bankList.find(bank => bank.status === 1 || bank.status === '1');
-          
+
           if (activeBank) {
             console.log('Found active bank:', activeBank);
             console.log('PromptPay Number:', activeBank.promptpay_number);
@@ -875,18 +874,18 @@ export default {
         console.log('=== Starting generatePromptPayQR ===');
         console.log('bankData:', this.bankData);
         console.log('productPrice:', this.productPrice);
-        
+
         // ใช้เบอร์โทรพร้อมเพย์แทนเลขบัญชี
         let promptpayNumber = this.bankData.promptpay_number || ''
         console.log('PromptPay Number from bankData:', promptpayNumber);
-        
+
         // ถ้าไม่มี PromptPay Number ให้แจ้งเตือน
         if (!promptpayNumber || !this.productPrice) {
           console.error('Missing PromptPay number or price:', {
             promptpayNumber,
             productPrice: this.productPrice
           });
-          
+
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -920,14 +919,14 @@ export default {
         // Generate PromptPay payload
         const payload = generatePayload(promptpayNumber, { amount: this.productPrice })
         console.log('PromptPay payload generated:', payload);
-        
+
         // Generate QR code as data URL
         this.generatedQRCode = await QRCode.toDataURL(payload)
         console.log('QR Code data URL generated, length:', this.generatedQRCode.length);
-        
-        console.log('✅ Generated PromptPay QR Code successfully');
+
+        console.log('Generated PromptPay QR Code successfully');
       } catch (error) {
-        console.error('❌ Error generating PromptPay QR:', error)
+        console.error(' Error generating PromptPay QR:', error)
         this.$toast({
           component: ToastificationContent,
           props: {
@@ -940,53 +939,101 @@ export default {
     },
     async insertUserEmailData() {
       try {
-        console.log('=== insertUserEmailData ===');
-        
-        // Check if we have registration data from store
-        if (!this.hasRegistrationData) {
-          console.log('No registration data in store, skipping insert');
+
+        // เช็คว่ามี email หรือไม่
+        if (!this.email) {
+          console.log('No email provided, skipping insert');
           return;
         }
 
-        const email = this.getEmail;
-        const password = this.getPassword;
         const { id, user_id } = this.$route.query || {};
 
-        console.log('Registration data:', { email, password: '***', user_id, order_id: id });
+        console.log('Registration data:', { email: this.email, user_id, order_id: id, purchase_type: this.purchaseType });
 
         // Validate data
-        if (!user_id || !id || !email || !password) {
-          console.log('Missing required data for insert:', { user_id, order_id: id, email: !!email, password: !!password });
+        if (!user_id || !id || !this.email) {
+          console.log('Missing required data for insert:', { user_id, order_id: id, email: !!this.email });
           return;
         }
 
-        // Prepare data
-        const data = {
-          user_id: user_id,
-          order_id: parseInt(id),
-          email: email,
-          password: password,
-          status_regis: 0,
-        };
+        // เช็ค purchase_type และเลือก API ที่เหมาะสม
+        if (this.purchaseType === 'personal') {
+          // สำหรับ personal: insert ลง users_email (ใช้ password จาก store)
+          console.log('Inserting to users_email table (personal)');
 
-        console.log('Inserting user email data:', { ...data, password: '***' });
+          // ดึง password จาก store
+          const password = this.getPassword;
 
-        // Call API
-        const response = await this.InsertUserEmail(data);
+          if (!password) {
+            console.error('Password not found in store');
+            return;
+          }
 
-        console.log('Insert response:', response);
+          const data = {
+            user_id: user_id,
+            order_id: parseInt(id),
+            email: this.email,
+            password: password,
+            status_regis: 0,
+          };
 
-        if (response && response.data && response.data.status === 'success') {
-          console.log('✅ User email inserted successfully');
-          // ไม่แสดง toast เพราะจะซ้ำกับ toast ของการยืนยันชำระเงิน
+          console.log('Calling API with data:', { ...data, password: '***' }); // ซ่อน password ใน log
+
+          const response = await this.InsertUserEmail(data);
+
+          console.log('Insert response:', response);
+
+          if (response && response.data && response.data.status === 'success') {
+            console.log(' Users email (personal) inserted successfully');
+            // ไม่แสดง toast เพราะจะซ้ำกับ toast ของการยืนยันชำระเงิน
+          } else {
+            const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
+            console.error('Insert users email failed:', errorMessage);
+            // Silent error - ไม่แสดง error toast เพราะไม่ต้องการให้รบกวน flow หลัก
+          }
+
+        } else if (this.purchaseType === 'email') {
+          // สำหรับ email: insert ลง personal_email (ไม่ใช้ password)
+          console.log('Inserting to personal_email table');
+
+          const data = {
+            user_id: user_id,
+            order_id: parseInt(id),
+            email: this.email,
+            status_regis: 0,
+          };
+
+          console.log('Calling API with data:', data);
+
+          const response = await this.InsertPersonalEmail(data);
+
+          // const response = await axios.post("api/personalemail/createPersonalEmail", data, {
+          //   headers: {
+          //     'Content-Type': 'application/json'
+          //   }
+          // }).catch(error => {
+          //   console.error('API Error:', error);
+          //   console.error('Error response:', error.response);
+          //   throw error;
+          // });
+
+          console.log('Insert response:', response);
+
+          if (response && response.data && response.data.status === 'success') {
+            console.log(' Personal email inserted successfully');
+            // ไม่แสดง toast เพราะจะซ้ำกับ toast ของการยืนยันชำระเงิน
+          } else {
+            const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
+            console.error('Insert personal email failed:', errorMessage);
+            // Silent error - ไม่แสดง error toast เพราะไม่ต้องการให้รบกวน flow หลัก
+          }
+
         } else {
-          const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
-          console.error('Insert user email failed:', errorMessage);
-          // Silent error - ไม่แสดง error toast เพราะไม่ต้องการให้รบกวน flow หลัก
+          console.log('Unknown purchase_type, skipping insert:', this.purchaseType);
         }
 
       } catch (error) {
-        console.error('❌ Error in insertUserEmailData:', error);
+        console.error('Error in insertUserEmailData:', error);
         // Silent error - ไม่แสดง error toast เพื่อไม่ให้รบกวน flow การชำระเงิน
       }
     }
@@ -1027,7 +1074,7 @@ export default {
   bottom: 0;
 
   background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at 70% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%);
+    radial-gradient(circle at 70% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%);
 
   z-index: 2;
 }
@@ -1083,7 +1130,7 @@ export default {
       border-color: rgba(255, 182, 193, 0.3);
     }
   }
-  
+
 
   .brand-text {
     color: #ff69b4 !important;
@@ -1158,7 +1205,7 @@ export default {
           box-shadow: 0 12px 35px rgba(255, 182, 193, 0.25);
           border-color: rgba(255, 182, 193, 0.3);
         }
-        
+
 
         .product-image {
           width: 80px;
@@ -1190,10 +1237,10 @@ export default {
       margin: 1.5rem 0;
     }
 
-    
+
     .userid-section {
       margin-bottom: 2rem;
-      
+
 
       .userid-title {
         color: #000000;
@@ -1212,7 +1259,7 @@ export default {
         }
       }
 
-      
+
       .userid-display {
         background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
         border: 2px solid rgba(255, 182, 193, 0.2);
@@ -1226,12 +1273,12 @@ export default {
           box-shadow: 0 6px 20px rgba(255, 182, 193, 0.15);
           border-color: rgba(255, 182, 193, 0.3);
         }
-        
+
         .line-profile {
           display: flex;
           align-items: center;
           gap: 1rem;
-          
+
           .line-avatar {
             width: 50px;
             height: 50px;
@@ -1239,12 +1286,12 @@ export default {
             object-fit: cover;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             transition: transform 0.3s ease;
-            
+
             &:hover {
               transform: scale(1.05);
             }
           }
-          
+
           .line-avatar-placeholder {
             width: 50px;
             height: 50px;
@@ -1255,23 +1302,23 @@ export default {
             justify-content: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
-            
+
             .placeholder-icon {
               width: 24px;
               height: 24px;
               color: #ff69b4;
             }
-            
+
             &:hover {
               transform: scale(1.05);
             }
           }
-          
+
           .line-info {
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
-            
+
             .line-name {
               color: #000000;
               font-family: 'MiSansMU', sans-serif;
@@ -1279,7 +1326,7 @@ export default {
               font-size: 1.1rem;
               line-height: 1.3;
             }
-            
+
             .line-id {
               color: #666666;
               font-family: 'MiSansMU', sans-serif;
@@ -1332,7 +1379,7 @@ export default {
           box-shadow: 0 12px 35px rgba(255, 182, 193, 0.25);
           border-color: rgba(255, 182, 193, 0.3);
         }
-        
+
 
         .bank-logo {
           margin-right: 1.5rem;
@@ -1686,7 +1733,7 @@ export default {
     padding: 2rem;
     border-radius: 20px !important;
   }
-  
+
   // .logo-section {
   //   .logo-image {
   //     width: 100px;
@@ -1698,7 +1745,7 @@ export default {
   //     font-size: 1.5rem;
   //   }
   // }
-  
+
   .content-section .main-content .payment-section .bank-info {
     flex-direction: column;
     text-align: center;
@@ -1726,7 +1773,7 @@ export default {
     padding: 1.5rem;
     border-radius: 16px !important;
   }
-  
+
   // .logo-section {
   //   .logo-image {
   //     width: 80px;
@@ -1738,7 +1785,7 @@ export default {
   //     font-size: 1.3rem;
   //   }
   // }
-  
+
   .content-section .main-content .product-info-section .section-title {
     font-size: 1.1rem;
   }

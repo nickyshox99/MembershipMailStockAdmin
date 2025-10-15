@@ -147,10 +147,11 @@ export default {
         },
       })
 
-      // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email และ sourceUserId
+      // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email, sourceUserId, shop_type และ purchaseType
       const query = {
-        type: 'email',
-        email: this.email
+        email: this.email,
+        shop_type: 3,
+        purchase_type: 'email'
       }
       if (this.sourceUserId) {
         query.sourceUserId = this.sourceUserId

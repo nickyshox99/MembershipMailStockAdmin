@@ -231,9 +231,9 @@ export default {
 
       // บันทึกข้อมูลลง store
       await this.setRegistrationData({
-        email: this.email,
+        // email: this.email,
         password: this.password,
-        sourceUserId: this.sourceUserId || null,
+        // sourceUserId: this.sourceUserId || null,
       })
 
       console.log('Register with:', {
@@ -253,8 +253,10 @@ export default {
 
       // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email และ sourceUserId
       const query = { 
-        type: 'personal',
-        email: this.email 
+        purchase_type: 'personal',
+        shop_type: 2,
+        email: this.email,
+        // sourceUserId: this.sourceUserId 
       }
       if (this.sourceUserId) {
         query.sourceUserId = this.sourceUserId

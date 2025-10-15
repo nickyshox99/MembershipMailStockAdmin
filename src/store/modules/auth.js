@@ -279,6 +279,27 @@ const actions = {
 
     return response;
   },
+
+  async InsertPersonalEmail({commit}, formData) {
+    console.log('InsertPersonalEmail action');
+    let response;
+    await axios.post("api/personalemail/createPersonalEmail", formData, {
+      headers: {            
+        'Content-Type': 'application/json'
+      }
+    }).then(
+      resp => {
+        response = resp;
+      }
+    ).catch(error => {
+      console.error('InsertPersonalEmail error:', error);
+      response = error.response || { data: { status: 'error', message: error.message } };
+    });
+
+    return response;
+  },
+
+  
   async UpdateStatusRegis({commit}, formData) {
     console.log('UpdateStatusRegis action');
     
