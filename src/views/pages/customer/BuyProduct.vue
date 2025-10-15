@@ -252,10 +252,10 @@ export default {
     await this.loadSetting()        // <— โหลดค่าก่อน
     
     // รับค่าจาก Vue Router Query
-    this.sourceUserId = this.$route.query.sourceUserId || '';
-    this.email = this.$route.query.email || '';
-    this.purchaseType = this.$route.query.purchase_type || this.$route.query.purchaseType || this.$route.query.type || '';
-    this.shopType = this.$route.query.shop_type || '';
+    this.sourceUserId = this.$route.query.sourceUserId;
+    this.email = this.$route.query.email;
+    this.purchaseType = this.$route.query.purchase_type || this.$route.query.purchaseType || this.$route.query.type;
+    this.shopType = this.$route.query.shop_type;
     
     console.log('BuyProduct - sourceUserId:', this.sourceUserId);
     console.log('BuyProduct - email:', this.email);
@@ -379,12 +379,9 @@ export default {
         if (this.shopType) {
           // แสดงเฉพาะ shop_type ที่ระบุ
           this.productList = allProducts.filter(product => product.shop_type == this.shopType);
-        } else {
-          // ถ้าไม่มี shopType ให้แสดงทั้งหมด
-          this.productList = allProducts;
         }
         
-        console.log('Filtered products for shop_type:', this.shopType, this.productList);
+        // console.log('Filtered products for shop_type:', this.shopType, this.productList);
       } else {
 
       }
@@ -446,7 +443,7 @@ export default {
       formData.append("product_id", this.product.id);
       formData.append("note", "");
       formData.append("page_name", this.$route.name);
-      formData.append("purchase_type", this.purchaseType || ''); // เพิ่ม purchase_type
+      formData.append("purchase_type", this.purchaseType); // เพิ่ม purchase_type
 
 
       formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"
@@ -467,7 +464,7 @@ export default {
 
 
         // const orderId = response.data.orderId || response.data.data?.id || '';
-        const orderId = response.data.order_id || '';
+        const orderId = response.data.order_id;
         console.log('orderId:', orderId);
         if (orderId) {
           this.$router.replace(
@@ -476,8 +473,8 @@ export default {
               query: { 
                 user_id: String(this.sourceUserId), 
                 id: String(orderId),
-                purchase_type: this.purchaseType || '',
-                email: this.email || ''
+                purchase_type: this.purchaseType,
+                email: this.email
               }
             })
         }
