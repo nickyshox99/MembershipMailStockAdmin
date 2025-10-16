@@ -264,24 +264,48 @@
         </b-badge>
       </div>
 
-       <!-- Top Seller Card -->
-       <div v-if="bestSellingProducts.length > 0" class="top-seller-card mb-4">
-         <div class="d-flex align-items-center justify-content-center flex-column text-center">
-           <div class="d-flex align-items-center mb-2">
-             <feather-icon icon="AwardIcon" size="24" class="text-danger me-2" />
-             <h6 class="text-danger fw-bold mb-0">Top Seller</h6>
-           </div>
-           <h4 class="fw-bold text-dark mb-2">{{ bestSellingProducts[0].subscription_name }}</h4>
-           <div class="text-dark">
-             <span class="fw-bold text-dark">{{ bestSellingProducts[0].total_orders }} ครั้ง</span> • 
-             <span class="fw-bold text-dark">{{ bestSellingProducts[0].unique_customers }} ลูกค้า</span>
-           </div>
-         </div>
-       </div>
+      <!-- Store Filter Dropdown -->
+      <b-row class="mb-3" v-if="availablePurchaseTypeOptions.length > 0">
+        <b-col cols="12" md="4">
+          <b-form-group label="เลือกร้าน:" label-class="fw-bold">
+            <b-form-select
+              v-model="selectedPurchaseType"
+              :options="availablePurchaseTypeOptions"
+              class="store-filter-select"
+            >
+              <template #first>
+                <b-form-select-option value="" disabled>-- เลือกร้าน --</b-form-select-option>
+              </template>
+            </b-form-select>
+          </b-form-group>
+        </b-col>
+      </b-row>
+
+      <!-- No Data for All Stores -->
+      <div v-if="availablePurchaseTypeOptions.length === 0" class="text-center py-5">
+        <feather-icon icon="PackageIcon" size="48" class="text-muted mb-3" />
+        <p class="text-muted">ยังไม่มีข้อมูลสินค้าขายดีในทุกร้าน</p>
+      </div>
+
+      <!-- Top Seller Card -->
+      <div v-else-if="currentBestSellingProducts.length > 0" class="top-seller-card mb-4">
+        <div class="d-flex align-items-center justify-content-center flex-column text-center">
+          <div class="d-flex align-items-center mb-2">
+            <feather-icon icon="AwardIcon" size="24" class="text-danger me-2" />
+            <h6 class="text-danger fw-bold mb-0">Top Seller - {{ selectedPurchaseTypeLabel }}</h6>
+          </div>
+          <h4 class="fw-bold text-dark mb-2">{{ currentBestSellingProducts[0].subscription_name }}</h4>
+          <div class="text-dark">
+            <span class="fw-bold text-dark">{{ currentBestSellingProducts[0].total_orders }} ครั้ง</span> • 
+            <span class="fw-bold text-dark">{{ currentBestSellingProducts[0].unique_customers }} ลูกค้า</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Best Selling Products Table -->
       <b-table
-        :items="bestSellingProducts"
+        v-if="currentBestSellingProducts.length > 0 && availablePurchaseTypeOptions.length > 0"
+        :items="currentBestSellingProducts"
         :fields="bestSellingFields"
         striped
         hover
@@ -306,17 +330,17 @@
           </div>
         </template>
         
-         <template #cell(total_orders)="data">
-           <div class="text-center">
-             <span class="fw-bold">{{ data.item.total_orders }}</span>
-           </div>
-         </template>
-         
-         <template #cell(unique_customers)="data">
-           <div class="text-center">
-             <span class="fw-bold">{{ data.item.unique_customers }}</span>
-           </div>
-         </template>
+        <template #cell(total_orders)="data">
+          <div class="text-center">
+            <span class="fw-bold">{{ data.item.total_orders }}</span>
+          </div>
+        </template>
+        
+        <template #cell(unique_customers)="data">
+          <div class="text-center">
+            <span class="fw-bold">{{ data.item.unique_customers }}</span>
+          </div>
+        </template>
       </b-table>
     </b-card>
 
@@ -448,7 +472,19 @@ export default {
         usedSlots: 0,
         availableSlots: 0
       },
-      bestSellingProducts: []
+      bestSellingProducts: {
+        email: [],
+        personal: [],
+        shop_family: [],
+        shop_personal: []
+      },
+      selectedPurchaseType: 'email',
+      purchaseTypeOptions: [
+        { value: 'email', text: '📧 Email Store' },
+        { value: 'personal', text: '👤 Personal' },
+        { value: 'shop_family', text: '👨‍👩‍👧‍👦 Shop Family' },
+        { value: 'shop_personal', text: '🛒 Shop Personal' }
+      ]
     }
   },
   computed: {
@@ -460,12 +496,25 @@ export default {
       this.dir = false
       return this.dir
     },
+    currentBestSellingProducts() {
+      return this.bestSellingProducts[this.selectedPurchaseType] || [];
+    },
+    selectedPurchaseTypeLabel() {
+      const option = this.purchaseTypeOptions.find(o => o.value === this.selectedPurchaseType);
+      return option ? option.text : '';
+    },
+    availablePurchaseTypeOptions() {
+      // กรองเฉพาะร้านที่มีข้อมูล
+      return this.purchaseTypeOptions.filter(option => {
+        return this.bestSellingProducts[option.value] && this.bestSellingProducts[option.value].length > 0;
+      });
+    }
   },
   async created() {    
     await this.search();  
   },
   methods: {
-    ...mapActions(["GetAccountSummaryReport", "GetSubscriptionTypeReport", "GetOrderStatusReport", "GetMonthlyRevenueReport", "TestOrderStatusData", "GetHistorySubScribeOrderNotApprove", "GetHistorySubScribeOrderWaitInvitation", "GetHistorySubScribeOrderWaitCheckPayment", "GetHistorySubScribeOrderCheckedPayment", "GetHistorySubScribeOrderAll", "GetSubscriptionGroup"]),
+    ...mapActions(["GetAccountSummaryReport", "GetSubscriptionTypeReport", "GetOrderStatusReport", "GetMonthlyRevenueReport", "TestOrderStatusData", "GetHistorySubScribeOrderNotApprove", "GetHistorySubScribeOrderWaitInvitation", "GetHistorySubScribeOrderWaitCheckPayment", "GetHistorySubScribeOrderCheckedPayment", "GetHistorySubScribeOrderAll","GetSubscriptionGroup", "GetSubscriptionGroupForReport"]),
     async search(){
       console.log('search all reports');
 
@@ -483,7 +532,8 @@ export default {
           this.GetSubscriptionTypeReport(formData),
           this.GetOrderStatusReport(formData),
           this.GetMonthlyRevenueReport(formData),
-          this.GetSubscriptionGroup(formData)
+          this.GetSubscriptionGroup(formData),
+          this.GetSubscriptionGroupForReport(formData)
         ]);
 
         // Process Account Summary Report
@@ -864,42 +914,96 @@ export default {
            
            console.log('Confirmed orders:', confirmedOrders);
            
-           // Group by subscription type and count
-           const productStats = {};
+           // Group by purchase_type and subscription type
+           const productStatsByType = {
+             email: {},
+             personal: {},
+             shop_family: {},
+             shop_personal: {}
+           };
+           
            confirmedOrders.forEach(order => {
-             // Use product_name if available, fallback to subscription_name
+             const purchaseType = order.purchase_type || 'email'; // default to email if not specified
              const key = order.product_name || order.subscription_name || `Product ${order.subscription_type_id}`;
-             if (!productStats[key]) {
-               productStats[key] = {
+             
+             // Initialize if not exists
+             if (!productStatsByType[purchaseType]) {
+               productStatsByType[purchaseType] = {};
+             }
+             
+             if (!productStatsByType[purchaseType][key]) {
+               productStatsByType[purchaseType][key] = {
                  subscription_name: key,
                  total_orders: 0,
                  unique_customers: new Set()
                };
              }
-             productStats[key].total_orders++;
+             
+             productStatsByType[purchaseType][key].total_orders++;
              if (order.user_id) {
-               productStats[key].unique_customers.add(order.user_id);
+               productStatsByType[purchaseType][key].unique_customers.add(order.user_id);
              }
            });
            
-           console.log('Product stats:', productStats);
+           console.log('Product stats by type:', productStatsByType);
            
-           // Convert to array and sort by total orders
-           this.bestSellingProducts = Object.values(productStats)
-             .map(item => ({
-               ...item,
-               unique_customers: item.unique_customers.size
-             }))
-             .sort((a, b) => b.total_orders - a.total_orders);
+           // Convert to arrays and sort by total orders for each purchase type
+           this.bestSellingProducts = {
+             email: Object.values(productStatsByType.email)
+               .map(item => ({
+                 ...item,
+                 unique_customers: item.unique_customers.size
+               }))
+               .sort((a, b) => b.total_orders - a.total_orders),
+             personal: Object.values(productStatsByType.personal)
+               .map(item => ({
+                 ...item,
+                 unique_customers: item.unique_customers.size
+               }))
+               .sort((a, b) => b.total_orders - a.total_orders),
+             shop_family: Object.values(productStatsByType.shop_family)
+               .map(item => ({
+                 ...item,
+                 unique_customers: item.unique_customers.size
+               }))
+               .sort((a, b) => b.total_orders - a.total_orders),
+             shop_personal: Object.values(productStatsByType.shop_personal)
+               .map(item => ({
+                 ...item,
+                 unique_customers: item.unique_customers.size
+               }))
+               .sort((a, b) => b.total_orders - a.total_orders)
+           };
              
-           console.log('Best selling products:', this.bestSellingProducts);
+           console.log('Best selling products by type:', this.bestSellingProducts);
+           
+           // Auto-select first available store if current selection has no data
+           if (!this.bestSellingProducts[this.selectedPurchaseType] || this.bestSellingProducts[this.selectedPurchaseType].length === 0) {
+             // Find first store with data
+             const firstStoreWithData = ['email', 'personal', 'shop_family', 'shop_personal'].find(type => 
+               this.bestSellingProducts[type] && this.bestSellingProducts[type].length > 0
+             );
+             if (firstStoreWithData) {
+               this.selectedPurchaseType = firstStoreWithData;
+             }
+           }
          } else {
            console.log('API response failed or no data');
-           this.bestSellingProducts = [];
+           this.bestSellingProducts = {
+             email: [],
+             personal: [],
+             shop_family: [],
+             shop_personal: []
+           };
          }
        } catch (error) {
          console.error('Error loading best selling products:', error);
-         this.bestSellingProducts = [];
+         this.bestSellingProducts = {
+           email: [],
+           personal: [],
+           shop_family: [],
+           shop_personal: []
+         };
        }
      },
     getRankBadgeVariant(index) {
