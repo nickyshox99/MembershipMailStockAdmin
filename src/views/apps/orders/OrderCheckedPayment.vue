@@ -71,21 +71,12 @@
         <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field === 'type_purchase'">
             <b-badge
-              v-if="props.row.purchase_type === 'shop'"
-              pill
-              variant="info"
+              :variant="getPurchaseTypeVariant(props.row.purchase_type)"
               class="text-capitalize"
             >
-              Shop
+              {{ getPurchaseTypeLabel(props.row.purchase_type) }}
             </b-badge>
-            <div v-if="props.row.purchase_type === 'personal'">
-              <b-badge
-                pill
-                variant="warning"
-                class="text-capitalize"
-              >
-                Personal
-              </b-badge>
+            <div v-if="props.row.purchase_type === 'personal' || props.row.purchase_type === 'email'">
               <br/>
               <b-badge
                 v-if="props.row.personal_email_status === 0"
@@ -106,9 +97,6 @@
                 สมัครสมาชิกแล้ว
               </b-badge>
             </div>
-            <span v-if="!props.row.purchase_type || (props.row.purchase_type !== 'shop' && props.row.purchase_type !== 'personal')">
-              -
-            </span>
           </span>
           <span v-if="props.column.field === 'line_name'">
             <div style="font-size: 14px;">
@@ -151,13 +139,17 @@
             }}
           </span>
           <span v-if="props.column.field === 'slip'" >
-            <b-img v-if="props.row.slip_file_url!=''" 
+            <b-img v-if="props.row.slip_file_url && props.row.slip_file_url !== '' && props.row.slip_file_url !== null" 
               @click="showImage(props.row)"
-              :src="props.row.slip_file_url"
+              :src="getSlipImageUrl(props.row.slip_file_url)"
               fluid
               thumbnail
               style="cursor: pointer; height: 100px"
+              @error="handleImageError"
             />
+            <div v-else style="color: #6c757d; font-style: italic;">
+              ไม่มีรูป slip
+            </div>
             <div style="font-size: 14px;">
               {{
                 props.row.slip_file_at != null
@@ -165,7 +157,6 @@
                   : ""
               }}
             </div>
-            
           </span>
 
           <span v-if="props.column.field === 'approved'">
@@ -220,7 +211,7 @@
           <span v-if="props.column.field === 'action'">
             <b-badge
               v-if="props.row.slip_correct==0||props.row.slip_correct==1"
-              style="cursor: pointer; margin-right: 2px"
+              style="cursor: pointer; margin-right: 2px; min-width: 100px; display: inline-block; margin-bottom: 2px"
               variant="info"
               @click="inspectData(props.row)"
             >
@@ -229,13 +220,13 @@
             </b-badge>
             
             <b-badge
-              v-if="props.row.purchase_type === 'personal'"
-              style="cursor: pointer; margin-right: 2px"
+              v-if="props.row.purchase_type === 'personal' || props.row.purchase_type === 'email'"
+              style="cursor: pointer; margin-right: 2px; min-width: 100px; display: inline-block; margin-bottom: 2px"
               variant="primary"
               @click="handlePersonalAction(props.row)"
             >
               <feather-icon icon="UserIcon" size="16" class="mr-0 mr-sm-50" />
-              <span class="d-none d-sm-inline">{{ t("Personal") }}</span>
+              <span class="d-none d-sm-inline">{{ props.row.purchase_type === 'email' ? t("Email") : t("Personal") }}</span>
             </b-badge>
           </span>
         </template>
@@ -450,8 +441,9 @@
                     <b-form-group
                         label-for="cancel-note-input"                    
                         >
-                        <img :src="imageModal"
+                        <img :src="getSlipImageUrl(imageModal)"
                           style="min-width: 300px;max-width: 300px; max-height: 600px;"
+                          @error="handleImageError"
                         />
                         
                     </b-form-group>
@@ -829,6 +821,9 @@ export default {
     ...mapActions(["VerifySlipOrder"]),
     ...mapActions(["GetPersonalEmailStatusByOrderId"]),
     ...mapActions(["GetPersonalEmailByOrderId"]),
+    ...mapActions(["UpdateEmailStatus"]),
+    ...mapActions(["GetEmailStatusByOrderId"]),
+    ...mapActions(["GetEmailByOrderId"]),
     
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
@@ -868,12 +863,14 @@ export default {
           if (response.data.status == 'success') {           
               this.rowsOrderHistory = response.data.data;
               
-              // Fetch personal email status for personal orders
+              // Fetch personal email status for personal and email orders
               for (let index = 0; index < this.rowsOrderHistory.length; index++) {
                   const element = this.rowsOrderHistory[index];
                   
                   if (element.purchase_type === 'personal') {
                       await this.fetchPersonalEmailStatus(element.id, index);
+                  } else if (element.purchase_type === 'email') {
+                      await this.fetchEmailStatus(element.id, index);
                   }
               }
           } else {
@@ -1159,6 +1156,29 @@ export default {
       this.imageModal = item.slip_file_url;
       this.showModalImage= true;
     },
+    
+    getSlipImageUrl(slipUrl) {
+      if (!slipUrl) return '';
+      
+      // ถ้า URL เริ่มต้นด้วย http หรือ https แล้ว ให้ใช้ตามเดิม
+      if (slipUrl.startsWith('http://') || slipUrl.startsWith('https://')) {
+        return slipUrl;
+      }
+      
+      // ถ้า URL เริ่มต้นด้วย / ให้เพิ่ม base URL
+      if (slipUrl.startsWith('/')) {
+        return `${window.location.origin}${slipUrl}`;
+      }
+      
+      // ถ้าเป็นชื่อไฟล์ธรรมดา ให้เข้าถึงจาก API backend
+      const apiBaseUrl = process.env.VUE_APP_API_BASE_URL || 'http://localhost:10600';
+      return `${apiBaseUrl}/assets/${slipUrl}`;
+    },
+    
+    handleImageError(event) {
+      console.error('Image load error:', event.target.src);
+      event.target.style.display = 'none';
+    },
     resetModalImage()
     {
       this.showModalImage= false;
@@ -1179,7 +1199,13 @@ export default {
       
       this.selectedOrderId = itemData.id;
       this.showModalPersonalEmail = true;
-      await this.loadPersonalEmailData(itemData.id);
+      
+      // ใช้ API ที่แตกต่างกันตาม purchase_type
+      if (itemData.purchase_type === 'email') {
+          await this.loadEmailData(itemData.id);
+      } else {
+          await this.loadPersonalEmailData(itemData.id);
+      }
     },
     
     async loadPersonalEmailData(orderId) {
@@ -1266,6 +1292,95 @@ export default {
         });
       }
     },
+    
+    async fetchEmailStatus(orderId, rowIndex) {
+        try {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const form = new FormData();
+            
+            form.append("userid", userData.username);
+            form.append("token", userData.token);
+            form.append("orderId", orderId);
+            
+            const response = await this.GetEmailStatusByOrderId(form);
+            
+            if (response.data.status === 'success' && response.data.data.length > 0) {
+                this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', response.data.data[0].status_regis);
+            } else {
+                this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
+            }
+        } catch (error) {
+            console.error('Error fetching email status:', error);
+            this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
+        }
+    },
+    
+    async loadEmailData(orderId) {
+      try {
+        this.loadingPersonalEmail = true;
+        this.personalEmailData = [];
+        
+        console.log('Loading email data for order ID:', orderId);
+        
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);
+        form.append("orderId", orderId);
+        form.append("username", userData.username);
+
+        const response = await this.GetEmailByOrderId(form);
+        
+        if (response.data.status === 'success') {
+          this.personalEmailData = response.data.data;
+          console.log('Email data loaded:', this.personalEmailData);
+        } else {
+          console.log('No email data found:', response.data.message);
+          this.personalEmailData = [];
+        }
+        
+      } catch (error) {
+        console.error('Error loading email data:', error);
+        this.personalEmailData = [];
+        
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Error`,
+            icon: 'AlertTriangleIcon',
+            variant: 'danger',
+            text: `Failed to load email data: ${error.message}`,
+          },
+          autoHideDelay: 5000,
+        });
+      } finally {
+        this.loadingPersonalEmail = false;
+      }
+    },
+    
+    getPurchaseTypeVariant(purchaseType) {
+      const variants = {
+        'personal': 'primary',
+        'shop': 'success', 
+        'email': 'info',
+        'shop_family': 'warning',
+        'shop_personal': 'secondary'
+      };
+      return variants[purchaseType] || 'light';
+    },
+    
+    getPurchaseTypeLabel(purchaseType) {
+      const labels = {
+        'personal': 'Personal',
+        'shop': 'Shop',
+        'email': 'Email',
+        'shop_family': 'Shop Family',
+        'shop_personal': 'Shop Personal'
+      };
+      return labels[purchaseType] || purchaseType;
+    }
   },
 };
 </script>
