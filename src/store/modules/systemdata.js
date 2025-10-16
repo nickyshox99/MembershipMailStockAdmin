@@ -3110,6 +3110,39 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async GetSubscriptionGroupForReport({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        searchWord: inputData.get("searchWord"),
+        page_name: inputData.get("page_name"),
+    }
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscriptionGroupForReport",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetActiveSubscriptionGroup({commit}, inputData) {
         
     var headers = {

@@ -1104,7 +1104,7 @@ export default {
         form.append("admin_id", userData.username);
         form.append("order_id", this.cancelOrderId);
         form.append("note", note?note:'');
-        form.append("slip_correct", 1);
+        form.append("slip_correct", 0);
                                                         
         const response = await this.VerifySlipOrder(form);
         if (response.data.status == "success") {
