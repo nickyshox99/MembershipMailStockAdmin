@@ -247,10 +247,10 @@ export default {
       pagePermission:[],
       shopTypeSelected: 0,
       shopTypeOptions: [
-        { value: 0, text: 'YouTube Family (Admin Full Service)' },
-        { value: 1, text: 'YouTube Individual (Admin Full Service)' },
-        { value: 2, text: 'Email Provided' },
-        { value: 3, text: 'Account Provided' }
+        { value: 0, text: 'Personal' },
+        { value: 1, text: 'Family' },
+        { value: 2, text: 'รหัสตัวเอง' },
+        { value: 3, text: 'เมลตัวเอง' }
       ],
       baseApiUrl: vueconfig.BASE_API_URL,
     };

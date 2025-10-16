@@ -111,11 +111,22 @@ export default {
       this.selectedPlan = plan
     },
     handleConfirm() {
-      if (this.selectedPlan) {
+      if (this.selectedPlan == "personal") {
         // นำไปหน้าซื้อสินค้าพร้อมส่ง plan type และ sourceUserId
         const query = { 
-          type: 'shop',
-          plan: this.selectedPlan // 'personal' หรือ 'family'
+          type: 'shop_personal',
+          // plan: this.selectedPlan // 'personal' หรือ 'family'
+          shop_type: 0,
+        }
+        if (this.sourceUserId) {
+          query.sourceUserId = this.sourceUserId
+        }
+        this.$router.push({ name: 'buy-product', query })
+      } else if (this.selectedPlan == "family") {
+        // นำไปหน้าซื้อสินค้าพร้อมส่ง plan type และ sourceUserId
+        const query = { 
+          type: 'shop_family',
+          shop_type: 1,
         }
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId

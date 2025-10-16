@@ -8,7 +8,7 @@
       <div class="auth-inner py-2">
         <b-card class="buy-product-card mb-0">
           <div class="logo-section">
-           <img src="/logo_lb2.png" alt="BigaByte Membership" class="logo-image">
+            <img src="/logo_lb2.png" alt="BigaByte Membership" class="logo-image">
             <h2 class="brand-text">
               littlebeem
             </h2>
@@ -209,7 +209,8 @@ export default {
       email: '',
       enableSkipApproval: false,
       sourceUserId: '',
-      purchaseType: '' // 'shop' หรือ 'personal'
+      purchaseType: '',
+      shopType: '' // shop_type ที่รับมาจาก query
     }
   },
   computed: {
@@ -249,16 +250,18 @@ export default {
   // },
   async created() {
     await this.loadSetting()        // <— โหลดค่าก่อน
-    
+
     // รับค่าจาก Vue Router Query
-    this.sourceUserId = this.$route.query.sourceUserId || '';
-    this.email = this.$route.query.email || '';
-    this.purchaseType = this.$route.query.type || '';
-    
+    this.sourceUserId = this.$route.query.sourceUserId;
+    this.email = this.$route.query.email;
+    this.purchaseType = this.$route.query.purchase_type || this.$route.query.purchaseType || this.$route.query.type;
+    this.shopType = this.$route.query.shop_type;
+
     console.log('BuyProduct - sourceUserId:', this.sourceUserId);
     console.log('BuyProduct - email:', this.email);
     console.log('BuyProduct - purchaseType:', this.purchaseType);
-    
+    console.log('BuyProduct - shopType:', this.shopType);
+
     await this.getSourceProfile();
 
     if (this.lineId == '') {
@@ -370,9 +373,18 @@ export default {
 
       const response = await this.GetActiveProductSetting(User);
       if (response.data.status == 'success') {
-        this.productList = response.data.data;
-      } else {
+        // Filter ข้อมูลตาม shopType
+        let allProducts = response.data.data;
 
+        if (this.shopType !== undefined && this.shopType !== null && this.shopType !== '') {
+          // แสดงเฉพาะ shop_type ที่ระบุ
+          console.log('Filtered products for shop_type:', this.shopType, this.productList);
+          this.productList = allProducts.filter(product => product.shop_type == this.shopType);
+        }
+        // console.log('Filtered products for shop_type:', this.shopType, this.productList);
+      } else {
+        this.productList = allProducts;
+        console.log('No shop_type filter, showing all products:', this.productList);
       }
     },
     changeSelectedProduct(id) {
@@ -432,7 +444,7 @@ export default {
       formData.append("product_id", this.product.id);
       formData.append("note", "");
       formData.append("page_name", this.$route.name);
-      formData.append("purchase_type", this.purchaseType || ''); // เพิ่ม purchase_type
+      formData.append("purchase_type", this.purchaseType); // เพิ่ม purchase_type
 
 
       formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"
@@ -453,13 +465,18 @@ export default {
 
 
         // const orderId = response.data.orderId || response.data.data?.id || '';
-        const orderId = response.data.order_id || '';
+        const orderId = response.data.order_id;
         console.log('orderId:', orderId);
         if (orderId) {
           this.$router.replace(
             {
               name: 'confirm-payment',
-              query: { user_id: String(this.sourceUserId), id: String(orderId) }
+              query: {
+                user_id: String(this.sourceUserId),
+                id: String(orderId),
+                purchase_type: this.purchaseType,
+                email: this.email
+              }
             })
         }
 
@@ -1006,12 +1023,12 @@ export default {
     border: none;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    box-shadow: 
+    box-shadow:
       0 25px 50px rgba(0, 0, 0, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     overflow: hidden;
     position: relative;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -1082,7 +1099,7 @@ export default {
     background: transparent;
     position: relative;
     z-index: 1;
-    
+
     .dialog-title {
       color: #000000;
       font-family: 'MiSansMU', sans-serif;
@@ -1112,25 +1129,25 @@ export default {
       font-size: 1rem;
       transition: all 0.3s ease;
       min-width: 120px;
-      
+
       &.btn-success {
         background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%);
         border: none;
         color: white;
         box-shadow: 0 6px 20px rgba(152, 251, 152, 0.3);
-        
+
         &:hover {
           transform: translateY(-3px);
           box-shadow: 0 10px 30px rgba(152, 251, 152, 0.4);
         }
       }
-      
+
       &.btn-secondary {
         background: linear-gradient(135deg, #ffb6c1 0%, #ffa0b4 100%);
         border: none;
         color: white;
         box-shadow: 0 6px 20px rgba(255, 182, 193, 0.3);
-        
+
         &:hover {
           transform: translateY(-3px);
           box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
@@ -1146,12 +1163,12 @@ export default {
   border: none;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  box-shadow: 
+  box-shadow:
     0 25px 50px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   overflow: hidden;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -1272,21 +1289,21 @@ export default {
   overflow-y: auto;
   width: 100%;
   padding: 1rem;
-  
+
   // Custom scrollbar
   &::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: rgba(255, 182, 193, 0.1);
     border-radius: 4px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: rgba(255, 105, 180, 0.3);
     border-radius: 4px;
-    
+
     &:hover {
       background: rgba(255, 105, 180, 0.5);
     }
@@ -1337,11 +1354,11 @@ export default {
   &:hover {
     border-color: #ff69b4;
     transform: translateY(-5px) scale(1.02);
-    box-shadow: 
+    box-shadow:
       0 15px 35px rgba(255, 105, 180, 0.2),
       0 5px 15px rgba(255, 105, 180, 0.1);
     background: rgba(255, 255, 255, 0.95);
-    
+
     &::before {
       background: linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(135, 206, 235, 0.1) 100%);
     }
@@ -1351,11 +1368,11 @@ export default {
     background: linear-gradient(135deg, rgba(255, 182, 193, 0.25) 0%, rgba(135, 206, 235, 0.15) 100%);
     border-color: #ff69b4;
     color: #000000;
-    box-shadow: 
+    box-shadow:
       0 10px 30px rgba(255, 105, 180, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-    
+
     &::before {
       background: linear-gradient(135deg, rgba(255, 182, 193, 0.3) 0%, rgba(135, 206, 235, 0.2) 100%);
     }

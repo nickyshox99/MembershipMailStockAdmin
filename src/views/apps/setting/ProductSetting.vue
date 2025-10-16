@@ -50,10 +50,10 @@
       </b-card>
     </Transition>
     
-    <!-- Family Type (0) -->
+    <!-- Personal Type (0) -->
     <Transition name="fade" mode="out-in">
-      <b-card :title="t('YouTube Family (Admin Full Service)')" v-if="!(isEditFormActive)">
-        <vue-good-table ref="my-table-0" :columns="columns" :rows="rowsFamily" :rtl="direction" :line-numbers="true"
+      <b-card :title="t('Personal')" v-if="!(isEditFormActive)">
+        <vue-good-table ref="my-table-0" :columns="columns" :rows="rowsPersonal" :rtl="direction" :line-numbers="true"
           :search-options="{
           enabled: false,
           externalQuery: searchTerm
@@ -148,10 +148,10 @@
       </b-card>
     </Transition>
 
-    <!-- Individual Type (1) -->
+    <!-- Family Type (1) -->
     <Transition name="fade" mode="out-in">
-      <b-card :title="t('YouTube Individual (Admin Full Service)')" v-if="!(isEditFormActive)">
-        <vue-good-table ref="my-table-1" :columns="columns" :rows="rowsIndividual" :rtl="direction" :line-numbers="true"
+      <b-card :title="t('Family')" v-if="!(isEditFormActive)">
+        <vue-good-table ref="my-table-1" :columns="columns" :rows="rowsFamily" :rtl="direction" :line-numbers="true"
           :search-options="{
           enabled: false,
           externalQuery: searchTerm
@@ -222,10 +222,10 @@
       </b-card>
     </Transition>
 
-    <!-- Email Provided Type (2) -->
+    <!-- รหัสตัวเอง Type (2) -->
     <Transition name="fade" mode="out-in">
-      <b-card :title="t('Email Provided')" v-if="!(isEditFormActive)">
-        <vue-good-table ref="my-table-2" :columns="columns" :rows="rowsEmailProvided" :rtl="direction" :line-numbers="true"
+      <b-card :title="t('รหัสตัวเอง')" v-if="!(isEditFormActive)">
+        <vue-good-table ref="my-table-2" :columns="columns" :rows="rowsSelfCode" :rtl="direction" :line-numbers="true"
           :search-options="{
           enabled: false,
           externalQuery: searchTerm
@@ -296,10 +296,10 @@
       </b-card>
     </Transition>
 
-    <!-- Account Provided Type (3) -->
+    <!-- เมลตัวเอง Type (3) -->
     <Transition name="fade" mode="out-in">
-      <b-card :title="t('Account Provided')" v-if="!(isEditFormActive)">
-        <vue-good-table ref="my-table-3" :columns="columns" :rows="rowsAccountProvided" :rtl="direction" :line-numbers="true"
+      <b-card :title="t('เมลตัวเอง')" v-if="!(isEditFormActive)">
+        <vue-good-table ref="my-table-3" :columns="columns" :rows="rowsSelfEmail" :rtl="direction" :line-numbers="true"
           :search-options="{
           enabled: false,
           externalQuery: searchTerm
@@ -496,16 +496,16 @@ export default {
     }
   },
   computed: {
-    rowsFamily() {
-      return this.rows.filter(row => row.shop_type === 0 || row.shop_type === null)
+    rowsPersonal() {
+      return this.rows.filter(row => row.shop_type === 0 || row.shop_type === null || row.shop_type === undefined)
     },
-    rowsIndividual() {
+    rowsFamily() {
       return this.rows.filter(row => row.shop_type === 1)
     },
-    rowsEmailProvided() {
+    rowsSelfCode() {
       return this.rows.filter(row => row.shop_type === 2)
     },
-    rowsAccountProvided() {
+    rowsSelfEmail() {
       return this.rows.filter(row => row.shop_type === 3)
     },
     resolveStatusVariant() {      
