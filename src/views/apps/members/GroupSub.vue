@@ -439,6 +439,10 @@ export default {
       if (response.data.status == 'success') {  
         //console.log(response.data.data);
         this.rows = response.data.data;
+        
+        // Filter out group with id 0 (Individual Email Stock)
+        this.rows = this.rows.filter(row => row.id !== 0);
+        
         for (let index = 0; index < this.rows.length; index++) {
             const element = this.rows[index];
             if (element.end_at!=null) {

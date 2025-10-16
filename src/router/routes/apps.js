@@ -116,6 +116,12 @@ export default [
   },
 
   {
+    path: '/apps/members/individualemailstock',
+    name: 'apps-individual-email-stock',
+    component: () => import('@/views/apps/members/IndividualEmailStock.vue'),
+  },
+
+  {
     path: '/apps/orders/orderwaitapprove',
     name: 'order-wait-approve',
     component: () => import('@/views/apps/orders/OrderWaitApprove.vue'),
