@@ -1,7 +1,7 @@
 export default [
   {
     header: "Manage Member",
-    submenu: ["apps-members-manage", "apps-alliances-manage", "apps-agent-refer", "apps-group-sub", "apps-personal-email-manage"],
+    submenu: ["apps-members-manage", "apps-alliances-manage", "apps-agent-refer", "apps-group-sub", "apps-personal-email-manage", "apps-individual-email-stock"],
   },
   {
     title: "Member",
@@ -19,6 +19,11 @@ export default [
       {
         title: "Personal Email",
         route: "apps-personal-email-manage",
+        icon: "MailIcon",
+      },
+      {
+        title: "Email Stock แบบบุคคล",
+        route: "apps-individual-email-stock",
         icon: "MailIcon",
       },
     ],

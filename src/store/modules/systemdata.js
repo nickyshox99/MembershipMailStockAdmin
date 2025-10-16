@@ -4577,6 +4577,103 @@ async GetActiveAdminBank({commit}, search) {
     return response;
 
   },
+  
+  // New actions for personal_email API
+  async GetEmailStatusByOrderId({commit}, inputData) {
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    const orderId = inputData.get("orderId");
+
+    let response;
+    await axios.get(`api/personal_email/getPersonalEmailStatusByOrderId/${orderId}`,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+  },
+  
+  async GetEmailByOrderId({commit}, inputData) {
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    const orderId = inputData.get("orderId");
+
+    let response;
+    await axios.get(`api/personal_email/getPersonalEmailByOrderId/${orderId}`,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+  },
+  
+  async UpdateEmailStatus({commit}, inputData) {
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        orderId: inputData.get("orderId"),
+        status: inputData.get("status"),
+    }
+
+    let response;
+    await axios.post("api/personal_email/updatePersonalEmailStatusByOrderId", body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+
+    return response;
+  },
 };
 
 const mutations = {
