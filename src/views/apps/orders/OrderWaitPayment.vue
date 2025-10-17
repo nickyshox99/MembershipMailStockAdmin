@@ -242,11 +242,11 @@
             <b-badge
               v-if="props.row.purchase_type === 'personal' || props.row.purchase_type === 'email'"
               style="cursor: pointer; width: 100%; display: block; text-align: center"
-              variant="primary"
+              :variant="props.row.personal_email_status === 1 ? 'warning' : 'primary'"
               @click="updateEmailStatus(props.row)"
             >
               <feather-icon icon="RefreshCwIcon" size="16" class="mr-0 mr-sm-50" />
-              <span class="d-none d-sm-inline">{{ t("Update Status") }}</span>
+              <span class="d-none d-sm-inline">{{ props.row.personal_email_status === 1 ? t("Unregistered") : t("Update Status") }}</span>
             </b-badge>
             <b-badge
               v-if="props.row.purchase_type === 'personal' || props.row.purchase_type === 'email'"
@@ -500,7 +500,7 @@
             @ok="handleOkUpdateStatus"      
             size="sm"  
             :hideHeaderClose="false"            
-            ok-variant="primary"
+            :ok-variant="updateStatusItem.personal_email_status === 1 ? 'warning' : 'primary'"
             :okTitle="t('YES')"
             buttonSize="sm"
             :cancelTitle="t('NO')"
@@ -508,7 +508,12 @@
         >
             <b-row>
                 <b-col md="12">
-                    <p>{{ t('คุณต้องการยืนยันการเปลี่ยนสถานะ การสมัครของเมลนี้ใช่หรือไม่') }}</p>
+                    <p v-if="updateStatusItem.personal_email_status === 1">
+                      {{ t('คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้สมัครสมาชิก" ใช่หรือไม่?') }}
+                    </p>
+                    <p v-else>
+                      {{ t('คุณต้องการยืนยันการเปลี่ยนสถานะเป็น "สมัครสมาชิกแล้ว" ใช่หรือไม่?') }}
+                    </p>
                     <p v-if="updateStatusItem && updateStatusItem.email" style="font-weight: bold; color: #7367f0;">
                       Email: {{ updateStatusItem.email }}
                     </p>
@@ -1296,10 +1301,13 @@ export default {
         const userData = JSON.parse(localStorage.getItem('userData'));
         const form = new FormData();
 
+        // Toggle status: ถ้าเป็น 1 ให้เปลี่ยนเป็น 0, ถ้าเป็น 0 หรือ null ให้เปลี่ยนเป็น 1
+        const newStatus = this.updateStatusItem.personal_email_status === 1 ? 0 : 1;
+
         form.append("userid", userData.username);
         form.append("token", userData.token);
         form.append("orderId", this.updateStatusItem.id);
-        form.append("status", 1);
+        form.append("status", newStatus);
         
         // ใช้ API ที่แตกต่างกันตาม purchase_type
         let response;
@@ -1310,6 +1318,7 @@ export default {
         }
         
         if (response.data.status == "success") {
+            const statusText = newStatus === 1 ? 'สมัครสมาชิกแล้ว' : 'ยังไม่ได้สมัครสมาชิก';
             this.$toast({
                 component: ToastificationContent,
                 position: 'top-right',
@@ -1317,7 +1326,7 @@ export default {
                     title: `Update Email Status`,
                     icon: 'CheckIcon',
                     variant: 'success',
-                    text: this.$t(`Update Status Successful`),
+                    text: this.$t(`Update Status Successful`) + ` (${statusText})`,
                 },
                 autoHideDelay: 3000,
             });
