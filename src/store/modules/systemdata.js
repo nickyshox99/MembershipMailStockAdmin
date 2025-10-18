@@ -4674,6 +4674,58 @@ async GetActiveAdminBank({commit}, search) {
 
     return response;
   },
+  async CheckOutStripe({commit}, inputData) {
+
+    try {
+        var headers = {
+            userid: inputData.get("userid"),
+            token: inputData.get("token"),
+        }
+    
+        var body = {
+            amount: inputData.get("amount"),
+            currency: inputData.get("currency"),
+            username: inputData.get("username"),
+            user_id: inputData.get("user_id"),
+            server_id: inputData.get("server_id"),
+            order_id: inputData.get("order_id"),
+            description: inputData.get("description"),
+            imageurl: inputData.get("imageurl"),
+            email: inputData.get("email"),
+            purchase_type: inputData.get("purchase_type"),
+        }
+    
+        
+        let response;
+        await axios.post("http://localhost:11000/api/strippayment/checkout", body,
+        {
+            headers: {            
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+            }
+        }).then(
+            resp => 
+            {  
+                response = resp;
+            }
+        );
+    
+        if (response.data.status=="success") 
+        {
+          
+        }
+    
+        return response;
+    } catch (error) {
+      console.log('CheckOutStripe error:', error);
+      return {
+        status: 'error',
+        message: error.message,
+      };
+    }
+   
+  },
 };
 
 const mutations = {
