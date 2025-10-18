@@ -101,7 +101,8 @@
                     <div class="qr-info">
                       <p class="qr-amount">ยอดชำระ: ฿{{ productPrice.toLocaleString('th-TH', {
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2 }) }}</p>
+                        maximumFractionDigits: 2
+                      }) }}</p>
                     </div>
                   </div>
                 </template>
@@ -228,6 +229,7 @@ import { useUtils as useI18nUtils } from '@core/libs/i18n'
 import generatePayload from 'promptpay-qr'
 import QRCode from 'qrcode'
 import axios from 'axios'
+import { integer } from '@/@core/utils/validations/validations'
 
 export default {
   components: {
@@ -270,10 +272,8 @@ export default {
       sideImg: require('@/assets/images/pages/login-v3.png'),
       // validation rulesimport store from '@/store/index'
       required,
-
       user_id: '',
       lineId: '',
-
       avatarImgUrl: require('@/assets/images/avatars/4.png'),
       displayName: '',
       errorMessage: '',
@@ -290,6 +290,7 @@ export default {
       productPrice: 0,
       purchaseType: '',
       email: '',
+      paymentType: '',
     }
   },
   computed: {
@@ -319,11 +320,13 @@ export default {
     console.log('ConfirmPayment - email:', this.email);
 
     await this.loadSetting();
+    this.paymentType = "stripe";
     await this.getOrderData();
   },
   methods: {
     ...mapActions(["GetOrderData"]),
     ...mapActions(["PaymentOrderWithSlip"]),
+    ...mapActions(["CheckOutStripe"]),
     ...mapActions(["UploadFileAndDeleteOldFile"]),
     ...mapActions(["CustomerDeleteOldFile"]),
     ...mapActions(["GetActiveProductSetting"]),
@@ -576,73 +579,121 @@ export default {
     },
     async confirmPayment() {
       console.log('confirmPayment');
-
-      // Check if slip is uploaded
-      if (!this.slip_file_url || this.slip_file_url === '') {
-        this.$toast({
-          component: ToastificationContent,
-          props: {
-            title: 'กรุณาอัปโหลดสลิปการโอนเงินก่อน',
-            icon: 'AlertCircleIcon',
-            variant: 'error',
-          },
-        });
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("userid", "-");
-      formData.append("token", "-");
-      formData.append("order_id", this.orderData.id);
-      formData.append("user_id", this.orderData.user_id);
-      formData.append("slip_file_url", this.slip_file_url);
-
-      console.log('Sending payment confirmation with:', {
-        order_id: this.orderData.id,
-        user_id: this.orderData.user_id,
-        slip_file_url: this.slip_file_url
-      });
-
-      const response = await this.PaymentOrderWithSlip(formData);
-      console.log('Payment confirmation response:', response);
+      console.log('paymentType:', this.paymentType);
 
 
-      if (response && response.data && response.data.status == 'success') {
-        // Insert user email data after payment confirmation success
-        await this.insertUserEmailData();
-        // await this.insertPersonalEmailData();
-        // if (this.purchaseType === 'personal') {
-        //   await this.InsertPersonalEmail(data);
-        // } else if (this.purchaseType === 'email') {
-        //   await this.InsertPersonalEmail(data);
-        // }
+      if (this.paymentType === 'stripe') {
 
-        this.showCompleteDialog = true;
-        this.$toast(
-          {
-            component: ToastificationContent,
-            props: {
-              title: 'ยืนยันการชำระเงินสำเร็จ',
-              icon: 'CheckIcon',
-              variant: 'success',
-            },
-          });
+        const formData = new FormData();
+        formData.append("userid", "-");
+        formData.append("token", "-");
+        formData.append("order_id", this.orderData.id);
+        formData.append("user_id", this.orderData.user_id);
+        formData.append("slip_file_url", this.slip_file_url);
+        formData.append("amount", (parseInt(this.productPrice) * 100));
+        formData.append("currency", "thb");
+        formData.append("username", this.orderData.user_id);
+        formData.append("user_id", this.orderData.user_id);
+        formData.append("server_id", this.orderData.id);
+        formData.append("order_id", this.orderData.id);
+        formData.append("description", this.orderData.product_name);
+        formData.append("imageurl", "http://localhost:9900/img/image.10008f5a.png");
+        formData.append("email", this.email);
+        formData.append("purchase_type", this.purchaseType);
+
+
+        const response = await this.CheckOutStripe(formData);
+        console.log('CheckOutStripe response:', response);
+        //เอา URL จาก response.data.data.url มาแล้ว redirect ไปหน้าใหม่ จาก URL ที่ส่งมา
+        const stripeUrl = response.data.data.url;
+        if (response && response.data && response.data.status == 'success') {
+          window.open(stripeUrl, '_blank');
+        }
+        else {
+          const errorMessage = (response && response.data && response.data.message) ||
+            (response && response.message) ||
+            'ยืนยันการชำระเงินล้มเหลว';
+          this.$toast(
+            {
+              component: ToastificationContent,
+              props: {
+                title: errorMessage,
+                icon: 'AlertCircleIcon',
+                variant: 'error',
+              },
+            });
+        }
       }
       else {
-        const errorMessage = (response && response.data && response.data.message) ||
-          (response && response.message) ||
-          'ยืนยันการชำระเงินล้มเหลว';
-
-        this.$toast(
-          {
+        // Check if slip is uploaded
+        if (!this.slip_file_url || this.slip_file_url === '') {
+          this.$toast({
             component: ToastificationContent,
             props: {
-              title: errorMessage,
+              title: 'กรุณาอัปโหลดสลิปการโอนเงินก่อน',
               icon: 'AlertCircleIcon',
               variant: 'error',
             },
           });
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("userid", "-");
+        formData.append("token", "-");
+        formData.append("order_id", this.orderData.id);
+        formData.append("user_id", this.orderData.user_id);
+        formData.append("slip_file_url", this.slip_file_url);
+
+        console.log('Sending payment confirmation with:', {
+          order_id: this.orderData.id,
+          user_id: this.orderData.user_id,
+          slip_file_url: this.slip_file_url
+        });
+
+        const response = await this.PaymentOrderWithSlip(formData);
+        console.log('Payment confirmation response:', response);
+
+
+        if (response && response.data && response.data.status == 'success') {
+          // Insert user email data after payment confirmation success
+          await this.insertUserEmailData();
+          // await this.insertPersonalEmailData();
+          // if (this.purchaseType === 'personal') {
+          //   await this.InsertPersonalEmail(data);
+          // } else if (this.purchaseType === 'email') {
+          //   await this.InsertPersonalEmail(data);
+          // }
+
+          this.showCompleteDialog = true;
+          this.$toast(
+            {
+              component: ToastificationContent,
+              props: {
+                title: 'ยืนยันการชำระเงินสำเร็จ',
+                icon: 'CheckIcon',
+                variant: 'success',
+              },
+            });
+        }
+        else {
+          const errorMessage = (response && response.data && response.data.message) ||
+            (response && response.message) ||
+            'ยืนยันการชำระเงินล้มเหลว';
+
+          this.$toast(
+            {
+              component: ToastificationContent,
+              props: {
+                title: errorMessage,
+                icon: 'AlertCircleIcon',
+                variant: 'error',
+              },
+            });
+        }
       }
+
+
     },
     async deleteSlip() {
       console.log('deleteSlip');
@@ -787,6 +838,7 @@ export default {
             if (k.toLowerCase().includes('enable')) val[k] = val[k] === 1 || val[k] === true
           })
           this.enableAutoGenerateQR = !!val.enableAutoGenerateQR
+
         }
       } catch (e) {
         console.error('Error loading setting:', e)
@@ -1922,6 +1974,7 @@ export default {
 
         .complete-content,
         .slip-correct-content {
+
           .complete-icon,
           .correct-icon {
             width: 56px;
@@ -2184,6 +2237,7 @@ export default {
 
         .complete-content,
         .slip-correct-content {
+
           .complete-icon,
           .correct-icon {
             width: 48px;
