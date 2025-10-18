@@ -80,6 +80,79 @@
         </b-card>
       </div>
     </div>
+
+    <!-- Email Info Modal -->
+    <b-modal
+      id="modal-email-info"
+      ref="modalEmailInfo"
+      v-model="showEmailInfoModal"
+      title="ข้อมูลสำคัญเกี่ยวกับการใช้งาน"
+      size="lg"
+      :hideHeaderClose="true"
+      hide-footer
+      no-close-on-backdrop
+      no-close-on-esc
+      @hidden="resetEmailInfoModal"
+    >
+      <div class="email-info-content">
+        <div class="benefits-card">
+          <div class="benefits-header">
+            <feather-icon icon="AwardIcon" class="header-icon" />
+            <h6 class="benefits-title">สิทธิประโยชน์ที่คุณจะได้รับ</h6>
+          </div>
+          <div class="benefits-grid">
+            <div class="benefit-item">
+              <feather-icon icon="VideoIcon" class="benefit-icon" />
+              <span>รับชมแบบไม่มีโฆษณา</span>
+            </div>
+            <div class="benefit-item">
+              <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
+              <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
+            </div>
+            <div class="benefit-item">
+              <feather-icon icon="DownloadIcon" class="benefit-icon" />
+              <span>ดาวโหลดวีดีโอออฟไลน์</span>
+            </div>
+            <div class="benefit-item">
+              <feather-icon icon="MusicIcon" class="benefit-icon" />
+              <span>สามารถใช้งาน youtube music</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="notices-card">
+          <div class="notice-item success">
+            <feather-icon icon="CheckCircleIcon" class="notice-icon" />
+            <span>มีแจ้งต่ออายุก่อนหมด</span>
+          </div>
+          <div class="notice-item info">
+            <feather-icon icon="ClockIcon" class="notice-icon" />
+            <span>เปลี่ยนรหัสเมล ควรรออย่างน้อย 7 วัน</span>
+          </div>
+        </div>
+
+        <div class="agreement-section">
+          <b-form-checkbox v-model="agreedToEmailTerms" class="custom-checkbox">
+            <span class="checkbox-label">ฉันได้อ่านและเข้าใจข้อมูลข้างต้นแล้ว</span>
+          </b-form-checkbox>
+        </div>
+
+        <div class="action-section">
+          <b-button
+            variant="primary"
+            block
+            class="confirm-button"
+            :disabled="!agreedToEmailTerms"
+            @click="handleEmailInfoConfirm"
+          >
+            <feather-icon icon="CheckIcon" class="button-icon" />
+            รับทราบและดำเนินการต่อ
+          </b-button>
+        </div>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -91,6 +164,8 @@ import {
   BFormGroup,
   BFormInput,
   BFormInvalidFeedback,
+  BModal,
+  BFormCheckbox,
 } from 'bootstrap-vue'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
@@ -103,12 +178,16 @@ export default {
     BFormGroup,
     BFormInput,
     BFormInvalidFeedback,
+    BModal,
+    BFormCheckbox,
   },
   data() {
     return {
       email: '',
       errorMessage: '',
       sourceUserId: null, // รับมาจาก LINE
+      showEmailInfoModal: true, // แสดง modal ข้อมูลทันทีที่เข้าหน้า
+      agreedToEmailTerms: false, // สถานะการยินยอมอ่านข้อมูล
     }
   },
   mounted() {
@@ -168,6 +247,15 @@ export default {
         query.sourceUserId = this.sourceUserId
       }
       this.$router.push({ name: 'select-topic', query })
+    },
+    resetEmailInfoModal() {
+      // ไม่ reset agreedToEmailTerms เพื่อเก็บสถานะไว้
+    },
+    handleEmailInfoConfirm() {
+      if (!this.agreedToEmailTerms) return
+      
+      // ปิด modal
+      this.showEmailInfoModal = false
     },
   },
 }
@@ -524,6 +612,242 @@ export default {
       font-size: 0.9rem;
       padding: 0.65rem 1.25rem !important;
     }
+  }
+}
+
+// Email Info Modal Styles - Modern Design
+.email-info-content {
+  font-family: 'MiSansMU', sans-serif;
+  padding: 0.5rem 0;
+
+  .benefits-card {
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.08) 0%, rgba(135, 206, 235, 0.08) 100%);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(255, 105, 180, 0.15);
+
+    .benefits-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      .header-icon {
+        width: 24px;
+        height: 24px;
+        color: #ff69b4;
+        margin-right: 0.5rem;
+      }
+
+      .benefits-title {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #333333;
+      }
+    }
+
+    .benefits-grid {
+      display: grid;
+      gap: 0.75rem;
+
+      .benefit-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+
+        .benefit-icon {
+          width: 20px;
+          height: 20px;
+          color: #ff69b4;
+          margin-right: 0.75rem;
+          margin-top: 2px;
+          flex-shrink: 0;
+        }
+
+        span {
+          flex: 1;
+          color: #333333;
+          font-size: 0.95rem;
+          line-height: 1.5;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.9);
+          transform: translateX(4px);
+        }
+      }
+    }
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.1) 50%, transparent 100%);
+    margin: 1.5rem 0;
+  }
+
+  .notices-card {
+    display: grid;
+    gap: 0.65rem;
+
+    .notice-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+
+      .notice-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.75rem;
+        margin-top: 1px;
+        flex-shrink: 0;
+      }
+
+      span {
+        flex: 1;
+      }
+
+      &.success {
+        background: rgba(40, 167, 69, 0.08);
+        border-left-color: #28a745;
+        
+        .notice-icon {
+          color: #28a745;
+        }
+        
+        span {
+          color: #155724;
+        }
+
+        &:hover {
+          background: rgba(40, 167, 69, 0.12);
+        }
+      }
+
+      &.info {
+        background: rgba(23, 162, 184, 0.08);
+        border-left-color: #17a2b8;
+        
+        .notice-icon {
+          color: #17a2b8;
+        }
+        
+        span {
+          color: #0c5460;
+        }
+
+        &:hover {
+          background: rgba(23, 162, 184, 0.12);
+        }
+      }
+    }
+  }
+
+  .agreement-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 182, 193, 0.08);
+    border-radius: 10px;
+    border: 2px dashed rgba(255, 105, 180, 0.2);
+
+    .custom-checkbox {
+      ::v-deep .custom-control-label {
+        font-family: 'MiSansMU', sans-serif;
+        font-size: 1rem;
+        color: #333333;
+        cursor: pointer;
+        padding-left: 0.5rem;
+      }
+
+      ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #ff69b4;
+        border-color: #ff69b4;
+        box-shadow: 0 2px 8px rgba(255, 105, 180, 0.3);
+      }
+
+      ::v-deep .custom-control-label::before {
+        border-width: 2px;
+        border-radius: 4px;
+      }
+    }
+
+    .checkbox-label {
+      font-weight: 600;
+      color: #000000;
+    }
+  }
+
+  .action-section {
+    margin-top: 1.25rem;
+
+    .confirm-button {
+      padding: 0.875rem 2rem !important;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 10px !important;
+      background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
+      border: none !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+      transition: all 0.3s ease;
+      font-family: 'MiSansMU', sans-serif;
+
+      .button-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.5rem;
+      }
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(255, 105, 180, 0.4) !important;
+        background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: linear-gradient(135deg, #d1d1d1 0%, #a8a8a8 100%) !important;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+// Modal Header Customization - Modern
+::v-deep #modal-email-info {
+  .modal-content {
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.1) 100%);
+    border-bottom: 2px solid rgba(255, 105, 180, 0.15);
+    padding: 1.25rem 1.5rem;
+
+    .modal-title {
+      color: #ff69b4;
+      font-family: 'MiSansMU', sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+    background: #fefefe;
   }
 }
 </style>
