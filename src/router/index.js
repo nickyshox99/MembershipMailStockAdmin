@@ -8,7 +8,7 @@ import apps from './routes/apps'
 import dashboard from './routes/dashboard'
 import pages from './routes/pages'
 import customer from './routes/customer'
-
+import customer2 from './routes/customer2'
 
 import store from '@/store/index'
 import useJwt from '@/auth/jwt/useJwt'
@@ -26,7 +26,8 @@ const router = new VueRouter({
     ...apps,
     ...dashboard,    
     ...pages,      
-    ...customer,
+    // ...customer,
+    ...customer2,
     {
       path: '*',
       redirect: 'error-404',
