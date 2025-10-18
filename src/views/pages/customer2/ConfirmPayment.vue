@@ -256,9 +256,7 @@ export default {
   setup(props, {
     emit
   }) {
-
     const { t } = useI18nUtils();
-
     return {
       t,
     }
