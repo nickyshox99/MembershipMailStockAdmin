@@ -134,6 +134,7 @@ import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 import { mapActions } from "vuex";
+import { mapGetters } from "vuex";
 import axios from "axios"
 import useJwt from '@/auth/jwt/useJwt'
 
@@ -214,6 +215,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('userRegistration', ['getEmail', 'getPassword', 'hasRegistrationData']),
     passwordToggleIcon() {
       return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
     },
