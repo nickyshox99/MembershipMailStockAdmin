@@ -584,6 +584,8 @@ export default {
 
       if (this.paymentType === 'stripe') {
 
+        // await this.insertUserEmailData();
+
         const formData = new FormData();
         formData.append("userid", "-");
         formData.append("token", "-");
