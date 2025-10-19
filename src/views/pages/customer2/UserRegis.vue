@@ -8,9 +8,9 @@
       <div class="auth-inner py-2">
         <b-card class="user-regis-card mb-0">
           <div class="logo-section">
-            <img src="/logo_lb2.png" alt="littlebeem" class="logo-image">
+            <img src="@/assets/images/logo/image.png" alt="allpremium" class="logo-image">
             <h2 class="brand-text">
-              littlebeem
+              All Premium
             </h2>
           </div>
 
@@ -375,14 +375,14 @@ export default {
 </script>
 
 <style lang="scss">
-// Pastel Theme - Matching SelectTopic.vue
+// YouTube Theme - White Background with Red/Black Accents
 .user-regis-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: #ffffff;
   font-family: 'MiSansMU', sans-serif;
 }
 
@@ -392,7 +392,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: #ffffff;
   opacity: 0.05;
   z-index: 1;
 }
@@ -403,8 +403,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(255, 0, 0, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
   z-index: 2;
 }
 
@@ -417,10 +417,10 @@ export default {
 }
 
 .user-regis-card {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: none !important;
+  background: #ffffff !important;
+  border: 2px solid #ff0000 !important;
   border-radius: 24px !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15) !important;
   backdrop-filter: blur(10px);
   padding: 2.5rem;
   animation: slideInUp 0.8s ease-out;
@@ -442,31 +442,31 @@ export default {
   margin-bottom: 2rem;
 
   .logo-image {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
-    border: 3px solid rgba(255, 182, 193, 0.2);
+    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3);
+    border: 3px solid #ff0000;
     transition: all 0.3s ease;
     object-fit: cover;
-    background: linear-gradient(135deg, rgba(255, 240, 245, 0.9) 0%, rgba(240, 248, 255, 0.9) 100%);
+    background: #ffffff;
     padding: 8px;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(255, 182, 193, 0.4);
-      border-color: rgba(255, 182, 193, 0.3);
+      box-shadow: 0 12px 35px rgba(255, 0, 0, 0.4);
+      border-color: #cc0000;
     }
   }
 
   .brand-text {
-    color: #ff69b4 !important;
+    color: #ff0000 !important;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    text-shadow: 0 2px 4px rgba(255, 182, 193, 0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -475,7 +475,7 @@ export default {
   margin-bottom: 2rem;
 
   .welcome-title {
-    color: #87ceeb;
+    color: #000000;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.5rem;
@@ -483,7 +483,7 @@ export default {
   }
 
   .welcome-subtitle {
-    color: #333333;
+    color: #666666;
     font-family: 'MiSansMU', sans-serif;
     font-size: 1rem;
     margin: 0;
@@ -509,22 +509,22 @@ export default {
         width: 18px;
         height: 18px;
         margin-right: 0.5rem;
-        color: #ff69b4;
+        color: #ff0000;
       }
     }
 
     .form-input-modern {
-      border: 2px solid rgba(255, 182, 193, 0.3);
+      border: 2px solid rgba(0, 0, 0, 0.2);
       border-radius: 12px;
       padding: 0.75rem 1rem;
       font-family: 'MiSansMU', sans-serif;
       font-size: 1rem;
       transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.9);
+      background: #ffffff;
 
       &:focus {
-        border-color: #ff69b4;
-        box-shadow: 0 0 0 0.2rem rgba(255, 105, 180, 0.25);
+        border-color: #ff0000;
+        box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
         background: white;
       }
 
@@ -541,22 +541,22 @@ export default {
       }
 
       .input-group-append {
-        border: 2px solid rgba(255, 182, 193, 0.3);
+        border: 2px solid rgba(0, 0, 0, 0.2);
         border-left: none;
         border-radius: 0 12px 12px 0;
-        background: rgba(255, 255, 255, 0.9);
+        background: #ffffff;
         padding: 0 1rem;
         display: flex;
         align-items: center;
         transition: all 0.3s ease;
 
         .feather-icon {
-          color: #ff69b4;
+          color: #ff0000;
           cursor: pointer;
           transition: all 0.3s ease;
 
           &:hover {
-            color: #ff1493;
+            color: #cc0000;
             transform: scale(1.1);
           }
         }
@@ -564,7 +564,7 @@ export default {
 
       &:focus-within {
         .input-group-append {
-          border-color: #ff69b4;
+          border-color: #ff0000;
         }
       }
     }
@@ -606,17 +606,17 @@ export default {
     font-size: 1.1rem;
     font-weight: 600;
     border-radius: 12px !important;
-    background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
+    background: #ff0000 !important;
     border: none !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
     transition: all 0.3s ease;
     font-family: 'MiSansMU', sans-serif;
 
     &:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5) !important;
-      background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
+      box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5) !important;
+      background: #cc0000 !important;
     }
 
     &:active:not(:disabled) {
@@ -626,6 +626,7 @@ export default {
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+      background: #ff6666 !important;
     }
 
     .button-icon {
@@ -643,14 +644,14 @@ export default {
     font-weight: 600;
     border-radius: 12px !important;
     background: transparent !important;
-    border: 2px solid rgba(255, 182, 193, 0.5) !important;
-    color: #ff69b4 !important;
+    border: 2px solid rgba(0, 0, 0, 0.3) !important;
+    color: #000000 !important;
     transition: all 0.3s ease;
     font-family: 'MiSansMU', sans-serif;
 
     &:hover {
-      background: rgba(255, 182, 193, 0.1) !important;
-      border-color: #ff69b4 !important;
+      background: rgba(0, 0, 0, 0.1) !important;
+      border-color: #000000 !important;
       transform: translateY(-1px);
     }
 
@@ -770,10 +771,10 @@ export default {
   padding: 0.5rem 0;
 
   .benefits-card {
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.08) 0%, rgba(135, 206, 235, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.08) 100%);
     border-radius: 12px;
     padding: 1.25rem;
-    border: 1px solid rgba(255, 105, 180, 0.15);
+    border: 1px solid rgba(255, 0, 0, 0.15);
 
     .benefits-header {
       display: flex;
@@ -783,7 +784,7 @@ export default {
       .header-icon {
         width: 24px;
         height: 24px;
-        color: #ff69b4;
+        color: #ff0000;
         margin-right: 0.5rem;
       }
 
@@ -810,7 +811,7 @@ export default {
         .benefit-icon {
           width: 20px;
           height: 20px;
-          color: #ff69b4;
+          color: #ff0000;
           margin-right: 0.75rem;
           margin-top: 2px;
           flex-shrink: 0;
@@ -938,9 +939,9 @@ export default {
   .agreement-section {
     margin-top: 1.5rem;
     padding: 1rem;
-    background: rgba(255, 182, 193, 0.08);
+    background: rgba(255, 0, 0, 0.08);
     border-radius: 10px;
-    border: 2px dashed rgba(255, 105, 180, 0.2);
+    border: 2px dashed rgba(255, 0, 0, 0.2);
 
     .custom-checkbox {
       ::v-deep .custom-control-label {
@@ -952,9 +953,9 @@ export default {
       }
 
       ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: #ff69b4;
-        border-color: #ff69b4;
-        box-shadow: 0 2px 8px rgba(255, 105, 180, 0.3);
+        background-color: #ff0000;
+        border-color: #ff0000;
+        box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
       }
 
       ::v-deep .custom-control-label::before {
@@ -977,10 +978,10 @@ export default {
       font-size: 1.05rem;
       font-weight: 600;
       border-radius: 10px !important;
-      background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
+      background: #ff0000 !important;
       border: none !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+      box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
       transition: all 0.3s ease;
       font-family: 'MiSansMU', sans-serif;
 
@@ -992,8 +993,8 @@ export default {
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(255, 105, 180, 0.4) !important;
-        background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
+        box-shadow: 0 6px 18px rgba(255, 0, 0, 0.4) !important;
+        background: #cc0000 !important;
       }
 
       &:active:not(:disabled) {
@@ -1003,7 +1004,7 @@ export default {
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        background: linear-gradient(135deg, #d1d1d1 0%, #a8a8a8 100%) !important;
+        background: #ff6666 !important;
         box-shadow: none;
       }
     }
@@ -1018,12 +1019,12 @@ export default {
   }
 
   .modal-header {
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.1) 100%);
-    border-bottom: 2px solid rgba(255, 105, 180, 0.15);
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.1) 100%);
+    border-bottom: 2px solid rgba(255, 0, 0, 0.15);
     padding: 1.25rem 1.5rem;
 
     .modal-title {
-      color: #ff69b4;
+      color: #ff0000;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 700;
       font-size: 1.35rem;
