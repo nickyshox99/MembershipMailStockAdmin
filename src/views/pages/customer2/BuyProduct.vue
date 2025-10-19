@@ -280,6 +280,8 @@ export default {
     ...mapActions(["CreateSubScribeOrder"]),
     ...mapActions(["GetEmailByLineSourceId"]),
     ...mapActions(["CreateAndApproveSubScribeOrder"]),
+    ...mapActions(["InsertUserEmail"]),
+    ...mapActions(["InsertPersonalEmail"]),
     async validationForm() {
 
     },
@@ -452,6 +454,7 @@ export default {
 
       if (response.data.status == 'success') {
 
+        // await this.insertUserEmailData();
 
         this.$toast(
           {
@@ -468,6 +471,9 @@ export default {
         const orderId = response.data.order_id;
         console.log('orderId:', orderId);
         if (orderId) {
+
+          await this.insertUserEmailData(orderId);
+
           this.$router.replace(
             {
               name: 'confirm-payment',
@@ -522,6 +528,98 @@ export default {
       } catch (e) {
         // เงียบไว้/หรือ toast ตามสะดวก
         this.enableSkipApproval = false
+      }
+    },
+    // เพิ่มใน methods (หลัง createSubScribeOrder)
+    async insertUserEmailData(orderId) {
+      try {
+        // เช็คว่ามี email หรือไม่
+        if (!this.email) {
+          console.log('No email provided, skipping insert');
+          return;
+        }
+
+        console.log('Registration data:', {
+          email: this.email,
+          user_id: this.sourceUserId,
+          order_id: orderId,
+          purchase_type: this.purchaseType
+        });
+
+        // Validate data
+        if (!this.sourceUserId || !this.email || !orderId) {
+          console.log('Missing required data for insert:', {
+            user_id: this.sourceUserId,
+            order_id: orderId,
+            email: !!this.email
+          });
+          return;
+        }
+
+        // เช็ค purchase_type และเลือก API ที่เหมาะสม
+        if (this.purchaseType === 'personal') {
+          // สำหรับ personal: insert ลง users_email (ใช้ password จาก store)
+          console.log('Inserting to users_email table (personal)');
+
+          // ดึง password จาก store
+          const password = this.getPassword;
+
+          if (!password) {
+            console.error('Password not found in store');
+            return;
+          }
+
+          const data = {
+            user_id: this.sourceUserId,
+            order_id: parseInt(orderId),
+            email: this.email,
+            password: password,
+            status_regis: 0,
+          };
+
+          console.log('Calling API with data:', { ...data, password: '***' }); // ซ่อน password ใน log
+
+          const response = await this.InsertUserEmail(data);
+
+          console.log('Insert response:', response);
+
+          if (response && response.data && response.data.status === 'success') {
+            console.log('Users email (personal) inserted successfully');
+          } else {
+            const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
+            console.error('Insert users email failed:', errorMessage);
+          }
+
+        } else if (this.purchaseType === 'email') {
+          // สำหรับ email: insert ลง personal_email (ไม่ใช้ password)
+          console.log('Inserting to personal_email table');
+
+          const data = {
+            user_id: this.sourceUserId,
+            order_id: parseInt(orderId),
+            email: this.email,
+            status_regis: 0,
+          };
+
+          console.log('Calling API with data:', data);
+
+          const response = await this.InsertPersonalEmail(data);
+
+          console.log('Insert response:', response);
+
+          if (response && response.data && response.data.status === 'success') {
+            console.log('Personal email inserted successfully');
+          } else {
+            const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
+            console.error('Insert personal email failed:', errorMessage);
+          }
+
+        } else {
+          console.log('Unknown purchase_type, skipping insert:', this.purchaseType);
+        }
+
+      } catch (error) {
+        console.error('Error in insertUserEmailData:', error);
       }
     },
   },
