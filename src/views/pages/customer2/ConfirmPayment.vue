@@ -63,7 +63,7 @@
               <!-- <div class="divider"></div> -->
 
               <!-- Payment Info -->
-              <div v-if="!showCompleteDialog && !showSlipCorrect" class="payment-section">
+              <div v-if="!showCompleteDialog && !showSlipCorrect && paymentType !== 'stripe'" class="payment-section">
                 <h4 class="payment-title">
                   <feather-icon icon="CreditCardIcon" class="title-icon" />
                   ชำระเงินโดยโอนเข้าบัญชี
@@ -82,7 +82,7 @@
               </div>
 
               <!-- QR Code Section -->
-              <div v-if="!showCompleteDialog && !showSlipCorrect" class="qr-section">
+              <div v-if="!showCompleteDialog && !showSlipCorrect && paymentType !== 'stripe'" class="qr-section">
                 <!-- Auto Generated QR Code (PromptPay) -->
                 <template v-if="enableAutoGenerateQR && generatedQRCode">
                   <h4 class="qr-title">
@@ -129,7 +129,7 @@
               <!-- <div class="divider"></div> -->
 
               <!-- Slip Upload -->
-              <div v-if="!showCompleteDialog && !showSlipCorrect" class="slip-section">
+              <div v-if="!showCompleteDialog && !showSlipCorrect && paymentType !== 'stripe'" class="slip-section">
                 <h4 class="slip-title">
                   <feather-icon icon="UploadIcon" class="title-icon" />
                   อัปโหลดสลิปการโอนเงิน
@@ -155,9 +155,15 @@
 
               <!-- Action Buttons -->
               <div v-if="!showCompleteDialog && !showSlipCorrect" class="action-section">
-                <b-button variant="success" class="confirm-btn" @click="confirmPayment()">
-                  <feather-icon icon="CheckIcon" class="button-icon" />
-                  ยืนยันการชำระเงิน
+                <b-button 
+                  variant="success" 
+                  class="confirm-btn" 
+                  @click="confirmPayment()"
+                  :disabled="isProcessingPayment"
+                >
+                  <b-spinner v-if="isProcessingPayment" small class="button-spinner" />
+                  <feather-icon v-else icon="CheckIcon" class="button-icon" />
+                  {{ isProcessingPayment ? 'กำลังตรวจสอบการชำระเงิน...' : 'ยืนยันการชำระเงิน' }}
                 </b-button>
               </div>
 
@@ -210,7 +216,7 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, BCard, BAvatar
+  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, BCard, BAvatar, BSpinner
 } from 'bootstrap-vue'
 
 import { required, user_id } from '@validations'
@@ -251,6 +257,7 @@ export default {
     ValidationObserver,
     BCard,
     BAvatar,
+    BSpinner,
   },
   mixins: [togglePasswordVisibility],
   setup(props, {
@@ -289,6 +296,10 @@ export default {
       purchaseType: '',
       email: '',
       paymentType: '',
+      isProcessingPayment: false,
+      paymentPollingInterval: null,
+      paymentPollingTimeout: null,
+      pollingStartTime: null,
     }
   },
   computed: {
@@ -318,7 +329,7 @@ export default {
     console.log('ConfirmPayment - email:', this.email);
 
     await this.loadSetting();
-    this.paymentType = "stripe";
+    await this.loadPaymentType();
     await this.getOrderData();
   },
   methods: {
@@ -409,6 +420,12 @@ export default {
           console.log('LINE Picture URL:', this.orderData.line_profile_url);
           console.log('Product Price (from use_credit/price/etc):', this.productPrice);
           console.log('Enable Auto Generate QR:', this.enableAutoGenerateQR);
+
+          // เช็คว่าชำระเงินสำเร็จแล้วหรือยัง
+          if (this.orderData.payment_status === 'success') {
+            console.log('Payment already completed on page load');
+            this.showSlipCorrect = true;
+          }
 
           // Generate PromptPay QR if enabled
           if (this.enableAutoGenerateQR && this.productPrice > 0) {
@@ -581,6 +598,8 @@ export default {
 
 
       if (this.paymentType === 'stripe') {
+        // เริ่ม loading
+        this.isProcessingPayment = true;
 
         const formData = new FormData();
         formData.append("userid", "-");
@@ -602,12 +621,41 @@ export default {
 
         const response = await this.CheckOutStripe(formData);
         console.log('CheckOutStripe response:', response);
+        
+        // เช็คว่าชำระเงินไปแล้วหรือยัง
+        if (response && response.data && response.data.status === 'already_paid') {
+          this.isProcessingPayment = false;
+          this.showSlipCorrect = true;
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'ท่านได้ชำระเงินไปแล้ว',
+              icon: 'CheckCircleIcon',
+              variant: 'success',
+            },
+          });
+          return;
+        }
+        
         //เอา URL จาก response.data.data.url มาแล้ว redirect ไปหน้าใหม่ จาก URL ที่ส่งมา
         const stripeUrl = response.data.data.url;
         if (response && response.data && response.data.status == 'success') {
           window.open(stripeUrl, '_blank');
+          
+          // เริ่ม polling เช็ค payment status
+          this.startPaymentPolling();
+          
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'กรุณาทำการชำระเงินในหน้าต่างใหม่ ระบบกำลังตรวจสอบการชำระเงิน...',
+              icon: 'InfoIcon',
+              variant: 'info',
+            },
+          });
         }
         else {
+          this.isProcessingPayment = false;
           const errorMessage = (response && response.data && response.data.message) ||
             (response && response.message) ||
             'ยืนยันการชำระเงินล้มเหลว';
@@ -652,6 +700,19 @@ export default {
         const response = await this.PaymentOrderWithSlip(formData);
         console.log('Payment confirmation response:', response);
 
+        // เช็คว่าชำระเงินไปแล้วหรือยัง
+        if (response && response.data && response.data.status === 'already_paid') {
+          this.showSlipCorrect = true;
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'ท่านได้ชำระเงินไปแล้ว',
+              icon: 'CheckCircleIcon',
+              variant: 'success',
+            },
+          });
+          return;
+        }
 
         if (response && response.data && response.data.status == 'success') {
           // Insert user email data after payment confirmation success
@@ -841,6 +902,57 @@ export default {
       } catch (e) {
         console.error('Error loading setting:', e)
         this.enableAutoGenerateQR = false
+      }
+    },
+
+    async loadPaymentType() {
+      try {
+        console.log('=== LOADING PAYMENT TYPE ===');
+        
+        // ลองดึงจาก localStorage ก่อน
+        const localPaymentType = localStorage.getItem('selectedPaymentType');
+        console.log('Payment type from localStorage:', localPaymentType);
+        
+        if (localPaymentType) {
+          this.paymentType = localPaymentType;
+          console.log('Using payment type from localStorage:', this.paymentType);
+          return;
+        }
+
+        // ถ้าไม่มีใน localStorage ให้ดึงจาก API
+        const userData = JSON.parse(localStorage.getItem('userData')) || {}
+        const response = await axios.get('/api/paymenttype', {
+          headers: {
+            'Content-Type': 'application/json',
+            'userid': userData.username || '-',
+            'token': userData.token || '-',
+          }
+        });
+
+        console.log('Payment type API response:', response.data);
+
+        if (response.data.status === 'success' && response.data.data && response.data.data.length > 0) {
+          // หา payment type ที่มี ID = 1 (ตามที่เราตั้งค่าไว้)
+          const activePaymentType = response.data.data.find(pt => pt.id === 1);
+          
+          if (activePaymentType) {
+            this.paymentType = activePaymentType.type_code;
+            console.log('Using payment type from API:', this.paymentType);
+            
+            // บันทึกลง localStorage เพื่อใช้ครั้งต่อไป
+            localStorage.setItem('selectedPaymentType', this.paymentType);
+          } else {
+            console.log('No active payment type found, defaulting to qr');
+            this.paymentType = 'qr';
+          }
+        } else {
+          console.log('API response failed, defaulting to qr');
+          this.paymentType = 'qr';
+        }
+      } catch (error) {
+        console.error('Error loading payment type:', error);
+        console.log('Error occurred, defaulting to qr');
+        this.paymentType = 'qr';
       }
     },
     async getProductPrice(productId) {
@@ -1086,7 +1198,109 @@ export default {
         console.error('Error in insertUserEmailData:', error);
         // Silent error - ไม่แสดง error toast เพื่อไม่ให้รบกวน flow การชำระเงิน
       }
+    },
+    startPaymentPolling() {
+      console.log('Starting payment polling...');
+      
+      // Clear existing interval if any
+      if (this.paymentPollingInterval) {
+        clearInterval(this.paymentPollingInterval);
+      }
+      
+      if (this.paymentPollingTimeout) {
+        clearTimeout(this.paymentPollingTimeout);
+      }
+      
+      // บันทึกเวลาเริ่มต้น
+      this.pollingStartTime = Date.now();
+      
+      // Poll every 3 seconds
+      this.paymentPollingInterval = setInterval(async () => {
+        await this.checkPaymentStatus();
+      }, 3000);
+      
+      // ตั้ง timeout 10 นาที (600,000 ms)
+      this.paymentPollingTimeout = setTimeout(() => {
+        console.log('Payment polling timeout after 10 minutes');
+        this.stopPaymentPolling();
+        this.isProcessingPayment = false;
+        
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'หมดเวลาตรวจสอบการชำระเงิน กรุณารีเฟรชหน้าเพื่อดูสถานะล่าสุด',
+            icon: 'ClockIcon',
+            variant: 'warning',
+          },
+        });
+      }, 600000); // 10 minutes
+    },
+    async checkPaymentStatus() {
+      try {
+        console.log('Checking payment status...');
+        
+        const formData = new FormData();
+        formData.append("userid", "-");
+        formData.append("token", "-");
+        formData.append("page_name", this.$route.name);
+        formData.append("id", this.$route.query.id || "");
+        formData.append("user_id", this.$route.query.user_id || "");
+
+        const response = await this.GetOrderData(formData);
+        
+        if (response && response.data && response.data.status === 'success' && response.data.data && response.data.data.length > 0) {
+          const orderData = response.data.data[0];
+          
+          console.log('Payment status check:', {
+            slip_correct: orderData.slip_correct,
+            wait_check_payment: orderData.wait_check_payment
+          });
+          
+          // เช็คว่าชำระเงินสำเร็จหรือยัง
+          if (orderData.payment_status === 'success') {
+            console.log('Payment successful!');
+            
+            // หยุด polling
+            this.stopPaymentPolling();
+            
+            // อัพเดท order data
+            this.orderData = orderData;
+            this.showSlipCorrect = true;
+            this.isProcessingPayment = false;
+            
+            // Insert email data
+            await this.insertUserEmailData();
+            
+            // แสดง success message
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'ชำระเงินสำเร็จ! กรุณารอการดำเนินการจากทีมงาน',
+                icon: 'CheckCircleIcon',
+                variant: 'success',
+              },
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error checking payment status:', error);
+      }
+    },
+    stopPaymentPolling() {
+      console.log('Stopping payment polling...');
+      if (this.paymentPollingInterval) {
+        clearInterval(this.paymentPollingInterval);
+        this.paymentPollingInterval = null;
+      }
+      if (this.paymentPollingTimeout) {
+        clearTimeout(this.paymentPollingTimeout);
+        this.paymentPollingTimeout = null;
+      }
     }
+  },
+  beforeDestroy() {
+    // Cleanup polling when component is destroyed
+    this.stopPaymentPolling();
   },
 }
 </script>
@@ -1671,17 +1885,23 @@ export default {
         display: flex;
         align-items: center;
         margin: 0 auto;
+        justify-content: center;
 
-        .button-icon {
+        .button-icon, .button-spinner {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
         }
 
-        &:hover {
+        &:hover:not(:disabled) {
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5) !important;
           background: #cc0000 !important;
+        }
+
+        &:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
         }
       }
     }
