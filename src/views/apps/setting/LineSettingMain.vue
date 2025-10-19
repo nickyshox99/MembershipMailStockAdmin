@@ -15,7 +15,7 @@
                 :readOnlyControl="settingTokenReadonly" />
         </b-tab>
 
-        <b-tab active>
+        <b-tab>
             <template #title>
                 <feather-icon icon="SettingsIcon" size="18" class="mr-50" />
                 <span class="font-weight-bold">ตั้งค่าร้าน</span>
@@ -23,6 +23,15 @@
 
             <line-setting-expire v-if="settingdata.line_token" :setting-data="settingdata.line_token"
                 :readOnlyControl="settingTokenReadonly" />
+        </b-tab>
+
+        <b-tab>
+            <template #title>
+                <feather-icon icon="CreditCardIcon" size="18" class="mr-50" />
+                <span class="font-weight-bold">ประเภทการชำระเงิน</span>
+            </template>
+
+            <payment-type-setting :readOnlyControl="settingTokenReadonly" />
         </b-tab>
         
 
@@ -57,6 +66,7 @@ import LineSettingToken from './LineSettingToken.vue'
 import LineSettingDepositFormat from './LineSettingDepositFormat.vue'
 import LineSettingWithdrawFormat from './LineSettingWithdrawFormat.vue'
 import LineSettingExpire from './LineSettingExpire.vue'
+import PaymentTypeSetting from './PaymentTypeSetting.vue'
 
 import axios from "axios";
 import { mapActions } from "vuex";
@@ -68,7 +78,8 @@ export default {
         LineSettingToken,
         LineSettingDepositFormat,
         LineSettingWithdrawFormat,
-        LineSettingExpire
+        LineSettingExpire,
+        PaymentTypeSetting
     },
     data() {
         return {
