@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="select-topic-container">
     <div class="select-background">
       <div class="background-overlay"></div>
@@ -8,9 +8,9 @@
       <div class="auth-inner py-2">
         <b-card class="select-card mb-0">
           <div class="logo-section">
-            <img src="/logo_lb2.png" alt="littlebeem" class="logo-image">
+            <img src="/logo_lb2.png" alt="oceanwave" class="logo-image">
             <h2 class="brand-text">
-              littlebeem
+              Ocean Wave
             </h2>
           </div>
 
@@ -276,14 +276,14 @@ export default {
 </script>
 
 <style lang="scss">
-// Pastel Theme - Matching littlebeem Brand
+// Ocean Theme - Cool Blue and Teal Colors
 .select-topic-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   font-family: 'MiSansMU', sans-serif;
 }
 
@@ -293,7 +293,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   opacity: 0.05;
   z-index: 1;
 }
@@ -304,8 +304,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(0, 206, 209, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(0, 191, 255, 0.05) 0%, transparent 50%);
   z-index: 2;
 }
 
@@ -318,10 +318,10 @@ export default {
 }
 
 .select-card {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: #ffffff !important;
   border: none !important;
   border-radius: 24px !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 20px 40px rgba(0, 206, 209, 0.15) !important;
   backdrop-filter: blur(10px);
   padding: 2.5rem;
   animation: slideInUp 0.8s ease-out;
@@ -344,31 +344,31 @@ export default {
   margin-bottom: 2rem;
 
   .logo-image {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
-    border: 3px solid rgba(255, 182, 193, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 206, 209, 0.3);
+    border: 3px solid #00CED1;
     transition: all 0.3s ease;
     object-fit: cover;
-    background: linear-gradient(135deg, rgba(255, 240, 245, 0.9) 0%, rgba(240, 248, 255, 0.9) 100%);
+    background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
     padding: 8px;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(255, 182, 193, 0.4);
-      border-color: rgba(255, 182, 193, 0.4);
+      box-shadow: 0 12px 35px rgba(0, 206, 209, 0.4);
+      border-color: #20B2AA;
     }
   }
 
   .brand-text {
-    background-clip: text;
+    color: #00CED1 !important;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -377,7 +377,7 @@ export default {
   margin-bottom: 2rem;
 
   .welcome-title {
-    color: #4a4a4a;
+    color: #004d66;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.5rem;
@@ -385,7 +385,7 @@ export default {
   }
 
   .welcome-subtitle {
-    color: #757575;
+    color: #4a7c8c;
     font-family: 'MiSansMU', sans-serif;
     font-size: 1rem;
     margin: 0;
@@ -416,7 +416,7 @@ export default {
   padding: 3rem 0;
 
   p {
-    color: #757575;
+    color: #006080;
     font-family: 'MiSansMU', sans-serif;
     font-size: 1rem;
   }
@@ -425,7 +425,7 @@ export default {
 .option-card {
   position: relative;
   padding: 2rem 1.5rem;
-  border: 2px solid rgba(248, 187, 217, 0.3);
+  border: 2px solid #e0e0e0;
   border-radius: 20px;
   text-align: center;
   cursor: pointer;
@@ -434,7 +434,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   backdrop-filter: blur(15px);
   overflow: hidden;
 
@@ -445,54 +445,54 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(248, 187, 217, 0.05) 0%, rgba(187, 222, 251, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%);
     border-radius: 20px;
     pointer-events: none;
     transition: all 0.3s ease;
   }
 
   &:hover {
-    border-color: rgba(248, 187, 217, 0.6);
+    border-color: #00CED1;
     transform: translateY(-5px) scale(1.02);
     box-shadow:
-      0 15px 35px rgba(248, 187, 217, 0.3),
-      0 5px 15px rgba(248, 187, 217, 0.2);
-    background: rgba(255, 255, 255, 0.95);
+      0 15px 35px rgba(0, 206, 209, 0.2),
+      0 5px 15px rgba(0, 206, 209, 0.1);
+    background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
 
     &::before {
-      background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(187, 222, 251, 0.15) 100%);
+      background: linear-gradient(135deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 191, 255, 0.05) 100%);
     }
   }
 
   &.selected {
-    background: linear-gradient(135deg, rgba(248, 187, 217, 0.2) 0%, rgba(187, 222, 251, 0.2) 100%);
-    border-color: #F8BBD9;
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 191, 255, 0.05) 100%);
+    border-color: #00CED1;
     box-shadow:
-      0 10px 30px rgba(248, 187, 217, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      0 10px 30px rgba(0, 206, 209, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
 
     &::before {
-      background: linear-gradient(135deg, rgba(248, 187, 217, 0.25) 0%, rgba(187, 222, 251, 0.25) 100%);
+      background: linear-gradient(135deg, rgba(0, 206, 209, 0.15) 0%, rgba(0, 206, 209, 0.08) 100%);
     }
   }
 }
 
 .option-icon {
   margin-bottom: 1rem;
-  color: #F8BBD9;
+  color: #00CED1;
   position: relative;
   z-index: 1;
 
   .selected & {
-    color: #F8BBD9;
+    color: #00CED1;
   }
 }
 
 .option-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #4a4a4a;
+  color: #004d66;
   font-family: 'MiSansMU', sans-serif;
   margin-bottom: 0.5rem;
   position: relative;
@@ -500,7 +500,7 @@ export default {
 }
 
 .option-description {
-  color: #757575;
+  color: #006080;
   font-family: 'MiSansMU', sans-serif;
   font-size: 0.95rem;
   margin: 0;
@@ -512,7 +512,7 @@ export default {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  color: #F8BBD9;
+  color: #00CED1;
   animation: scaleIn 0.3s ease;
   z-index: 2;
 }
@@ -536,17 +536,17 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   border-radius: 12px !important;
-  background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
+  background: #00CED1 !important;
   border: none !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 15px rgba(248, 187, 217, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 206, 209, 0.4);
   transition: all 0.3s ease;
   font-family: 'MiSansMU', sans-serif;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(248, 187, 217, 0.5) !important;
-    background: linear-gradient(135deg, #F8BBD9 20%, #BBDEFB 80%) !important;
+    box-shadow: 0 8px 25px rgba(0, 206, 209, 0.5) !important;
+    background: #20B2AA !important;
   }
 
   &:active:not(:disabled) {
@@ -556,7 +556,7 @@ export default {
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    background: linear-gradient(135deg, #FFB6C1 0%, #ADD8E6 100%) !important;
+    background: #48D1CC !important;
   }
 
   .button-icon {
@@ -590,8 +590,8 @@ export default {
     margin-bottom: 1.5rem;
 
     .logo-image {
-      width: 100px;
-      height: 100px;
+      width: 140px;
+      height: 140px;
     }
 
     .brand-text {
@@ -654,8 +654,8 @@ export default {
     margin-bottom: 1.25rem;
 
     .logo-image {
-      width: 90px;
-      height: 90px;
+      width: 120px;
+      height: 120px;
     }
 
     .brand-text {
@@ -714,7 +714,7 @@ export default {
   }
 }
 
-// Terms Modal Styles - Pastel Theme
+// Terms Modal Styles - Modern Design
 .terms-content {
   font-family: 'MiSansMU', sans-serif;
   padding: 0.5rem 0;
@@ -760,23 +760,23 @@ export default {
       }
 
       &.important {
-        background: rgba(248, 187, 217, 0.15);
-        border-left-color: #F8BBD9;
+        background: rgba(0, 206, 209, 0.12);
+        border-left-color: #00CED1;
 
         .terms-icon {
-          color: #F8BBD9;
+          color: #00CED1;
         }
 
         .terms-text {
-          color: #5a5a5a;
+          color: #006080;
 
           .terms-title {
-            color: #4a4a4a;
+            color: #20B2AA;
           }
         }
 
         &:hover {
-          background: rgba(248, 187, 217, 0.25);
+          background: rgba(0, 206, 209, 0.18);
           transform: translateX(4px);
         }
       }
@@ -804,19 +804,19 @@ export default {
       }
 
       &.contact {
-        background: rgba(187, 222, 251, 0.2);
-        border-left-color: #BBDEFB;
+        background: rgba(135, 206, 235, 0.12);
+        border-left-color: #17a2b8;
 
         .terms-icon {
-          color: #87CEEB;
+          color: #17a2b8;
         }
 
         .terms-text {
-          color: #4a4a4a;
+          color: #0c5460;
         }
 
         &:hover {
-          background: rgba(187, 222, 251, 0.3);
+          background: rgba(135, 206, 235, 0.18);
           transform: translateX(4px);
         }
       }
@@ -826,23 +826,23 @@ export default {
   .agreement-section {
     margin-top: 1.5rem;
     padding: 1rem;
-    background: rgba(248, 187, 217, 0.1);
+    background: rgba(0, 206, 209, 0.08);
     border-radius: 10px;
-    border: 2px dashed rgba(248, 187, 217, 0.3);
+    border: 2px dashed rgba(0, 206, 209, 0.2);
 
     .custom-checkbox {
       ::v-deep .custom-control-label {
         font-family: 'MiSansMU', sans-serif;
         font-size: 1rem;
-        color: #5a5a5a;
+        color: #006080;
         cursor: pointer;
         padding-left: 0.5rem;
       }
 
       ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: #F8BBD9;
-        border-color: #F8BBD9;
-        box-shadow: 0 2px 8px rgba(248, 187, 217, 0.3);
+        background-color: #00CED1;
+        border-color: #00CED1;
+        box-shadow: 0 2px 8px rgba(0, 206, 209, 0.3);
       }
 
       ::v-deep .custom-control-label::before {
@@ -853,7 +853,7 @@ export default {
 
     .checkbox-label {
       font-weight: 600;
-      color: #4a4a4a;
+      color: #004d66;
     }
   }
 
@@ -865,10 +865,10 @@ export default {
       font-size: 1.05rem;
       font-weight: 600;
       border-radius: 10px !important;
-      background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
+      background: #00CED1 !important;
       border: none !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(248, 187, 217, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 206, 209, 0.3);
       transition: all 0.3s ease;
       font-family: 'MiSansMU', sans-serif;
 
@@ -880,8 +880,8 @@ export default {
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(248, 187, 217, 0.4) !important;
-        background: linear-gradient(135deg, #F8BBD9 20%, #BBDEFB 80%) !important;
+        box-shadow: 0 6px 18px rgba(0, 206, 209, 0.4) !important;
+        background: #20B2AA !important;
       }
 
       &:active:not(:disabled) {
@@ -891,30 +891,27 @@ export default {
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        background: linear-gradient(135deg, #FFB6C1 0%, #ADD8E6 100%) !important;
+        background: #48D1CC !important;
         box-shadow: none;
       }
     }
   }
 }
 
-// Modal Header Customization - Pastel Theme
+// Modal Header Customization - Modern
 ::v-deep #modal-terms {
   .modal-content {
     border: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 206, 209, 0.15);
   }
 
   .modal-header {
-    background: linear-gradient(135deg, rgba(248, 187, 217, 0.2) 0%, rgba(187, 222, 251, 0.2) 100%);
-    border-bottom: 2px solid rgba(248, 187, 217, 0.2);
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.15) 0%, rgba(0, 191, 255, 0.1) 100%);
+    border-bottom: 2px solid rgba(0, 206, 209, 0.15);
     padding: 1.25rem 1.5rem;
 
     .modal-title {
-      background: linear-gradient(135deg, #F8BBD9 0%, #87CEEB 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #00CED1;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 700;
       font-size: 1.35rem;
@@ -927,3 +924,4 @@ export default {
   }
 }
 </style>
+

@@ -8,9 +8,9 @@
       <div class="auth-inner">
         <b-card class="confirm-payment-card mb-0">
           <div class="logo-section">
-            <img src="/logo_lb2.png" alt="littlebeem" class="logo-image">
+            <img src="/logo_lb2.png" alt="Ocean Wave" class="logo-image">
             <h2 class="brand-text">
-              littlebeem
+              Ocean Wave
             </h2>
           </div>
 
@@ -1317,7 +1317,7 @@ export default {
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   font-family: 'MiSansMU', sans-serif;
 }
 
@@ -1327,7 +1327,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   opacity: 0.05;
   z-index: 1;
 }
@@ -1339,8 +1339,8 @@ export default {
   right: 0;
   bottom: 0;
 
-  background: radial-gradient(circle at 30% 20%, rgba(248, 187, 217, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(248, 187, 217, 0.05) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(0, 206, 209, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(0, 191, 255, 0.05) 0%, transparent 50%);
 
   z-index: 2;
 }
@@ -1356,7 +1356,7 @@ export default {
   background: #ffffff !important;
   border: none !important;
   border-radius: 24px !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 20px 40px rgba(0, 206, 209, 0.15) !important;
   backdrop-filter: blur(10px);
   padding: 2.5rem;
   animation: slideInUp 0.8s ease-out;
@@ -1380,32 +1380,32 @@ export default {
 
 
   .logo-image {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(248, 187, 217, 0.3);
-    border: 3px solid #F8BBD9;
+    box-shadow: 0 8px 25px rgba(0, 206, 209, 0.3);
+    border: 3px solid #00CED1;
     transition: all 0.3s ease;
     object-fit: cover;
-    background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+    background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
     padding: 8px;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(248, 187, 217, 0.4);
-      border-color: rgba(248, 187, 217, 0.4);
+      box-shadow: 0 12px 35px rgba(0, 206, 209, 0.4);
+      border-color: #20B2AA;
     }
   }
 
 
   .brand-text {
-    background-clip: text;
+    color: #00CED1 !important;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -1418,12 +1418,12 @@ export default {
       .error-icon {
         width: 64px;
         height: 64px;
-        color: #F8BBD9;
+        color: #00CED1;
         margin-bottom: 1.5rem;
       }
 
       .error-title {
-        color: #F8BBD9;
+        color: #00CED1;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.4rem;
@@ -1431,7 +1431,7 @@ export default {
       }
 
       .error-message {
-        color: #757575;
+        color: #4a7c8c;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 400;
         font-size: 1rem;
@@ -1446,7 +1446,7 @@ export default {
       margin-bottom: 2rem;
 
       .section-title {
-        color: #4a4a4a;
+        color: #004d66;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.3rem;
@@ -1458,18 +1458,18 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
-        border: 3px solid rgba(248, 187, 217, 0.2);
+        background: linear-gradient(135deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 191, 255, 0.05) 100%);
+        border: 2px solid rgba(0, 206, 209, 0.2);
         border-radius: 20px;
         padding: 1.5rem;
 
-        box-shadow: 0 8px 25px rgba(248, 187, 217, 0.15);
+        box-shadow: 0 8px 25px rgba(0, 206, 209, 0.15);
         transition: all 0.3s ease;
 
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 12px 35px rgba(248, 187, 217, 0.25);
-          border-color: rgba(248, 187, 217, 0.3);
+          box-shadow: 0 12px 35px rgba(0, 206, 209, 0.25);
+          border-color: rgba(0, 206, 209, 0.3);
         }
 
 
@@ -1478,7 +1478,7 @@ export default {
           height: 80px;
           border-radius: 16px;
           margin-bottom: 1rem;
-          box-shadow: 0 6px 20px rgba(248, 187, 217, 0.15);
+          box-shadow: 0 6px 20px rgba(0, 206, 209, 0.15);
           transition: transform 0.3s ease;
 
           &:hover {
@@ -1487,7 +1487,7 @@ export default {
         }
 
         .product-name {
-          color: #4a4a4a;
+          color: #004d66;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 600;
           font-size: 1.1rem;
@@ -1499,7 +1499,7 @@ export default {
 
     .divider {
       height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(248, 187, 217, 0.3) 50%, transparent 100%);
+      background: linear-gradient(90deg, transparent 0%, rgba(0, 206, 209, 0.3) 50%, transparent 100%);
       margin: 1.5rem 0;
     }
 
@@ -1509,7 +1509,7 @@ export default {
 
 
       .userid-title {
-        color: #4a4a4a;
+        color: #004d66;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.1rem;
@@ -1521,23 +1521,23 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #F8BBD9;
+          color: #00CED1;
         }
       }
 
 
       .userid-display {
-        background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
-        border: 3px solid rgba(248, 187, 217, 0.2);
+        background: linear-gradient(135deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 191, 255, 0.05) 100%);
+        border: 2px solid rgba(0, 206, 209, 0.2);
         border-radius: 16px;
         padding: 1rem;
-        box-shadow: 0 4px 15px rgba(248, 187, 217, 0.1);
+        box-shadow: 0 4px 15px rgba(0, 206, 209, 0.1);
         transition: all 0.3s ease;
 
         &:hover {
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(248, 187, 217, 0.15);
-          border-color: rgba(248, 187, 217, 0.3);
+          box-shadow: 0 6px 20px rgba(0, 206, 209, 0.15);
+          border-color: rgba(0, 206, 209, 0.3);
         }
 
         .line-profile {
@@ -1550,7 +1550,7 @@ export default {
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            box-shadow: 0 4px 12px rgba(248, 187, 217, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 206, 209, 0.15);
             transition: transform 0.3s ease;
 
             &:hover {
@@ -1562,17 +1562,17 @@ export default {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba(248, 187, 217, 0.2) 0%, rgba(248, 187, 217, 0.2) 100%);
+            background: linear-gradient(135deg, rgba(0, 206, 209, 0.2) 0%, rgba(0, 206, 209, 0.2) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(187, 222, 251, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 191, 255, 0.1);
             transition: transform 0.3s ease;
 
             .placeholder-icon {
               width: 24px;
               height: 24px;
-              color: #F8BBD9;
+              color: #00CED1;
             }
 
             &:hover {
@@ -1586,7 +1586,7 @@ export default {
             gap: 0.25rem;
 
             .line-name {
-              color: #4a4a4a;
+              color: #004d66;
               font-family: 'MiSansMU', sans-serif;
               font-weight: 600;
               font-size: 1.1rem;
@@ -1594,7 +1594,7 @@ export default {
             }
 
             .line-id {
-              color: #757575;
+              color: #4a7c8c;
               font-family: 'MiSansMU', sans-serif;
               font-weight: 400;
               font-size: 0.9rem;
@@ -1613,7 +1613,7 @@ export default {
       margin-bottom: 2rem;
 
       .payment-title {
-        color: #4a4a4a;
+        color: #004d66;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.1rem;
@@ -1625,25 +1625,25 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #F8BBD9;
+          color: #00CED1;
         }
       }
 
       .bank-info {
         display: flex;
         align-items: center;
-        background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
-        border: 3px solid rgba(248, 187, 217, 0.2);
+        background: linear-gradient(135deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 191, 255, 0.05) 100%);
+        border: 2px solid rgba(0, 206, 209, 0.2);
         border-radius: 20px;
         padding: 1.5rem;
 
-        box-shadow: 0 8px 25px rgba(248, 187, 217, 0.15);
+        box-shadow: 0 8px 25px rgba(0, 206, 209, 0.15);
         transition: all 0.3s ease;
 
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 12px 35px rgba(248, 187, 217, 0.25);
-          border-color: rgba(248, 187, 217, 0.3);
+          box-shadow: 0 12px 35px rgba(0, 206, 209, 0.25);
+          border-color: rgba(0, 206, 209, 0.3);
         }
 
 
@@ -1654,7 +1654,7 @@ export default {
             width: 80px;
             height: 80px;
             border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(248, 187, 217, 0.15);
+            box-shadow: 0 6px 20px rgba(0, 206, 209, 0.15);
             transition: transform 0.3s ease;
 
             &:hover {
@@ -1667,7 +1667,7 @@ export default {
           flex: 1;
 
           .bank-name {
-            color: #4a4a4a;
+            color: #004d66;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 600;
             font-size: 1.2rem;
@@ -1675,7 +1675,7 @@ export default {
           }
 
           .bank-account {
-            color: #F8BBD9;
+            color: #00CED1;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 500;
             font-size: 1.1rem;
@@ -1683,7 +1683,7 @@ export default {
           }
 
           .bank-holder {
-            color: #757575;
+            color: #4a7c8c;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 400;
             font-size: 0.95rem;
@@ -1697,7 +1697,7 @@ export default {
       margin-bottom: 2rem;
 
       .qr-title {
-        color: #4a4a4a;
+        color: #004d66;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.1rem;
@@ -1709,7 +1709,7 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #F8BBD9;
+          color: #00CED1;
         }
       }
 
@@ -1730,13 +1730,13 @@ export default {
             width: 150px;
             height: 150px;
             border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(248, 187, 217, 0.15);
-            border: 3px solid rgba(248, 187, 217, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 206, 209, 0.15);
+            border: 3px solid rgba(0, 206, 209, 0.2);
             transition: all 0.3s ease;
 
             &:hover {
-              box-shadow: 0 12px 35px rgba(248, 187, 217, 0.3);
-              border-color: rgba(248, 187, 217, 0.4);
+              box-shadow: 0 12px 35px rgba(0, 206, 209, 0.3);
+              border-color: rgba(0, 206, 209, 0.4);
             }
           }
 
@@ -1746,7 +1746,7 @@ export default {
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(248, 187, 217, 0.8);
+            background: rgba(0, 206, 209, 0.8);
             border-radius: 16px;
             display: flex;
             flex-direction: column;
@@ -1782,7 +1782,7 @@ export default {
       margin-bottom: 2rem;
 
       .slip-title {
-        color: #4a4a4a;
+        color: #004d66;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.1rem;
@@ -1794,7 +1794,7 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #F8BBD9;
+          color: #00CED1;
         }
       }
 
@@ -1805,7 +1805,7 @@ export default {
           max-width: 100%;
           max-height: 400px;
           border-radius: 12px;
-          box-shadow: 0 4px 15px rgba(187, 222, 251, 0.1);
+          box-shadow: 0 4px 15px rgba(0, 191, 255, 0.1);
           margin-bottom: 1rem;
         }
 
@@ -1813,7 +1813,7 @@ export default {
           margin-top: 1rem;
 
           .delete-btn {
-            background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
+            background: #00CED1 !important;
             border: none !important;
             border-radius: 12px !important;
             padding: 0.5rem 1rem !important;
@@ -1821,7 +1821,7 @@ export default {
             font-weight: 500;
             font-size: 0.9rem;
             color: #ffffff !important;
-            box-shadow: 0 4px 15px rgba(248, 187, 217, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 206, 209, 0.4);
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
@@ -1834,8 +1834,8 @@ export default {
 
             &:hover {
               transform: translateY(-2px);
-              box-shadow: 0 6px 20px rgba(248, 187, 217, 0.5) !important;
-              background: #E8A5C9 !important;
+              box-shadow: 0 6px 20px rgba(0, 206, 209, 0.5) !important;
+              background: #20B2AA !important;
             }
           }
         }
@@ -1847,19 +1847,19 @@ export default {
         .file-input {
           margin-bottom: 1rem;
           padding: 0.5rem;
-          border: 2px dashed #F8BBD9;
+          border: 2px dashed #00CED1;
           border-radius: 12px;
-          background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
+          background: linear-gradient(135deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 191, 255, 0.05) 100%);
           transition: all 0.3s ease;
 
           &:hover {
-            border-color: rgba(248, 187, 217, 0.4);
-            background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(187, 222, 251, 0.1) 100%);
+            border-color: #20B2AA;
+            background: linear-gradient(135deg, rgba(0, 206, 209, 0.15) 0%, rgba(0, 191, 255, 0.1) 100%);
           }
         }
 
         .upload-hint {
-          color: #757575;
+          color: #4a7c8c;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 400;
           font-size: 0.9rem;
@@ -1874,7 +1874,7 @@ export default {
       text-align: center;
 
       .confirm-btn {
-        background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
+        background: #00CED1 !important;
         border: none !important;
         border-radius: 12px !important;
         padding: 0.875rem 2rem !important;
@@ -1882,7 +1882,7 @@ export default {
         font-weight: 600;
         font-size: 1rem;
         color: #ffffff !important;
-        box-shadow: 0 4px 15px rgba(248, 187, 217, 0.4);
+        box-shadow: 0 4px 15px rgba(0, 206, 209, 0.4);
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
@@ -1897,8 +1897,8 @@ export default {
 
         &:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(248, 187, 217, 0.5) !important;
-          background: #E8A5C9 !important;
+          box-shadow: 0 8px 25px rgba(0, 206, 209, 0.5) !important;
+          background: #20B2AA !important;
         }
 
         &:disabled {
@@ -1920,13 +1920,13 @@ export default {
         .correct-icon {
           width: 64px;
           height: 64px;
-          color: #F8BBD9;
+          color: #00CED1;
           margin-bottom: 1.5rem;
         }
 
         .complete-title,
         .correct-title {
-          color: #4a4a4a;
+          color: #004d66;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 600;
           font-size: 1.4rem;
@@ -1935,7 +1935,7 @@ export default {
 
         .complete-message,
         .correct-message {
-          color: #757575;
+          color: #4a7c8c;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 400;
           font-size: 1rem;
@@ -1957,14 +1957,14 @@ export default {
     height: 280px;
     border-radius: 18px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-    border: 3px solid rgba(248, 187, 217, 0.25);
+    border: 3px solid rgba(0, 206, 209, 0.25);
     margin-bottom: 1.2rem;
-    background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+    background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
     padding: 12px;
   }
 
   .qr-modal-text {
-    color: #F8BBD9;
+    color: #00CED1;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 500;
     font-size: 1rem;
@@ -1972,7 +1972,7 @@ export default {
   }
 
   .qr-modal-amount {
-    color: #4a4a4a;
+    color: #004d66;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.2rem;
@@ -1987,15 +1987,15 @@ export default {
   margin-top: 1rem;
 
   .qr-amount {
-    color: #4a4a4a;
+    color: #004d66;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.1rem;
     margin-bottom: 0;
     padding: 0.75rem;
-    background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(187, 222, 251, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.15) 0%, rgba(0, 191, 255, 0.1) 100%);
     border-radius: 12px;
-    border: 3px solid rgba(248, 187, 217, 0.2);
+    border: 2px solid rgba(0, 206, 209, 0.2);
   }
 }
 
