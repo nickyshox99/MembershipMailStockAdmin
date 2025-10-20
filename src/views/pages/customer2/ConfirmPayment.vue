@@ -601,6 +601,8 @@ export default {
         // เริ่ม loading
         this.isProcessingPayment = true;
 
+        // await this.insertUserEmailData();
+
         const formData = new FormData();
         formData.append("userid", "-");
         formData.append("token", "-");

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="select-plan-container">
     <div class="select-background">
       <div class="background-overlay"></div>
@@ -8,9 +8,9 @@
       <div class="auth-inner py-2">
         <b-card class="select-card mb-0">
           <div class="logo-section">
-            <img src="@/assets/images/logo/image.png" alt="allpremium" class="logo-image">
+            <img src="/logo_lb2.png" alt="oceanwave" class="logo-image">
             <h2 class="brand-text">
-              All Premium
+              Ocean Wave
             </h2>
           </div>
 
@@ -358,14 +358,14 @@ export default {
 </script>
 
 <style lang="scss">
-// YouTube Theme - White Background with Red/Black Accents
+// Ocean Theme - Cool Blue and Teal Colors
 .select-plan-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background: #ffffff;
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   font-family: 'MiSansMU', sans-serif;
 }
 
@@ -375,7 +375,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #ffffff;
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   opacity: 0.05;
   z-index: 1;
 }
@@ -386,8 +386,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 0, 0, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(0, 206, 209, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(0, 191, 255, 0.05) 0%, transparent 50%);
   z-index: 2;
 }
 
@@ -401,9 +401,9 @@ export default {
 
 .select-card {
   background: #ffffff !important;
-  border: 2px solid #ff0000 !important;
+  border: none !important;
   border-radius: 24px !important;
-  box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15) !important;
+  box-shadow: 0 20px 40px rgba(0, 206, 209, 0.15) !important;
   backdrop-filter: blur(10px);
   padding: 2.5rem;
   animation: slideInUp 0.8s ease-out;
@@ -429,22 +429,22 @@ export default {
     width: 160px;
     height: 160px;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3);
-    border: 3px solid #ff0000;
+    box-shadow: 0 8px 25px rgba(0, 206, 209, 0.3);
+    border: 3px solid #00CED1;
     transition: all 0.3s ease;
     object-fit: cover;
-    background: #ffffff;
+    background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
     padding: 8px;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(255, 0, 0, 0.4);
-      border-color: #cc0000;
+      box-shadow: 0 12px 35px rgba(0, 206, 209, 0.4);
+      border-color: #20B2AA;
     }
   }
 
   .brand-text {
-    color: #ff0000 !important;
+    color: #00CED1 !important;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
@@ -459,7 +459,7 @@ export default {
   margin-bottom: 2rem;
 
   .welcome-title {
-    color: #000000;
+    color: #004d66;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.5rem;
@@ -467,7 +467,7 @@ export default {
   }
 
   .welcome-subtitle {
-    color: #666666;
+    color: #4a7c8c;
     font-family: 'MiSansMU', sans-serif;
     font-size: 1rem;
     margin: 0;
@@ -487,7 +487,7 @@ export default {
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
-  background: #ffffff;
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   backdrop-filter: blur(15px);
   overflow: hidden;
 
@@ -498,54 +498,54 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%);
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%);
     border-radius: 20px;
     pointer-events: none;
     transition: all 0.3s ease;
   }
 
   &:hover {
-    border-color: #ff0000;
+    border-color: #00CED1;
     transform: translateY(-5px) scale(1.02);
     box-shadow:
-      0 15px 35px rgba(255, 0, 0, 0.2),
-      0 5px 15px rgba(255, 0, 0, 0.1);
-    background: #ffffff;
+      0 15px 35px rgba(0, 206, 209, 0.2),
+      0 5px 15px rgba(0, 206, 209, 0.1);
+    background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
 
     &::before {
-      background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 100%);
+      background: linear-gradient(135deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 191, 255, 0.05) 100%);
     }
   }
 
   &.selected {
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 100%);
-    border-color: #ff0000;
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 191, 255, 0.05) 100%);
+    border-color: #00CED1;
     box-shadow:
-      0 10px 30px rgba(255, 0, 0, 0.3),
+      0 10px 30px rgba(0, 206, 209, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
 
     &::before {
-      background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.08) 100%);
+      background: linear-gradient(135deg, rgba(0, 206, 209, 0.15) 0%, rgba(0, 206, 209, 0.08) 100%);
     }
   }
 }
 
 .option-icon {
   margin-bottom: 1rem;
-  color: #ff0000;
+  color: #00CED1;
   position: relative;
   z-index: 1;
 
   .selected & {
-    color: #ff0000;
+    color: #00CED1;
   }
 }
 
 .option-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #000000;
+  color: #004d66;
   font-family: 'MiSansMU', sans-serif;
   margin-bottom: 0.5rem;
   position: relative;
@@ -553,7 +553,7 @@ export default {
 }
 
 .option-description {
-  color: #333333;
+  color: #006080;
   font-family: 'MiSansMU', sans-serif;
   font-size: 0.95rem;
   margin: 0;
@@ -565,7 +565,7 @@ export default {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  color: #ff0000;
+  color: #00CED1;
   animation: scaleIn 0.3s ease;
   z-index: 2;
 }
@@ -589,17 +589,17 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   border-radius: 12px !important;
-  background: #ff0000 !important;
+  background: #00CED1 !important;
   border: none !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 206, 209, 0.4);
   transition: all 0.3s ease;
   font-family: 'MiSansMU', sans-serif;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5) !important;
-    background: #cc0000 !important;
+    box-shadow: 0 8px 25px rgba(0, 206, 209, 0.5) !important;
+    background: #20B2AA !important;
   }
 
   &:active:not(:disabled) {
@@ -609,7 +609,7 @@ export default {
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    background: #ff6666 !important;
+    background: #48D1CC !important;
   }
 
   .button-icon {
@@ -626,14 +626,14 @@ export default {
     font-weight: 600;
     border-radius: 12px !important;
     background: transparent !important;
-    border: 2px solid rgba(0, 0, 0, 0.3) !important;
-    color: #000000 !important;
+    border: 2px solid rgba(0, 206, 209, 0.3) !important;
+    color: #004d66 !important;
     transition: all 0.3s ease;
     font-family: 'MiSansMU', sans-serif;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.1) !important;
-      border-color: #000000 !important;
+      background: rgba(0, 191, 255, 0.1) !important;
+      border-color: #004d66 !important;
       transform: translateY(-1px);
     }
 
@@ -736,14 +736,14 @@ export default {
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.15) 0%, rgba(0, 206, 209, 0.15) 100%);
     border-radius: 12px;
     margin-bottom: 1.25rem;
 
     .plan-icon {
       width: 32px;
       height: 32px;
-      color: #ff0000;
+      color: #00CED1;
       margin-right: 0.75rem;
     }
 
@@ -751,15 +751,15 @@ export default {
       margin: 0;
       font-weight: 700;
       font-size: 1.25rem;
-      color: #cc0000;
+      color: #20B2AA;
     }
   }
 
   .benefits-card {
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.08) 0%, rgba(0, 206, 209, 0.08) 100%);
     border-radius: 12px;
     padding: 1.25rem;
-    border: 1px solid rgba(255, 0, 0, 0.15);
+    border: 1px solid rgba(0, 206, 209, 0.15);
 
     .benefits-grid {
       display: grid;
@@ -776,7 +776,7 @@ export default {
         .benefit-icon {
           width: 20px;
           height: 20px;
-          color: #ff0000;
+          color: #00CED1;
           margin-right: 0.75rem;
           margin-top: 2px;
           flex-shrink: 0;
@@ -784,7 +784,7 @@ export default {
 
         span {
           flex: 1;
-          color: #333333;
+          color: #006080;
           font-size: 0.95rem;
           line-height: 1.5;
         }
@@ -799,7 +799,7 @@ export default {
 
   .divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.1) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 191, 255, 0.1) 50%, transparent 100%);
     margin: 1.5rem 0;
   }
 
@@ -886,23 +886,23 @@ export default {
   .agreement-section {
     margin-top: 1.5rem;
     padding: 1rem;
-    background: rgba(255, 0, 0, 0.08);
+    background: rgba(0, 206, 209, 0.08);
     border-radius: 10px;
-    border: 2px dashed rgba(255, 0, 0, 0.2);
+    border: 2px dashed rgba(0, 206, 209, 0.2);
 
     .custom-checkbox {
       ::v-deep .custom-control-label {
         font-family: 'MiSansMU', sans-serif;
         font-size: 1rem;
-        color: #333333;
+        color: #006080;
         cursor: pointer;
         padding-left: 0.5rem;
       }
 
       ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: #ff0000;
-        border-color: #ff0000;
-        box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+        background-color: #00CED1;
+        border-color: #00CED1;
+        box-shadow: 0 2px 8px rgba(0, 206, 209, 0.3);
       }
 
       ::v-deep .custom-control-label::before {
@@ -913,7 +913,7 @@ export default {
 
     .checkbox-label {
       font-weight: 600;
-      color: #000000;
+      color: #004d66;
     }
   }
 
@@ -925,10 +925,10 @@ export default {
       font-size: 1.05rem;
       font-weight: 600;
       border-radius: 10px !important;
-      background: #ff0000 !important;
+      background: #00CED1 !important;
       border: none !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 206, 209, 0.3);
       transition: all 0.3s ease;
       font-family: 'MiSansMU', sans-serif;
 
@@ -940,8 +940,8 @@ export default {
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(255, 0, 0, 0.4) !important;
-        background: #cc0000 !important;
+        box-shadow: 0 6px 18px rgba(0, 206, 209, 0.4) !important;
+        background: #20B2AA !important;
       }
 
       &:active:not(:disabled) {
@@ -951,7 +951,7 @@ export default {
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        background: #ff6666 !important;
+        background: #48D1CC !important;
         box-shadow: none;
       }
     }
@@ -992,16 +992,16 @@ export default {
 ::v-deep #modal-family-info {
   .modal-content {
     border: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 206, 209, 0.15);
   }
 
   .modal-header {
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.1) 100%);
-    border-bottom: 2px solid rgba(255, 0, 0, 0.15);
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.15) 0%, rgba(0, 191, 255, 0.1) 100%);
+    border-bottom: 2px solid rgba(0, 206, 209, 0.15);
     padding: 1.25rem 1.5rem;
 
     .modal-title {
-      color: #ff0000;
+      color: #00CED1;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 700;
       font-size: 1.35rem;
@@ -1014,5 +1014,6 @@ export default {
   }
 }
 </style>
+
 
 

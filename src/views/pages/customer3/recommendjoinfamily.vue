@@ -8,15 +8,15 @@
       <div class="auth-inner py-2">
         <b-card class="recommend-card mb-0">
           <div class="logo-section">
-            <img src="/logo_lb2.png" alt="littlebeem" class="logo-image">
+            <img src="/logo_lb2.png" alt="Ocean Wave" class="logo-image">
             <h2 class="brand-text">
-              littlebeem
+              Ocean Wave
             </h2>
           </div>
 
           <div class="welcome-section">
             <h3 class="welcome-title">ขั้นตอนการสมัครสมาชิก</h3>
-            <p class="welcome-subtitle">ทำตามขั้นตอนเหล่านี้เพื่อเข้าร่วมครอบครัว littlebeem</p>
+            <p class="welcome-subtitle">ทำตามขั้นตอนเหล่านี้เพื่อเข้าร่วมครอบครัว Ocean Wave</p>
           </div>
 
           <div class="steps-section">
@@ -171,7 +171,7 @@ export default {
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   font-family: 'MiSansMU', sans-serif;
 }
 
@@ -181,7 +181,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   opacity: 0.05;
   z-index: 1;
 }
@@ -192,8 +192,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(248, 187, 217, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(248, 187, 217, 0.05) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(0, 206, 209, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(0, 191, 255, 0.05) 0%, transparent 50%);
   z-index: 2;
 }
 
@@ -208,7 +208,7 @@ export default {
   background: #ffffff !important;
   border: none !important;
   border-radius: 24px !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 20px 40px rgba(0, 206, 209, 0.15) !important;
   backdrop-filter: blur(10px);
   padding: 2.5rem;
   animation: slideInUp 0.8s ease-out;
@@ -230,34 +230,31 @@ export default {
   margin-bottom: 2rem;
   
   .logo-image {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(248, 187, 217, 0.3);
-    border: 3px solid #F8BBD9;
+    box-shadow: 0 8px 25px rgba(0, 206, 209, 0.3);
+    border: 3px solid #00CED1;
     transition: all 0.3s ease;
     object-fit: cover;
-    background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+    background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
     padding: 8px;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(248, 187, 217, 0.4);
-      border-color: rgba(248, 187, 217, 0.4);
+      box-shadow: 0 12px 35px rgba(0, 206, 209, 0.4);
+      border-color: #20B2AA;
     }
   }
 
   .brand-text {
-    background: linear-gradient(135deg, #F8BBD9 0%, #87CEEB 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #00CED1 !important;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -266,7 +263,7 @@ export default {
   margin-bottom: 2.5rem;
   
   .welcome-title {
-    color: #4a4a4a;
+    color: #004d66;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.5rem;
@@ -274,7 +271,7 @@ export default {
   }
   
   .welcome-subtitle {
-    color: #757575;
+    color: #4a7c8c;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 400;
     font-size: 1rem;
@@ -290,14 +287,14 @@ export default {
     align-items: flex-start;
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background: rgba(248, 187, 217, 0.05);
+    background: rgba(0, 206, 209, 0.05);
     border-radius: 16px;
     transition: all 0.3s ease;
     
     &:hover {
-      background: rgba(248, 187, 217, 0.1);
+      background: rgba(0, 206, 209, 0.1);
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(248, 187, 217, 0.15);
+      box-shadow: 0 8px 25px rgba(0, 206, 209, 0.15);
     }
     
     &:last-child {
@@ -307,7 +304,7 @@ export default {
     .step-number {
       width: 40px;
       height: 40px;
-      background: #F8BBD9;
+      background: #00CED1;
       color: #ffffff;
       border-radius: 50%;
       display: flex;
@@ -318,14 +315,14 @@ export default {
       font-size: 1.1rem;
       margin-right: 1.5rem;
       flex-shrink: 0;
-      box-shadow: 0 4px 15px rgba(248, 187, 217, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 206, 209, 0.3);
     }
     
     .step-content {
       flex: 1;
       
       .step-title {
-        color: #4a4a4a;
+        color: #004d66;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.1rem;
@@ -333,7 +330,7 @@ export default {
       }
       
       .step-description {
-        color: #757575;
+        color: #4a7c8c;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 400;
         font-size: 0.95rem;
@@ -348,7 +345,7 @@ export default {
   text-align: center;
   
   .start-btn {
-    background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
+    background: #00CED1 !important;
     border: none !important;
     border-radius: 12px !important;
     padding: 0.875rem 2rem !important;
@@ -356,7 +353,7 @@ export default {
     font-weight: 600;
     font-size: 1rem;
     color: #ffffff !important;
-    box-shadow: 0 4px 15px rgba(248, 187, 217, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 206, 209, 0.3);
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -370,8 +367,8 @@ export default {
     
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(248, 187, 217, 0.4) !important;
-      background: #E8A5C9 !important;
+      box-shadow: 0 8px 25px rgba(0, 206, 209, 0.4) !important;
+      background: #20B2AA !important;
     }
   }
 }

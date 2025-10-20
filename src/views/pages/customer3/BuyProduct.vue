@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="buy-product-container">
     <div class="buy-product-background">
       <div class="background-overlay"></div>
@@ -8,9 +8,9 @@
       <div class="auth-inner py-2">
         <b-card class="buy-product-card mb-0">
           <div class="logo-section">
-            <img src="@/assets/images/logo/image.png" alt="All Premium" class="logo-image">
+            <img src="/logo_lb2.png" alt="Ocean Wave" class="logo-image">
             <h2 class="brand-text">
-              All Premium
+              Ocean Wave
             </h2>
           </div>
 
@@ -639,7 +639,7 @@ export default {
   align-items: center;
   justify-content: center;
   position: relative;
-  background: #ffffff;
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   font-family: 'MiSansMU', sans-serif;
 }
 
@@ -649,7 +649,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #ffffff;
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
   opacity: 0.05;
   z-index: 1;
 }
@@ -660,8 +660,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 0, 0, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(0, 206, 209, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(0, 191, 255, 0.05) 0%, transparent 50%);
   z-index: 2;
 }
 
@@ -674,9 +674,9 @@ export default {
 
 .buy-product-card {
   background: #ffffff !important;
-  border: 2px solid #ff0000 !important;
+  border: none !important;
   border-radius: 24px !important;
-  box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15) !important;
+  box-shadow: 0 20px 40px rgba(0, 206, 209, 0.15) !important;
   backdrop-filter: blur(10px);
   padding: 2.5rem;
   animation: slideInUp 0.8s ease-out;
@@ -702,22 +702,22 @@ export default {
     width: 160px;
     height: 160px;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3);
-    border: 3px solid #ff0000;
+    box-shadow: 0 8px 25px rgba(0, 206, 209, 0.3);
+    border: 3px solid #00CED1;
     transition: all 0.3s ease;
     object-fit: cover;
-    background: #ffffff;
+    background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 25%, #80DEEA 50%, #4DD0E1 75%, #26C6DA 100%);
     padding: 8px;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(255, 0, 0, 0.4);
-      border-color: #cc0000;
+      box-shadow: 0 12px 35px rgba(0, 206, 209, 0.4);
+      border-color: #20B2AA;
     }
   }
 
   .brand-text {
-    color: #ff0000 !important;
+    color: #00CED1 !important;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
@@ -732,7 +732,7 @@ export default {
     margin-bottom: 2rem;
 
     .section-title {
-      color: #000000;
+      color: #004d66;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 600;
       font-size: 1.3rem;
@@ -744,20 +744,20 @@ export default {
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 100%);
-      border: 2px solid rgba(255, 0, 0, 0.2);
+      background: linear-gradient(135deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 191, 255, 0.05) 100%);
+      border: 2px solid rgba(0, 206, 209, 0.2);
       border-radius: 20px;
       padding: 2rem;
       margin-bottom: 1.5rem;
       width: 100%;
-      box-shadow: 0 8px 25px rgba(255, 0, 0, 0.15);
+      box-shadow: 0 8px 25px rgba(0, 206, 209, 0.15);
       transition: all 0.3s ease;
       white-space: nowrap;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 35px rgba(255, 0, 0, 0.25);
-        border-color: rgba(255, 0, 0, 0.3);
+        box-shadow: 0 12px 35px rgba(0, 206, 209, 0.25);
+        border-color: rgba(0, 206, 209, 0.3);
       }
 
       .product-info {
@@ -772,7 +772,7 @@ export default {
           height: 80px;
           border-radius: 16px;
           margin-bottom: 1rem;
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 6px 20px rgba(0, 206, 209, 0.15);
           transition: transform 0.3s ease;
 
           &:hover {
@@ -788,7 +788,7 @@ export default {
           text-align: center;
 
           .product-name {
-            color: #000000;
+            color: #004d66;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 600;
             font-size: 1.4rem;
@@ -800,7 +800,7 @@ export default {
           }
 
           .product-desc {
-            color: #333333;
+            color: #006080;
             font-size: 1rem;
             margin: 0;
             line-height: 1.4;
@@ -815,7 +815,7 @@ export default {
       .select-product-btn {
         width: 100%;
         max-width: 250px;
-        background: #ff0000 !important;
+        background: #00CED1 !important;
         border: none !important;
         border-radius: 12px !important;
         padding: 0.75rem 1.5rem !important;
@@ -823,7 +823,7 @@ export default {
         font-weight: 600;
         font-size: 1rem;
         color: #ffffff !important;
-        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+        box-shadow: 0 4px 15px rgba(0, 206, 209, 0.4);
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
@@ -837,8 +837,8 @@ export default {
 
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5) !important;
-          background: #cc0000 !important;
+          box-shadow: 0 6px 20px rgba(0, 206, 209, 0.5) !important;
+          background: #20B2AA !important;
         }
 
         &:active {
@@ -855,26 +855,26 @@ export default {
         .no-product-icon {
           width: 48px;
           height: 48px;
-          color: #ff0000;
+          color: #00CED1;
           margin-bottom: 1rem;
         }
 
         .no-product-text {
-          color: #333333;
+          color: #006080;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 400;
           margin-bottom: 1.5rem;
         }
 
         .select-product-btn {
-          background: #ff0000 !important;
+          background: #00CED1 !important;
           border: none !important;
           border-radius: 12px !important;
           padding: 0.875rem 1.5rem !important;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 500;
           color: #ffffff !important;
-          box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+          box-shadow: 0 4px 15px rgba(0, 206, 209, 0.4);
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
@@ -888,8 +888,8 @@ export default {
 
           &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5) !important;
-            background: #cc0000 !important;
+            box-shadow: 0 8px 25px rgba(0, 206, 209, 0.5) !important;
+            background: #20B2AA !important;
           }
         }
       }
@@ -906,7 +906,7 @@ export default {
     margin-bottom: 2rem;
 
     .email-title {
-      color: #000000;
+      color: #004d66;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 600;
       font-size: 1.1rem;
@@ -928,7 +928,7 @@ export default {
       padding: 1rem;
 
       .email-text {
-        color: #000000;
+        color: #004d66;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 500;
         font-size: 1rem;
@@ -940,7 +940,7 @@ export default {
     text-align: center;
 
     .confirm-btn {
-      background: #ff0000 !important;
+      background: #00CED1 !important;
       border: none !important;
       border-radius: 12px !important;
       padding: 0.875rem 2rem !important;
@@ -948,7 +948,7 @@ export default {
       font-weight: 600;
       font-size: 1rem;
       color: #ffffff !important;
-      box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+      box-shadow: 0 4px 15px rgba(0, 206, 209, 0.4);
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
@@ -962,8 +962,8 @@ export default {
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5) !important;
-        background: #cc0000 !important;
+        box-shadow: 0 8px 25px rgba(0, 206, 209, 0.5) !important;
+        background: #20B2AA !important;
       }
     }
   }
@@ -977,12 +977,12 @@ export default {
     .complete-icon {
       width: 64px;
       height: 64px;
-      color: #ff0000;
+      color: #00CED1;
       margin-bottom: 1.5rem;
     }
 
     .complete-title {
-      color: #000000;
+      color: #004d66;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 600;
       font-size: 1.4rem;
@@ -990,7 +990,7 @@ export default {
     }
 
     .complete-message {
-      color: #333333;
+      color: #006080;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 400;
       font-size: 1rem;
@@ -1126,7 +1126,7 @@ export default {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     box-shadow:
-      0 25px 50px rgba(0, 0, 0, 0.15),
+      0 25px 50px rgba(0, 206, 209, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     overflow: hidden;
     position: relative;
@@ -1155,7 +1155,7 @@ export default {
     .modal-title {
       font-weight: 700;
       font-size: 1.4rem;
-      color: #000000;
+      color: #004d66;
       font-family: 'MiSansMU', sans-serif;
       text-align: center;
       margin: 0;
@@ -1203,7 +1203,7 @@ export default {
     z-index: 1;
 
     .dialog-title {
-      color: #000000;
+      color: #004d66;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 600;
       font-size: 1.3rem;
@@ -1266,7 +1266,7 @@ export default {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   box-shadow:
-    0 25px 50px rgba(0, 0, 0, 0.15),
+    0 25px 50px rgba(0, 206, 209, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   overflow: hidden;
   position: relative;
@@ -1294,12 +1294,12 @@ export default {
 
   &.bg-success {
     background: linear-gradient(135deg, rgba(152, 251, 152, 0.2) 0%, rgba(144, 238, 144, 0.2) 100%) !important;
-    color: #000000 !important;
+    color: #004d66 !important;
 
     .modal-title {
       font-weight: 700;
       font-size: 1.4rem;
-      color: #000000;
+      color: #004d66;
       font-family: 'MiSansMU', sans-serif;
     }
 
@@ -1332,7 +1332,7 @@ export default {
   text-align: center;
   font-size: 1rem;
   line-height: 1.5;
-  color: #333333;
+  color: #006080;
   font-family: 'MiSansMU', sans-serif;
   position: relative;
   z-index: 1;
@@ -1422,7 +1422,7 @@ export default {
 
 .grid-item {
   width: 100%;
-  color: #000000;
+  color: #004d66;
   border: 2px solid rgba(255, 182, 193, 0.3);
   border-radius: 20px;
   padding: 1.5rem;
@@ -1469,7 +1469,7 @@ export default {
   &.selected {
     background: linear-gradient(135deg, rgba(255, 182, 193, 0.25) 0%, rgba(135, 206, 235, 0.15) 100%);
     border-color: #ff69b4;
-    color: #000000;
+    color: #004d66;
     box-shadow:
       0 10px 30px rgba(255, 105, 180, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -1485,14 +1485,14 @@ export default {
     height: 70px;
     border-radius: 16px;
     flex-shrink: 0;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 191, 255, 0.1);
     transition: all 0.3s ease;
     object-fit: cover;
   }
 
   &:hover img {
     transform: scale(1.1) rotate(2deg);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 25px rgba(0, 206, 209, 0.15);
   }
 
   .product-info {
@@ -1507,14 +1507,14 @@ export default {
       font-weight: 600;
       margin-bottom: 6px;
       word-wrap: break-word;
-      color: #000000;
+      color: #004d66;
       font-family: 'MiSansMU', sans-serif;
       line-height: 1.3;
 
       &:last-child {
         font-size: 14px;
         font-weight: 400;
-        color: #333333;
+        color: #006080;
         line-height: 1.4;
       }
     }

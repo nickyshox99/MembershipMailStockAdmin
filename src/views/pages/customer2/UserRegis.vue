@@ -269,6 +269,9 @@ export default {
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
+      console.log('UserRegis - sourceUserId received:', this.sourceUserId)
+    } else {
+      console.log('UserRegis - No sourceUserId in query parameters')
     }
   },
   computed: {

@@ -202,6 +202,9 @@ export default {
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
+      console.log('SelectTopic - sourceUserId received:', this.sourceUserId)
+    } else {
+      console.log('SelectTopic - No sourceUserId in query parameters')
     }
     // โหลดสถานะการแสดงปุ่ม
     this.fetchButtonStatus()
@@ -248,6 +251,7 @@ export default {
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
+        console.log('SelectTopic - Navigating to select-plan-type with query:', query)
         this.$router.push({ name: 'select-plan-type', query })
       } else if (this.selectedType === 'personal') {
         // นำไปหน้าลงทะเบียนด้วยรหัสตัวเอง พร้อมส่ง sourceUserId
@@ -255,6 +259,7 @@ export default {
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
+        console.log('SelectTopic - Navigating to user-regis with query:', query)
         this.$router.push({ name: 'user-regis', query })
       } else if (this.selectedType === 'email') {
         // นำไปหน้ากรอกเมลตัวเอง พร้อมส่ง sourceUserId
@@ -262,6 +267,7 @@ export default {
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
+        console.log('SelectTopic - Navigating to registeremail with query:', query)
         this.$router.push({ name: 'registeremail', query })
       }
     },

@@ -1,22 +1,22 @@
 ﻿<template>
-  <div class="registeremail-container">
-    <div class="registeremail-background">
+  <div class="user-regis-container">
+    <div class="user-regis-background">
       <div class="background-overlay"></div>
     </div>
-
+    
     <div class="auth-wrapper auth-v1 px-2">
       <div class="auth-inner py-2">
-        <b-card class="registeremail-card mb-0">
+        <b-card class="user-regis-card mb-0">
           <div class="logo-section">
-            <img src="/logo_lb2.png" alt="littlebeem" class="logo-image">
+            <img src="/logo_lb2.png" alt="sunsetclub" class="logo-image">
             <h2 class="brand-text">
-              littlebeem
+              Sunset Club
             </h2>
           </div>
 
           <div class="welcome-section">
-            <h3 class="welcome-title">ลงทะเบียนด้วยเมลตัวเอง</h3>
-            <p class="welcome-subtitle">กรุณากรอกอีเมลของคุณเพื่อเริ่มต้นใช้งาน</p>
+            <h3 class="welcome-title">ลงทะเบียนด้วยรหัสตัวเอง</h3>
+            <p class="welcome-subtitle">กรุณากรอกข้อมูลของคุณเพื่อเริ่มต้นใช้งาน</p>
           </div>
 
           <div class="form-section">
@@ -41,6 +41,64 @@
                 </b-form-invalid-feedback>
               </b-form-group>
 
+              <!-- Password Input -->
+              <b-form-group label-for="password" class="form-group-modern">
+                <label for="password" class="form-label">
+                  <feather-icon icon="LockIcon" class="label-icon" />
+                  Password
+                </label>
+                <b-input-group class="input-group-merge">
+                  <b-form-input
+                    id="password"
+                    v-model="password"
+                    :type="passwordFieldType"
+                    placeholder="กรุณากรอกรหัสผ่าน"
+                    class="form-input-modern"
+                    :state="passwordState"
+                    required
+                  />
+                  <b-input-group-append is-text>
+                    <feather-icon
+                      :icon="passwordToggleIcon"
+                      class="cursor-pointer"
+                      @click="togglePasswordVisibility"
+                    />
+                  </b-input-group-append>
+                </b-input-group>
+                <b-form-invalid-feedback :state="passwordState">
+                  รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร
+                </b-form-invalid-feedback>
+              </b-form-group>
+
+              <!-- Confirm Password Input -->
+              <b-form-group label-for="confirm-password" class="form-group-modern">
+                <label for="confirm-password" class="form-label">
+                  <feather-icon icon="LockIcon" class="label-icon" />
+                  Confirm Password
+                </label>
+                <b-input-group class="input-group-merge">
+                  <b-form-input
+                    id="confirm-password"
+                    v-model="confirmPassword"
+                    :type="confirmPasswordFieldType"
+                    placeholder="ยืนยันรหัสผ่านอีกครั้ง"
+                    class="form-input-modern"
+                    :state="confirmPasswordState"
+                    required
+                  />
+                  <b-input-group-append is-text>
+                    <feather-icon
+                      :icon="confirmPasswordToggleIcon"
+                      class="cursor-pointer"
+                      @click="toggleConfirmPasswordVisibility"
+                    />
+                  </b-input-group-append>
+                </b-input-group>
+                <b-form-invalid-feedback :state="confirmPasswordState">
+                  รหัสผ่านไม่ตรงกัน
+                </b-form-invalid-feedback>
+              </b-form-group>
+
               <!-- Error Message -->
               <b-form-group v-if="errorMessage" class="error-section">
                 <div class="error-message">
@@ -59,7 +117,7 @@
                   :disabled="!isFormValid"
                 >
                   <feather-icon icon="CheckIcon" class="button-icon" />
-                  ดำเนินการต่อ
+                  ลงทะเบียน
                 </b-button>
               </div>
 
@@ -103,19 +161,19 @@
           <div class="benefits-grid">
             <div class="benefit-item">
               <feather-icon icon="VideoIcon" class="benefit-icon" />
-              <span>รับชมแบบไม่มีโฆษณา</span>
+              <span>รับชมแบบไม่มีโฆษณา ดาวโหลดวีดีโอออฟไลน์</span>
             </div>
             <div class="benefit-item">
               <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
               <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
             </div>
             <div class="benefit-item">
-              <feather-icon icon="DownloadIcon" class="benefit-icon" />
-              <span>ดาวโหลดวีดีโอออฟไลน์</span>
-            </div>
-            <div class="benefit-item">
               <feather-icon icon="MusicIcon" class="benefit-icon" />
               <span>สามารถใช้งาน youtube music</span>
+            </div>
+            <div class="benefit-item">
+              <feather-icon icon="MonitorIcon" class="benefit-icon" />
+              <span>ดูพร้อมกันได้ 4 เครื่อง(อิงตามข้อกำหนดแอพ)</span>
             </div>
           </div>
         </div>
@@ -127,9 +185,17 @@
             <feather-icon icon="CheckCircleIcon" class="notice-icon" />
             <span>มีแจ้งต่ออายุก่อนหมด</span>
           </div>
-          <div class="notice-item info">
-            <feather-icon icon="ClockIcon" class="notice-icon" />
-            <span>เปลี่ยนรหัสเมล ควรรออย่างน้อย 7 วัน</span>
+          <div class="notice-item neutral">
+            <feather-icon icon="InfoIcon" class="notice-icon" />
+            <span>ต้องใช้เมลและรหัสลูกค้า</span>
+          </div>
+          <div class="notice-item warning">
+            <feather-icon icon="AlertCircleIcon" class="notice-icon" />
+            <span>ร้านจะต้องเข้าเมลลูกค้าไปต่อ"ทุกเดือน"</span>
+          </div>
+          <div class="notice-item danger">
+            <feather-icon icon="AlertTriangleIcon" class="notice-icon" />
+            <span>ห้ามนำเมลสำคัญในการใช้งาน มาใช้ หากนำมาใช้ร้านไม่รับผิดชอบทุกกรณี</span>
           </div>
         </div>
 
@@ -164,13 +230,16 @@ import {
   BFormGroup,
   BFormInput,
   BFormInvalidFeedback,
+  BInputGroup,
+  BInputGroupAppend,
   BModal,
   BFormCheckbox,
 } from 'bootstrap-vue'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import { mapActions } from 'vuex'
 
 export default {
-  name: 'RegisterEmail',
+  name: 'UserRegis',
   components: {
     BCard,
     BButton,
@@ -178,12 +247,18 @@ export default {
     BFormGroup,
     BFormInput,
     BFormInvalidFeedback,
+    BInputGroup,
+    BInputGroupAppend,
     BModal,
     BFormCheckbox,
   },
   data() {
     return {
       email: '',
+      password: '',
+      confirmPassword: '',
+      passwordFieldType: 'password',
+      confirmPasswordFieldType: 'password',
       errorMessage: '',
       sourceUserId: null, // รับมาจาก LINE
       showEmailInfoModal: true, // แสดง modal ข้อมูลทันทีที่เข้าหน้า
@@ -194,46 +269,84 @@ export default {
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
-      console.log('RegisterEmail - sourceUserId received:', this.sourceUserId)
+      console.log('UserRegis - sourceUserId received:', this.sourceUserId)
     } else {
-      console.log('RegisterEmail - No sourceUserId in query parameters')
+      console.log('UserRegis - No sourceUserId in query parameters')
     }
   },
   computed: {
+    passwordToggleIcon() {
+      return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
+    },
+    confirmPasswordToggleIcon() {
+      return this.confirmPasswordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
+    },
     emailState() {
       if (this.email === '') return null
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       return emailRegex.test(this.email)
     },
+    passwordState() {
+      if (this.password === '') return null
+      return this.password.length >= 6
+    },
+    confirmPasswordState() {
+      if (this.confirmPassword === '') return null
+      return this.password === this.confirmPassword
+    },
     isFormValid() {
-      return this.emailState === true
+      return (
+        this.emailState === true &&
+        this.passwordState === true &&
+        this.confirmPasswordState === true
+      )
     },
   },
   methods: {
+    ...mapActions('userRegistration', ['setRegistrationData']),
+    
+    togglePasswordVisibility() {
+      this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password'
+    },
+    toggleConfirmPasswordVisibility() {
+      this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password'
+    },
     async handleSubmit() {
       if (!this.isFormValid) {
-        this.errorMessage = 'กรุณากรอกอีเมลให้ถูกต้อง'
+        this.errorMessage = 'กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง'
         return
       }
 
       this.errorMessage = ''
 
-      console.log('Register with email:', this.email)
+      // บันทึกข้อมูลลง store
+      await this.setRegistrationData({
+        // email: this.email,
+        password: this.password,
+        // sourceUserId: this.sourceUserId || null,
+      })
+
+      console.log('Register with:', {
+        email: this.email,
+        password: this.password,
+      })
+      console.log('Data saved to store!')
 
       this.$toast({
         component: ToastificationContent,
         props: {
-          title: 'บันทึกอีเมลสำเร็จ',
+          title: 'ลงทะเบียนสำเร็จ',
           icon: 'CheckIcon',
           variant: 'success',
         },
       })
 
-      // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email, sourceUserId, shop_type และ purchaseType
-      const query = {
+      // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email และ sourceUserId
+      const query = { 
+        purchase_type: 'personal',
+        shop_type: 2,
         email: this.email,
-        shop_type: 3,
-        purchase_type: 'email'
+        // sourceUserId: this.sourceUserId 
       }
       if (this.sourceUserId) {
         query.sourceUserId = this.sourceUserId
@@ -265,24 +378,24 @@ export default {
 </script>
 
 <style lang="scss">
-// Pastel Theme - Matching littlebeem Brand
-.registeremail-container {
+// Sunset Theme - Warm Orange and Purple Colors
+.user-regis-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: linear-gradient(135deg, #FFE4E1 0%, #FFD6BA 25%, #FFDAB9 50%, #FFB6C1 75%, #DDA0DD 100%);
   font-family: 'MiSansMU', sans-serif;
 }
 
-.registeremail-background {
+.user-regis-background {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+  background: linear-gradient(135deg, #FFE4E1 0%, #FFD6BA 25%, #FFDAB9 50%, #FFB6C1 75%, #DDA0DD 100%);
   opacity: 0.05;
   z-index: 1;
 }
@@ -293,8 +406,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(248, 187, 217, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(248, 187, 217, 0.05) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(255, 142, 83, 0.05) 0%, transparent 50%);
   z-index: 2;
 }
 
@@ -306,11 +419,11 @@ export default {
   margin: 0 auto;
 }
 
-.registeremail-card {
+.user-regis-card {
   background: #ffffff !important;
   border: none !important;
   border-radius: 24px !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 20px 40px rgba(255, 107, 107, 0.15) !important;
   backdrop-filter: blur(10px);
   padding: 2.5rem;
   animation: slideInUp 0.8s ease-out;
@@ -332,24 +445,27 @@ export default {
   margin-bottom: 2rem;
 
   .logo-image {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(248, 187, 217, 0.3);
-    border: 3px solid #F8BBD9;
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+    border: 3px solid #FF6B6B;
     transition: all 0.3s ease;
     object-fit: cover;
-    background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
+    background: linear-gradient(135deg, #FFE4E1 0%, #FFD6BA 25%, #FFDAB9 50%, #FFB6C1 75%, #DDA0DD 100%);
     padding: 8px;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(248, 187, 217, 0.4);
-      border-color: rgba(248, 187, 217, 0.4);
+      box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+      border-color: #FF8E53;
     }
   }
 
   .brand-text {
+    background: linear-gradient(135deg, #FF6B6B 0%, #AB47BC 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     background-clip: text;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
@@ -365,7 +481,7 @@ export default {
   margin-bottom: 2rem;
 
   .welcome-title {
-    color: #4a4a4a;
+    color: #5d4037;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.5rem;
@@ -373,7 +489,7 @@ export default {
   }
 
   .welcome-subtitle {
-    color: #757575;
+    color: #8d6e63;
     font-family: 'MiSansMU', sans-serif;
     font-size: 1rem;
     margin: 0;
@@ -389,7 +505,7 @@ export default {
     .form-label {
       display: flex;
       align-items: center;
-      color: #4a4a4a;
+      color: #5d4037;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 600;
       font-size: 1rem;
@@ -399,27 +515,63 @@ export default {
         width: 18px;
         height: 18px;
         margin-right: 0.5rem;
-        color: #F8BBD9;
+        color: #FF6B6B;
       }
     }
 
     .form-input-modern {
-      border: 3px solid rgba(248, 187, 217, 0.2);
+      border: 2px solid rgba(255, 107, 107, 0.2);
       border-radius: 12px;
       padding: 0.75rem 1rem;
       font-family: 'MiSansMU', sans-serif;
       font-size: 1rem;
       transition: all 0.3s ease;
-    
+      background: linear-gradient(135deg, #FFE4E1 0%, #FFD6BA 25%, #FFDAB9 50%, #FFB6C1 75%, #DDA0DD 100%);
 
       &:focus {
-        border-color: #F8BBD9;
-        box-shadow: 0 0 0 0.2rem rgba(248, 187, 217, 0.25);
+        border-color: #FF6B6B;
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
         background: white;
       }
 
       &::placeholder {
-        color: #9e9e9e;
+        color: #999;
+      }
+    }
+
+    .input-group-merge {
+      .form-input-modern {
+        border-right: none;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      .input-group-append {
+        border: 2px solid rgba(255, 107, 107, 0.2);
+        border-left: none;
+        border-radius: 0 12px 12px 0;
+        background: linear-gradient(135deg, #FFE4E1 0%, #FFD6BA 25%, #FFDAB9 50%, #FFB6C1 75%, #DDA0DD 100%);
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+
+        .feather-icon {
+          color: #FF6B6B;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            color: #FF8E53;
+            transform: scale(1.1);
+          }
+        }
+      }
+
+      &:focus-within {
+        .input-group-append {
+          border-color: #FF6B6B;
+        }
       }
     }
 
@@ -460,17 +612,17 @@ export default {
     font-size: 1.1rem;
     font-weight: 600;
     border-radius: 12px !important;
-    background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
+    background: #FF6B6B !important;
     border: none !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 15px rgba(248, 187, 217, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
     transition: all 0.3s ease;
     font-family: 'MiSansMU', sans-serif;
 
     &:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(248, 187, 217, 0.5) !important;
-      background: #E8A5C9 !important;
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5) !important;
+      background: #FF8E53 !important;
     }
 
     &:active:not(:disabled) {
@@ -480,7 +632,7 @@ export default {
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      background: #FFB6C1 !important;
+      background: #FFA07A !important;
     }
 
     .button-icon {
@@ -498,14 +650,14 @@ export default {
     font-weight: 600;
     border-radius: 12px !important;
     background: transparent !important;
-    border: 2px solid rgba(248, 187, 217, 0.3) !important;
-    color: #4a4a4a !important;
+    border: 2px solid rgba(255, 107, 107, 0.3) !important;
+    color: #5d4037 !important;
     transition: all 0.3s ease;
     font-family: 'MiSansMU', sans-serif;
 
     &:hover {
-      background: rgba(187, 222, 251, 0.1) !important;
-      border-color: #4a4a4a !important;
+      background: rgba(221, 160, 221, 0.1) !important;
+      border-color: #5d4037 !important;
       transform: translateY(-1px);
     }
 
@@ -519,7 +671,7 @@ export default {
 
 // Responsive Design
 @media (max-width: 768px) {
-  .registeremail-card {
+  .user-regis-card {
     padding: 2rem;
   }
 
@@ -564,7 +716,7 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .registeremail-card {
+  .user-regis-card {
     padding: 1.5rem;
   }
 
@@ -625,10 +777,10 @@ export default {
   padding: 0.5rem 0;
 
   .benefits-card {
-    background: linear-gradient(135deg, rgba(248, 187, 217, 0.08) 0%, rgba(248, 187, 217, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.08) 0%, rgba(255, 107, 107, 0.08) 100%);
     border-radius: 12px;
     padding: 1.25rem;
-    border: 1px solid rgba(248, 187, 217, 0.15);
+    border: 1px solid rgba(255, 107, 107, 0.15);
 
     .benefits-header {
       display: flex;
@@ -638,7 +790,7 @@ export default {
       .header-icon {
         width: 24px;
         height: 24px;
-        color: #F8BBD9;
+        color: #FF6B6B;
         margin-right: 0.5rem;
       }
 
@@ -646,7 +798,7 @@ export default {
         margin: 0;
         font-weight: 600;
         font-size: 1.1rem;
-        color: #5a5a5a;
+        color: #6d4c41;
       }
     }
 
@@ -665,7 +817,7 @@ export default {
         .benefit-icon {
           width: 20px;
           height: 20px;
-          color: #F8BBD9;
+          color: #FF6B6B;
           margin-right: 0.75rem;
           margin-top: 2px;
           flex-shrink: 0;
@@ -673,7 +825,7 @@ export default {
 
         span {
           flex: 1;
-          color: #5a5a5a;
+          color: #6d4c41;
           font-size: 0.95rem;
           line-height: 1.5;
         }
@@ -688,7 +840,7 @@ export default {
 
   .divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(187, 222, 251, 0.1) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(221, 160, 221, 0.1) 50%, transparent 100%);
     margin: 1.5rem 0;
   }
 
@@ -735,20 +887,56 @@ export default {
         }
       }
 
-      &.info {
-        background: rgba(23, 162, 184, 0.08);
-        border-left-color: #17a2b8;
+      &.neutral {
+        background: rgba(108, 117, 125, 0.08);
+        border-left-color: #6c757d;
         
         .notice-icon {
-          color: #17a2b8;
+          color: #6c757d;
         }
         
         span {
-          color: #0c5460;
+          color: #495057;
         }
 
         &:hover {
-          background: rgba(23, 162, 184, 0.12);
+          background: rgba(108, 117, 125, 0.12);
+        }
+      }
+
+      &.warning {
+        background: rgba(255, 193, 7, 0.12);
+        border-left-color: #ffc107;
+        
+        .notice-icon {
+          color: #f39c12;
+        }
+        
+        span {
+          color: #856404;
+          font-weight: 500;
+        }
+
+        &:hover {
+          background: rgba(255, 193, 7, 0.18);
+        }
+      }
+
+      &.danger {
+        background: rgba(220, 53, 69, 0.12);
+        border-left-color: #dc3545;
+        
+        .notice-icon {
+          color: #dc3545;
+        }
+        
+        span {
+          color: #721c24;
+          font-weight: 600;
+        }
+
+        &:hover {
+          background: rgba(220, 53, 69, 0.18);
         }
       }
     }
@@ -757,23 +945,23 @@ export default {
   .agreement-section {
     margin-top: 1.5rem;
     padding: 1rem;
-    background: rgba(248, 187, 217, 0.08);
+    background: rgba(255, 107, 107, 0.08);
     border-radius: 10px;
-    border: 2px dashed rgba(248, 187, 217, 0.2);
+    border: 2px dashed rgba(255, 107, 107, 0.2);
 
     .custom-checkbox {
       ::v-deep .custom-control-label {
         font-family: 'MiSansMU', sans-serif;
         font-size: 1rem;
-        color: #5a5a5a;
+        color: #6d4c41;
         cursor: pointer;
         padding-left: 0.5rem;
       }
 
       ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: #F8BBD9;
-        border-color: #F8BBD9;
-        box-shadow: 0 2px 8px rgba(248, 187, 217, 0.3);
+        background-color: #FF6B6B;
+        border-color: #FF6B6B;
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
       }
 
       ::v-deep .custom-control-label::before {
@@ -784,7 +972,7 @@ export default {
 
     .checkbox-label {
       font-weight: 600;
-      color: #4a4a4a;
+      color: #5d4037;
     }
   }
 
@@ -796,10 +984,10 @@ export default {
       font-size: 1.05rem;
       font-weight: 600;
       border-radius: 10px !important;
-      background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
+      background: #FF6B6B !important;
       border: none !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(248, 187, 217, 0.3);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
       transition: all 0.3s ease;
       font-family: 'MiSansMU', sans-serif;
 
@@ -811,8 +999,8 @@ export default {
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(248, 187, 217, 0.4) !important;
-        background: #E8A5C9 !important;
+        box-shadow: 0 6px 18px rgba(255, 107, 107, 0.4) !important;
+        background: #FF8E53 !important;
       }
 
       &:active:not(:disabled) {
@@ -822,7 +1010,7 @@ export default {
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        background: #FFB6C1 !important;
+        background: #FFA07A !important;
         box-shadow: none;
       }
     }
@@ -833,16 +1021,16 @@ export default {
 ::v-deep #modal-email-info {
   .modal-content {
     border: none;
-    box-shadow: 0 10px 40px rgba(248, 187, 217, 0.15);
+    box-shadow: 0 10px 40px rgba(255, 107, 107, 0.15);
   }
 
   .modal-header {
-    background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(187, 222, 251, 0.1) 100%);
-    border-bottom: 2px solid rgba(248, 187, 217, 0.15);
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(221, 160, 221, 0.1) 100%);
+    border-bottom: 2px solid rgba(255, 107, 107, 0.15);
     padding: 1.25rem 1.5rem;
 
     .modal-title {
-      color: #F8BBD9;
+      color: #FF6B6B;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 700;
       font-size: 1.35rem;
