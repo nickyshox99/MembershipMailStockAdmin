@@ -4728,9 +4728,11 @@ async GetActiveAdminBank({commit}, search) {
             purchase_type: inputData.get("purchase_type"),
         }
     
+        // อ่าน webhook URL จาก environment variable
+        const webhookBaseUrl = process.env.VUE_APP_WEBHOOK_BASE_URL || 'http://localhost:11000';
         
         let response;
-        await axios.post("http://localhost:11000/api/strippayment/checkout", body,
+        await axios.post(`${webhookBaseUrl}/api/strippayment/checkout`, body,
         {
             headers: {            
             'Content-Type': 'application/json',
