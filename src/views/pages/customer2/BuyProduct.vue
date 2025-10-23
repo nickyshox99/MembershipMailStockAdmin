@@ -265,7 +265,7 @@ export default {
     console.log('BuyProduct - shopType:', this.shopType);
 
     await this.getSourceProfile();
-
+    console.log('lineId:', this.lineId);
     if (this.lineId == '') {
       this.showProduct = false;
     } else {

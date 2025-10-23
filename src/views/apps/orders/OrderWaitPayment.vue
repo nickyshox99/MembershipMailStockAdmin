@@ -1528,7 +1528,7 @@ export default {
       
       // ถ้าเป็นชื่อไฟล์ธรรมดา ให้เข้าถึงจาก API backend
       // ใช้ environment variable สำหรับ API base URL
-      const apiBaseUrl = process.env.VUE_APP_API_BASE_URL || 'http://localhost:10600';
+      const apiBaseUrl = process.env.VUE_APP_API_BASE_URL || 'https://api.allpremium.shop';
       return `${apiBaseUrl}/assets/${slipUrl}`;
     },
     

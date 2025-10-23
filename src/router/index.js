@@ -27,8 +27,8 @@ const router = new VueRouter({
     ...apps,
     ...dashboard,    
     ...pages,      
-    ...customer,
-    // ...customer2,
+    // ...customer,
+    ...customer2,
     // ...customer3,
     // ...customer4,
     {
