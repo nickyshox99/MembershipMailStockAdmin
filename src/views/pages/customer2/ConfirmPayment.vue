@@ -718,7 +718,7 @@ export default {
 
         if (response && response.data && response.data.status == 'success') {
           // Insert user email data after payment confirmation success
-          await this.insertUserEmailData();
+          // await this.insertUserEmailData();
           // await this.insertPersonalEmailData();
           // if (this.purchaseType === 'personal') {
           //   await this.InsertPersonalEmail(data);
@@ -1271,7 +1271,7 @@ export default {
             this.isProcessingPayment = false;
             
             // Insert email data
-            await this.insertUserEmailData();
+            // await this.insertUserEmailData();
             
             // แสดง success message
             this.$toast({

@@ -4733,7 +4733,7 @@ async GetActiveAdminBank({commit}, search) {
         const webhookBaseUrl = process.env.VUE_APP_WEBHOOK_BASE_URL || 'http://localhost:11000';
         
         let response;
-        await axios.post(`${webhookBaseUrl}/api/strippayment/checkout`, body,
+        await axios.post(`https://payment.allpremium.online/api/strippayment/checkout`, body,
         {
             headers: {            
             'Content-Type': 'application/json',
