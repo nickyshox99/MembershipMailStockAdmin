@@ -2427,6 +2427,7 @@ async GetActiveAdminBank({commit}, search) {
         order_id: inputData.get("order_id"),       
         slip_correct: inputData.get("slip_correct"),    
         note :  inputData.get("note"),       
+        invite_link : inputData.get("invite_link"),
     }
 
     // console.log(body);

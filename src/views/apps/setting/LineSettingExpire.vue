@@ -5,36 +5,6 @@
             <b-row>
 
 
-                <!-- <b-col md="6">
-          <b-form-group label-for="register" label="Register Token">
-            <b-form-input id="register" v-model="localOptions.Register" placeholder="" readonly/>
-          </b-form-group>
-        </b-col>
-
-        <b-col md="6">
-          <b-form-group label-for="deposit" label="Deposit Token">
-            <b-form-input id="deposit" v-model="localOptions.Deposit" placeholder="" readonly/>
-          </b-form-group>
-        </b-col>
-
-        <b-col md="6">
-          <b-form-group label-for="withdraw" label="Withdraw" readonly>
-            <b-form-input id="withdraw" v-model="localOptions.Withdraw" placeholder="" readonly/>
-          </b-form-group>
-        </b-col>
-
-        <b-col md="6">
-          <b-form-group label-for="login" label="Login">
-            <b-form-input id="login" v-model="localOptions.Login" placeholder="" readonly/>
-          </b-form-group>
-        </b-col>
-
-        <b-col md="6">
-          <b-form-group label-for="cronday" label="Cron Daily">
-            <b-form-input id="cronday" v-model="localOptions.Cron_day" placeholder="" readonly/>
-          </b-form-group>
-        </b-col> -->
-
                 <b-col md="6">
                     <b-form-group label-for="setneardate" label="จำนวนวันใกล้หมดอายุ">
                         <b-form-input id="setneardate" v-model="localOptions.SetNearDate" type="number"
@@ -59,7 +29,7 @@
                     </b-form-group>
                 </b-col>
 
-                <b-col md="6">
+                <!-- <b-col md="6">
                     <b-form-group label="ขั้นตอนการอนุมัติ">
                         <b-form-checkbox v-model="localOptions.enableSkipApproval">
                             ข้ามขั้นตอนการอนุมัติ
@@ -71,7 +41,7 @@
                             }}
                         </small>
                     </b-form-group>
-                </b-col>
+                </b-col> -->
 
                 <b-col md="6">
                     <b-form-group label="การแจ้งเตือนเมื่อหมดอายุ">
@@ -109,6 +79,189 @@
                     </b-button>
                 </b-col>
 
+                <b-col md="12">
+                    <hr/>
+                </b-col>
+
+                <b-col md="12">
+                    <b-row>
+                        <b-col md="6">
+                        <b-form-group label="ภาพคำแนะนำ">
+                        </b-form-group>
+                    </b-col>        
+                    <b-col md="6">
+                        <b-form-group label="ภาพคำแนะนำ 2">
+                        </b-form-group>
+                    </b-col>   
+                    </b-row>
+                </b-col>
+
+                <b-col md="12">
+                    <b-row>
+                        <b-col md="6" >
+                            <img 
+                                v-if="localOptions.recommendImage.length > 0"
+                                :src="localOptions.recommendImage" 
+                                style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; padding: 10px;"
+                                alt="Image Preview"
+                            />                    
+                        </b-col>
+
+                        <b-col md="6" >
+                            <img 
+                                v-if="localOptions.recommendImage2.length > 0"
+                                :src="localOptions.recommendImage2" 
+                                style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; padding: 10px;"
+                                alt="Image Preview"
+                            />                    
+                        </b-col>
+                    </b-row>
+
+                </b-col>
+               
+
+                <b-col md="12">
+                    <b-row>
+                        <b-col md="6">
+                            <input type="file" @change="uploadFile('recommendImage')" ref="recommendImage" v-if="localOptions.recommendImage.length == 0">
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="info" class="mt-1 mr-1"  @click="submitFile('recommendImage')" v-if="localOptions.recommendImage.length == 0">
+                                Upload
+                            </b-button>
+                            
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="danger" class="mt-1 mr-1"  @click="deleteFile('recommendImage')" v-if="localOptions.recommendImage.length > 0">Delete
+
+                            </b-button>
+                        </b-col>
+                        <b-col md="6">
+                            <input type="file" @change="uploadFile('recommendImage2')" ref="recommendImage2" v-if="localOptions.recommendImage2.length == 0">
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="info" class="mt-1 mr-1"  @click="submitFile('recommendImage2')" v-if="localOptions.recommendImage2.length == 0">
+                                Upload
+                            </b-button>
+                            
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="danger" class="mt-1 mr-1"  @click="deleteFile('recommendImage2')" v-if="localOptions.recommendImage2.length > 0">Delete
+
+                            </b-button>
+                        </b-col>
+                    </b-row>
+                </b-col>
+               
+                <b-col md="12">
+                    <hr/>
+                </b-col>
+
+                <b-col md="12">
+                    <b-row>
+                        <b-col md="6">
+                        <b-form-group label="ภาพคำแนะนำ 3">
+                        </b-form-group>
+                    </b-col>        
+                    <b-col md="6">
+                        <b-form-group label="ภาพคำแนะนำ 4">
+                        </b-form-group>
+                    </b-col>   
+                    </b-row>
+                </b-col>
+
+                <b-col md="12">
+                    <b-row>
+                        <b-col >
+                            <img  
+                                v-if="localOptions.recommendImage3.length > 0"
+                                :src="localOptions.recommendImage3" 
+                                style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; padding: 10px;"
+                                alt="Image Preview"
+                            />                    
+                        </b-col>
+
+                        <b-col md="6" >
+                            <img 
+                                v-if="localOptions.recommendImage4.length > 0"
+                                :src="localOptions.recommendImage4" 
+                                style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; padding: 10px;"
+                                alt="Image Preview"
+                            />                    
+                        </b-col>
+                    </b-row>
+
+                </b-col>
+               
+
+                <b-col md="12">
+                    <b-row>
+                        <b-col md="6">
+                            <input type="file" @change="uploadFile('recommendImage3')" ref="recommendImage3" v-if="localOptions.recommendImage3.length == 0">
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="info" class="mt-1 mr-1"  @click="submitFile('recommendImage3')" v-if="localOptions.recommendImage3.length == 0">
+                                Upload
+                            </b-button>
+                            
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="danger" class="mt-1 mr-1"  @click="deleteFile('recommendImage3')" v-if="localOptions.recommendImage3.length > 0">Delete
+
+                            </b-button>
+                        </b-col>
+                        <b-col md="6">
+                            <input type="file" @change="uploadFile('recommendImage4')" ref="recommendImage4" v-if="localOptions.recommendImage4.length == 0">
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="info" class="mt-1 mr-1"  @click="submitFile('recommendImage4')" v-if="localOptions.recommendImage4.length == 0">
+                                Upload
+                            </b-button>
+                            
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="danger" class="mt-1 mr-1"  @click="deleteFile('recommendImage4')" v-if="localOptions.recommendImage4.length > 0">Delete
+
+                            </b-button>
+                        </b-col>
+                    </b-row>
+                </b-col>
+               
+                <b-col md="12">
+                    <hr/>
+                </b-col>
+
+                <b-col md="12">
+                    <b-row>
+                        <b-col md="6">
+                        <b-form-group label="ภาพคำแนะนำ 5">
+                        </b-form-group>
+                    </b-col>        
+              
+                    </b-row>
+                </b-col>
+
+                <b-col md="12">
+                    <b-row>
+                        <b-col md="6">
+                            <img 
+                                v-if="localOptions.recommendImage5.length > 0"                             
+                                :src="localOptions.recommendImage5" 
+                                style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; padding: 10px;"
+                                alt="Image Preview"
+                            />                    
+                        </b-col>
+
+                    </b-row>
+
+                </b-col>
+
+                <b-col md="12">
+                    <b-row>
+                        <b-col md="6">
+                            <input type="file" @change="uploadFile('recommendImage5')" ref="recommendImage5" v-if="localOptions.recommendImage5.length == 0">
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="info" class="mt-1 mr-1"  @click="submitFile('recommendImage5')" v-if="localOptions.recommendImage5.length == 0">
+                                Upload
+                            </b-button>
+                            
+                            <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="danger" class="mt-1 mr-1"  @click="deleteFile('recommendImage5')" v-if="localOptions.recommendImage5.length > 0">Delete
+
+                            </b-button>
+                        </b-col>
+                      
+                    </b-row>
+                </b-col>
+               
+                <b-col md="12">
+                    <hr/>
+                </b-col>
+
+              
+
             </b-row>
         </b-form>
     </b-card>
@@ -116,13 +269,15 @@
 
 <script>
 import {
-    BButton, BForm, BFormGroup, BFormInput, BRow, BCol, BCard, BFormTextarea, BFormCheckbox, BFormSelect
+    BButton, BForm, BFormGroup, BFormInput, BRow, BCol, BCard, BFormTextarea, BFormCheckbox, BFormSelect,
+    BFormFile,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import flatPickr from 'vue-flatpickr-component'
 import Ripple from 'vue-ripple-directive'
 import Cleave from 'vue-cleave-component'
 import axios from "axios";
+import { mapActions } from "vuex";
 
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
@@ -144,6 +299,7 @@ export default {
         flatPickr,
         Cleave,
         BFormSelect,
+        BFormFile,
     },
     directives: {
         Ripple,
@@ -157,16 +313,7 @@ export default {
             type: Boolean,
             required: true,
         }
-    },
-    // data() {
-    //     return {
-    //         // localOptions: JSON.parse(JSON.stringify(this.settingData)),
-    //         localOptions:{
-    //             ...JSON.parse(JSON.stringify(this.settingData)),
-    //             enableSkipApproval: this.settingData.enableSkipApproval ?? false,
-    //         }
-    //     }
-    // },
+    },    
     data() {
         const base = JSON.parse(JSON.stringify(this.settingData || {}))
         return {
@@ -180,6 +327,8 @@ export default {
                 enableAutoGenerateQR: !!base.enableAutoGenerateQR, // เพิ่มใหม่สำหรับ QR Code System
                 // ถ้ามี field อื่น ๆ ใน setting ก็ spread มาด้วย
             },
+            tmpFileUpload:[],
+            recommendImagePreview:false,
         }
     },
     watch: {
@@ -205,6 +354,8 @@ export default {
     created() {
     },
     methods: {
+        ...mapActions(["UploadFileAndDeleteOldFile"]),  
+        ...mapActions(["DeleteOldFile"]),     
         resetForm() {
             const v = JSON.parse(JSON.stringify(this.settingData || {}))
             this.localOptions = {
@@ -349,6 +500,65 @@ export default {
                     autoHideDelay: 3000,
                 })
             }
+        },
+        uploadFile(tmpName) {                                    
+            this.tmpFileUpload[tmpName] = this.$refs[tmpName].files[0];            
+            //console.log(this.tmpFileUpload[tmpName]); 
+        },
+        async submitFile(tmpName) {                       
+            console.log('submitFile');            
+            if (this.tmpFileUpload[tmpName]==null) 
+            {
+                this.$toast(
+                {
+                    component: ToastificationContent,
+                    props: {
+                    title: 'No file for upload.',
+                    icon: 'EditIcon',
+                    variant: 'error',
+                    },
+                });
+                return;    
+            }
+            
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const formData = new FormData();
+
+            formData.append("userid", userData.username);
+            formData.append("token", userData.token);
+
+            formData.append("file", this.tmpFileUpload[tmpName]);            
+            formData.append("tofilename", this.tmpFileUpload[tmpName].name);            
+            formData.append("oldFilePath", null);
+            
+            const response = await this.UploadFileAndDeleteOldFile(formData);
+            if (response.data.status == 'success') 
+            {    
+                
+                this.localOptions[tmpName] = response.data.url;
+                this.updateSetting();
+                this.tmpFileUpload[tmpName] = null;
+            }
+            else {
+                this.$toast(
+                {
+                    component: ToastificationContent,
+                    props: {
+                    title: response.data.message,
+                    icon: 'EditIcon',
+                    variant: 'error',
+                    },
+                });
+            }
+        },
+        async deleteFile(tmpName)
+        {
+            console.log('deleteFile');
+            this.localOptions[tmpName] = "";
+            this.updateSetting();
+
+            this[tmpName] = "";
+            
         },
     },
 }

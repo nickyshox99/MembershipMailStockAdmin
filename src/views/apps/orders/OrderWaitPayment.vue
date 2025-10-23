@@ -348,6 +348,21 @@
                     </b-form-group>
                 </b-col>
             </b-row>
+            <b-row>
+                <b-col md="12">
+                    <b-form-group
+                        :label="t('Invite Link')"
+                        label-for="invite-link-input"                    
+                        >
+                        
+                        <b-form-input
+                            id="invite-link-input"
+                            v-model="inviteLink"                
+                        ></b-form-input>                          
+                        
+                    </b-form-group>
+                </b-col>
+            </b-row>
         </b-modal>
 
         <b-modal
@@ -805,7 +820,7 @@ export default {
       personalEmailData: [],
       loadingPersonalEmail: false,
       selectedOrderId: null,
-
+      inviteLink :'',
     };
   },
   computed: {
@@ -1008,6 +1023,7 @@ export default {
         form.append("order_id", this.approveOrderId);
         form.append("note", note?note:'');
         form.append("slip_correct", 1);
+        form.append("invite_link", this.inviteLink);
                                                         
         const response = await this.VerifySlipOrder(form);
         if (response.data.status == "success") {

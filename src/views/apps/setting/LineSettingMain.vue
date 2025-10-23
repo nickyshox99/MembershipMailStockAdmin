@@ -5,15 +5,6 @@
 
 
 
-        <b-tab active>
-            <template #title>
-                <feather-icon icon="SettingsIcon" size="18" class="mr-50" />
-                <span class="font-weight-bold">Line Token</span>
-            </template>
-
-            <line-setting-token v-if="settingdata.line_token" :setting-data="settingdata.line_token"
-                :readOnlyControl="settingTokenReadonly" />
-        </b-tab>
 
         <b-tab>
             <template #title>
@@ -87,6 +78,7 @@ export default {
             settingdata: {},
             pagePermission: [],
             settingTokenReadonly: false,
+            
         }
     },
     async created() {
@@ -140,6 +132,7 @@ export default {
     },
     methods: {
         ...mapActions(["GetPagePermission"]),
+        
         async getPagePermission() {
             console.log('getPagePermission');
 
@@ -177,6 +170,7 @@ export default {
             }
 
         },
+        
     },
 }
 </script>

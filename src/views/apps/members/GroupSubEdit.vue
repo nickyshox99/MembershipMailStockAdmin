@@ -50,6 +50,22 @@
                   </b-form-group>
                 </b-col>
 
+                <b-col md="12">
+                  <b-form-group
+                    :label="t('Note')"
+                    label-for="note"
+                  >
+                    <b-form-input
+                      id="note"
+                      placeholder="ใส่ข้อความที่อยากใส่ให้ลูกค้าตอนอนุมัติ"
+                      v-model="note"
+                      type="text"
+                    />
+                  </b-form-group>
+                </b-col>
+
+                
+
 
                 <b-col>
                   <b-button
@@ -419,6 +435,7 @@ export default {
     statusActive: 0,
     titleCard: "",
     period_number: 1,
+    note: ''
     
 
   },
@@ -723,6 +740,7 @@ export default {
                 user_id: '', // line_user_id ว่างตามที่ระบุ
                 group_id: this.pRowData.id,
                 page_name: this.$route.name,
+                note : this.note,
             }
 
             let response;
@@ -772,7 +790,7 @@ export default {
         });
       }
       
-},
+    },
     editMemberData(memberRow) {
         console.log('editMemberData', memberRow);
         this.isEditMode = true;

@@ -3,7 +3,7 @@
     <div>
       <b-row>
         <b-col md="9">
-          <b-card-code v-if="isEmailFormActive" id="admin-edit" :title="titleCard"
+          <b-card-code v-if="isAddFormVisible && !isEditFormVisible" id="admin-edit" title="Add Email To Stock"
             @change="(val) => $emit('update:is-admin-edit-active', val)">
             <b-form @submit.prevent>
               <b-row>
@@ -28,6 +28,12 @@
                   </b-form-group>
                 </b-col>
 
+                <b-col md="12">
+                    <b-form-group :label="t('Note')" label-for="note">
+                    <b-form-input id="note" placeholder="ใส่ข้อความที่อยากใส่ให้ลูกค้าตอนอนุมัติ" v-model="note" type="text" />
+                  </b-form-group>
+                </b-col>
+
                 <b-col>
                   <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" type="submit" variant="primary" class="mr-1"
                     @click="addEmail" v-if="isModeEmailEdit">
@@ -47,7 +53,7 @@
         </b-col>
       </b-row>
 
-      <b-row>
+      <b-row v-if="!isAddFormVisible && !isEditFormVisible">
         <b-col md="9">
           <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mb-2" @click="toggleAddForm">
             <feather-icon icon="PlusIcon" class="mr-50" />
@@ -56,9 +62,9 @@
         </b-col>
       </b-row>
 
-      <b-row v-if="isAddFormVisible">
+      <b-row v-if="isEditFormVisible">
         <b-col md="9">
-          <b-card-code id="edit-email" :title="t('Edit Member')">
+          <b-card-code id="edit-email" title="Edit Email Stock">
             <b-form @submit.prevent>
               <b-row>
                 <b-col md="6">
@@ -80,6 +86,12 @@
                         </b-button>
                       </b-input-group-append>
                     </b-input-group>
+                  </b-form-group>
+                </b-col>
+
+                <b-col md="12">
+                    <b-form-group :label="t('Note')" label-for="note">
+                    <b-form-input id="note" placeholder="ใส่ข้อความที่อยากใส่ให้ลูกค้าตอนอนุมัติ" v-model="note" type="text" />
                   </b-form-group>
                 </b-col>
 
@@ -137,11 +149,11 @@
                     {{ t("Save") }}
                   </b-button>
 
-                  <!-- <b-button @click="cancelEdit" v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="reset"
+                  <b-button @click="close" v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="reset"
                     variant="outline-secondary">
-                    <feather-icon icon="XIcon" />
-                    {{ t("Cancel") }}
-                  </b-button> -->
+                    <feather-icon icon="DeleteIcon" />
+                    {{ t("Close") }}
+                  </b-button>
                 </b-col>
               </b-row>
             </b-form>
@@ -252,7 +264,7 @@ import {
   BFormDatepicker,
   BPagination,
   BBadge,
-  BAvatar,
+  BAvatar,  
 } from "bootstrap-vue";
 import { ref } from "@vue/composition-api";
 import vSelect from 'vue-select';
@@ -288,7 +300,7 @@ export default {
     BPagination,
     BBadge,
     BAvatar,
-    vSelect,
+    vSelect    
   },
   directives: {
     Ripple,
@@ -357,6 +369,7 @@ export default {
       showNewPassword: false,
       isEditMode: true,
       isAddFormVisible: false,
+      isEditFormVisible: false,
       editingEmailId: null,
       editingEmail: '',
       editingPassword: '',
@@ -370,6 +383,7 @@ export default {
 
       statusActive: 0,
       titleCard: "",
+      note : '',
     };
   },
   props: {
@@ -467,6 +481,8 @@ export default {
       return ctime;
     },
     close() {
+      this.isAddFormVisible = false;
+      this.isEditFormVisible = false;
       this.$emit("refetch-data");
       this.$emit("close-edit-form");
     },
@@ -619,6 +635,7 @@ export default {
         user_id: '', // line_user_id ว่างตามที่ระบุ
         group_id: 0,
         page_name: this.$route.name,
+        note : this.note,
       }
 
       let response;
@@ -666,15 +683,87 @@ export default {
         });
       }
     },
+    async updateEmail() {
+        console.log('updateEmail');
+        
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        
+        var headers = {
+            userid: userData.username,
+            token: userData.token,
+        }
+
+        var body = {
+          email: this.newEmail,
+          password: this.newPassword,
+          user_id: '', // line_user_id ว่างตามที่ระบุ
+          group_id: 0,
+          page_name: this.$route.name,
+          note : this.note,
+        }
+
+        let response;
+        await axios.post("api/subscriptiongroup/updateMemberData",body,
+        {
+            headers: {            
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+            }
+        }).then(
+            resp => 
+            {
+                response = resp;
+            }
+        );
+    
+        if (response.data.status == 'success') {
+            this.$toast({
+                component: ToastificationContent,
+                props: {
+                    title: 'Success',
+                    icon: 'CheckIcon',
+                    variant: 'success',
+                    text: 'Member data updated successfully',
+                },
+                autoHideDelay: 3000,
+            });
+            
+            // Clear edit form and refresh data
+            this.isEditMode = false;
+            this.editingMemberId = null;
+            this.editingEmail = '';
+            this.editingPassword = '';
+            this.editingLineUserId = '';
+            this.note ='';
+            
+            this.getSubscribeMemberByGroupById();
+            this.$emit("refetch-data");
+        }
+        else {
+            this.$toast(
+            {
+                component: ToastificationContent,
+                props: {
+                title: response.data.message || 'Error',
+                icon: 'EditIcon',
+                variant: 'error',
+                },
+            });
+        }
+    },
     editEmailData(emailRow) {
       console.log('editEmailData', emailRow);
       this.isEditMode = true;
-      this.isAddFormVisible = true;
+      this.isAddFormVisible = false;
+      this.isEditFormVisible = true;
       this.editingEmailId = emailRow.id;
       this.editingEmail = emailRow.email;
       this.editingPassword = emailRow.password || '';
       this.editingLineUserId = emailRow.user_id || '';
       this.selectedLineContact = emailRow.user_id || null;
+      this.note = emailRow.note || '';
+      
     },
     saveEmailEdit() {
       console.log('saveEmailEdit');
@@ -706,15 +795,17 @@ export default {
       }
 
       var body = {
+        id : this.editingEmailId,
         email: this.editingEmail,
         password: this.editingPassword,
         user_id: this.editingLineUserId || '',
         group_id: 0,
         page_name: this.$route.name,
+        note : this.note,
       }
 
       let response;
-      await axios.post("api/subscriptiongroup/addMemberToGroup", body,
+      await axios.post("api/subscriptiongroup/updateMemberData", body,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -741,12 +832,13 @@ export default {
 
         // Clear edit form and refresh data
         this.isEditMode = false;
-        this.isAddFormVisible = false;
+        this.isAddFormVisible = true;
         this.editingEmailId = null;
         this.editingEmail = '';
         this.editingPassword = '';
         this.editingLineUserId = '';
         this.selectedLineContact = null;
+        this.note = '';
 
         this.getIndividualEmails();
         this.$emit("refetch-data");
@@ -769,6 +861,7 @@ export default {
       this.editingPassword = '';
       this.editingLineUserId = '';
       this.showEditPassword = false;
+      this.note = '';
     },
     toggleEditPasswordVisibility() {
       this.showEditPassword = !this.showEditPassword;
@@ -786,6 +879,7 @@ export default {
         this.editingLineUserId = '';
         this.selectedLineContact = null;
         this.showEditPassword = false;
+        this.note = '';
       }
     },
   },
