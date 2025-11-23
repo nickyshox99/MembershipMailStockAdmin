@@ -93,30 +93,15 @@
           <h5 class="plan-name">เมลร้านแบบ Personal</h5>
         </div>
 
-        <div class="benefits-card">
-          <div class="benefits-grid">
-            <div class="benefit-item">
-              <feather-icon icon="VideoIcon" class="benefit-icon" />
-              <span>รับชมแบบไม่มีโฆษณา</span>
+        <div v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage2'] && settingdata['line_token']['recommendImage2'].length > 0">            
+            <div style="display: block;">
+              <img :src="settingdata['line_token']['recommendImage2']" width="100%" ></img>
             </div>
-            <div class="benefit-item">
-              <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
-              <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
-            </div>
-            <div class="benefit-item">
-              <feather-icon icon="DownloadIcon" class="benefit-icon" />
-              <span>ดาวโหลดวีดีโอออฟไลน์</span>
-            </div>
-            <div class="benefit-item">
-              <feather-icon icon="MusicIcon" class="benefit-icon" />
-              <span>สามารถใช้งาน youtube music</span>
-            </div>
-          </div>
         </div>
 
         <div class="divider"></div>
 
-        <div class="notices-card">
+        <!-- <div class="notices-card">
           <div class="notice-item success">
             <feather-icon icon="CheckCircleIcon" class="notice-icon" />
             <span>มีแจ้งต่ออายุก่อนหมด</span>
@@ -125,7 +110,7 @@
             <feather-icon icon="ClockIcon" class="notice-icon" />
             <span>เปลี่ยนรหัสเมล ควรรออย่างน้อย 7 วัน</span>
           </div>
-        </div>
+        </div> -->
 
         <div class="agreement-section">
           <b-form-checkbox v-model="agreedToPersonalTerms" class="custom-checkbox">
@@ -175,29 +160,16 @@
         </div>
 
         <div class="benefits-card">
-          <div class="benefits-grid">
-            <div class="benefit-item">
-              <feather-icon icon="VideoIcon" class="benefit-icon" />
-              <span>รับชมแบบไม่มีโฆษณา ดาวโหลดวีดีโอออฟไลน์</span>
+          <div v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage3'] && settingdata['line_token']['recommendImage3'].length > 0">            
+                <div style="display: block;">
+                  <img :src="settingdata['line_token']['recommendImage3']" width="100%" ></img>
+                </div>
             </div>
-            <div class="benefit-item">
-              <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
-              <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
-            </div>
-            <div class="benefit-item">
-              <feather-icon icon="MusicIcon" class="benefit-icon" />
-              <span>สามารถใช้งาน youtube music</span>
-            </div>
-            <div class="benefit-item">
-              <feather-icon icon="MonitorIcon" class="benefit-icon" />
-              <span>ดูพร้อมกันได้ 4 เครื่อง(อิงตามข้อกำหนดแอพ)</span>
-            </div>
-          </div>
         </div>
 
         <div class="divider"></div>
 
-        <div class="notices-card">
+        <!-- <div class="notices-card">
           <div class="notice-item success">
             <feather-icon icon="CheckCircleIcon" class="notice-icon" />
             <span>มีแจ้งต่ออายุก่อนหมด</span>
@@ -210,7 +182,7 @@
             <feather-icon icon="ClockIcon" class="notice-icon" />
             <span>เปลี่ยนรหัสเมล ควรรออย่างน้อย 7 วัน</span>
           </div>
-        </div>
+        </div> -->
 
         <div class="agreement-section">
           <b-form-checkbox v-model="agreedToFamilyTerms" class="custom-checkbox">
@@ -253,6 +225,7 @@ import {
   BModal,
   BFormCheckbox,
 } from 'bootstrap-vue'
+import axios from 'axios'
 
 export default {
   name: 'SelectPlanType',
@@ -272,9 +245,11 @@ export default {
       showFamilyInfoModal: false, // แสดง modal ข้อมูล Family
       agreedToPersonalTerms: false, // สถานะการยินยอม Personal
       agreedToFamilyTerms: false, // สถานะการยินยอม Family
+      settingdata: {},
     }
   },
-  mounted() {
+  async mounted() {
+    console.log("mounted");
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
@@ -282,7 +257,55 @@ export default {
     } else {
       console.log('SelectPlanType - No sourceUserId in query parameters')
     }
+  
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const formData = new FormData();
+
+    var headers = {
+        userid: 'big',
+        token: 'big',
+    }
+
+    var body = {
+        userid: 'big',
+        token: 'big',
+    }
+
+    let response;
+    await axios.get("api/adminsetting/getadminsetting", {
+        headers: {
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+        }
+    }).then(
+        resp => {
+            response = resp.data.data;
+        }
+    );
+
+    //console.log(response);
+
+    let tmpSettingData = {};
+
+    for (let index = 0; index < response.length; index++) {
+        const element = response[index];
+        let meta_name = element.meta;
+        let meta_data = JSON.parse(element.value);
+        for (const [key, value] of Object.entries(meta_data)) {
+            if (key.includes("enable")) {
+                meta_data[key] = value == 1 ? true : false;
+            }              
+            
+        }
+        tmpSettingData[meta_name] = meta_data;        
+    }
+
+    this.settingdata = tmpSettingData;
+
+    //console.log(this.settingdata['line_token']['recommendImage2']);
   },
+ 
   methods: {
     selectPlan(plan) {
       this.selectedPlan = plan

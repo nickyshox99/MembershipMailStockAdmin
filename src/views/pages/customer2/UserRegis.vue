@@ -154,33 +154,16 @@
     >
       <div class="email-info-content">
         <div class="benefits-card">
-          <div class="benefits-header">
-            <feather-icon icon="AwardIcon" class="header-icon" />
-            <h6 class="benefits-title">สิทธิประโยชน์ที่คุณจะได้รับ</h6>
-          </div>
-          <div class="benefits-grid">
-            <div class="benefit-item">
-              <feather-icon icon="VideoIcon" class="benefit-icon" />
-              <span>รับชมแบบไม่มีโฆษณา ดาวโหลดวีดีโอออฟไลน์</span>
+            <div v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage4'] && settingdata['line_token']['recommendImage4'].length > 0">            
+                <div style="display: block;">
+                  <img :src="settingdata['line_token']['recommendImage4']" width="100%" ></img>
+                </div>
             </div>
-            <div class="benefit-item">
-              <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
-              <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
-            </div>
-            <div class="benefit-item">
-              <feather-icon icon="MusicIcon" class="benefit-icon" />
-              <span>สามารถใช้งาน youtube music</span>
-            </div>
-            <div class="benefit-item">
-              <feather-icon icon="MonitorIcon" class="benefit-icon" />
-              <span>ดูพร้อมกันได้ 4 เครื่อง(อิงตามข้อกำหนดแอพ)</span>
-            </div>
-          </div>
         </div>
 
         <div class="divider"></div>
 
-        <div class="notices-card">
+        <!-- <div class="notices-card">
           <div class="notice-item success">
             <feather-icon icon="CheckCircleIcon" class="notice-icon" />
             <span>มีแจ้งต่ออายุก่อนหมด</span>
@@ -197,7 +180,7 @@
             <feather-icon icon="AlertTriangleIcon" class="notice-icon" />
             <span>ห้ามนำเมลสำคัญในการใช้งาน มาใช้ หากนำมาใช้ร้านไม่รับผิดชอบทุกกรณี</span>
           </div>
-        </div>
+        </div> -->
 
         <div class="agreement-section">
           <b-form-checkbox v-model="agreedToEmailTerms" class="custom-checkbox">
@@ -235,6 +218,7 @@ import {
   BModal,
   BFormCheckbox,
 } from 'bootstrap-vue'
+import axios from 'axios'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import { mapActions } from 'vuex'
 
@@ -263,9 +247,10 @@ export default {
       sourceUserId: null, // รับมาจาก LINE
       showEmailInfoModal: true, // แสดง modal ข้อมูลทันทีที่เข้าหน้า
       agreedToEmailTerms: false, // สถานะการยินยอมอ่านข้อมูล
+      settingdata: {},
     }
   },
-  mounted() {
+  async mounted() {
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
@@ -273,6 +258,51 @@ export default {
     } else {
       console.log('UserRegis - No sourceUserId in query parameters')
     }
+
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const formData = new FormData();
+
+    var headers = {
+        userid: 'big',
+        token: 'big',
+    }
+
+    var body = {
+        userid: 'big',
+        token: 'big',
+    }
+
+    let response;
+    await axios.get("api/adminsetting/getadminsetting", {
+        headers: {
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+        }
+    }).then(
+        resp => {
+            response = resp.data.data;
+        }
+    );
+
+    //console.log(response);
+
+    let tmpSettingData = {};
+
+    for (let index = 0; index < response.length; index++) {
+        const element = response[index];
+        let meta_name = element.meta;
+        let meta_data = JSON.parse(element.value);
+        for (const [key, value] of Object.entries(meta_data)) {
+            if (key.includes("enable")) {
+                meta_data[key] = value == 1 ? true : false;
+            }              
+            
+        }
+        tmpSettingData[meta_name] = meta_data;        
+    }
+
+    this.settingdata = tmpSettingData;
   },
   computed: {
     passwordToggleIcon() {

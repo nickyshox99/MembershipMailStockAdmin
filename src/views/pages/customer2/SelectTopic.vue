@@ -100,15 +100,20 @@
     >
       <div class="terms-content">
         <div class="terms-card">
-          <div class="terms-item important">
+          <div class="terms-item important" v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage'] || settingdata['line_token']['recommendImage'].length<=0">
             <feather-icon icon="AlertCircleIcon" class="terms-icon" />
             <div class="terms-text">
               <p class="terms-title">Youtube official มีข้อกำหนด และ official อาจมีการปรับเปลี่ยนกฎ</p>
               <p class="terms-desc">ทางร้านต้องยึดตามข้อกำหนดของ official</p>
             </div>
           </div>
+          <div v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage'] && settingdata['line_token']['recommendImage'].length>0">            
+            <div style="display: block;">
+              <img :src="settingdata['line_token']['recommendImage']" width="100%" ></img>
+            </div>
+          </div>
 
-          <div class="terms-item support">
+          <!-- <div class="terms-item support">
             <feather-icon icon="ShieldIcon" class="terms-icon" />
             <div class="terms-text">
               <p class="terms-title">หากเกิดปัญหา ทางร้านดูแลให้ลูกค้าตลอดการใช้งาน</p>
@@ -120,7 +125,7 @@
             <div class="terms-text">
               <p class="terms-desc">ต้องการสอบถามเพิ่มเติมทักไลน์</p>
             </div>
-          </div>
+          </div> -->
         </div>
 
         <div class="agreement-section">
@@ -187,6 +192,7 @@ export default {
       isLoading: true, // สถานะการโหลดข้อมูล
       showTermsModal: true, // แสดง modal ข้อกำหนดทันทีที่เข้าหน้า
       agreedToTerms: false, // สถานะการยินยอมข้อกำหนด
+      settingdata: {},
     }
   },
   computed: {
@@ -198,7 +204,7 @@ export default {
       return 4 // 3 ปุ่ม
     },
   },
-  mounted() {
+  async mounted() {
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
@@ -206,6 +212,50 @@ export default {
     } else {
       console.log('SelectTopic - No sourceUserId in query parameters')
     }
+
+    // โหลดข้อมูล setting
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const formData = new FormData();
+
+    var headers = {
+        userid: 'big',
+        token: 'big',
+    }
+
+    var body = {
+        userid: 'big',
+        token: 'big',
+    }
+
+    let response;
+    await axios.get("api/adminsetting/getadminsetting", {
+        headers: {
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+        }
+    }).then(
+        resp => {
+            response = resp.data.data;
+        }
+    );
+
+    let tmpSettingData = {};
+
+    for (let index = 0; index < response.length; index++) {
+        const element = response[index];
+        let meta_name = element.meta;
+        let meta_data = JSON.parse(element.value);
+        for (const [key, value] of Object.entries(meta_data)) {
+            if (key.includes("enable")) {
+                meta_data[key] = value == 1 ? true : false;
+            }
+        }
+        tmpSettingData[meta_name] = meta_data;
+    }
+
+    this.settingdata = tmpSettingData;
+
     // โหลดสถานะการแสดงปุ่ม
     this.fetchButtonStatus()
   },
@@ -271,6 +321,7 @@ export default {
         this.$router.push({ name: 'registeremail', query })
       }
     },
+    
   },
 }
 </script>
