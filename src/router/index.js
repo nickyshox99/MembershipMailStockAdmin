@@ -28,8 +28,8 @@ const router = new VueRouter({
     ...dashboard,    
     ...pages,      
     // ...customer,
-    ...customer2,
-    // ...customer3,
+    // ...customer2,
+    ...customer3,
     // ...customer4,
     {
       path: '*',
