@@ -36,33 +36,17 @@
                 </div>
               </b-col>
 
-              <b-col v-if="showUserCode" cols="12" :md="getColumnSize" class="option-col">
-                <div class="option-card" :class="{ 'selected': selectedType === 'personal' }"
-                  @click="selectType('personal')">
+              <b-col v-if="showCustomerEmail" cols="12" :md="getColumnSize" class="option-col">
+                <div class="option-card" :class="{ 'selected': selectedType === 'customer-email' }"
+                  @click="selectType('customer-email')">
                   <div class="option-icon">
-                    <feather-icon icon="UserIcon" size="48" />
+                    <feather-icon icon="UserCheckIcon" size="48" />
                   </div>
-                  <h4 class="option-title">รหัสตัวเอง</h4>
+                  <h4 class="option-title">ซื้อแบบเมลลูกค้า</h4>
                   <p class="option-description">
-                    ใช้รหัสส่วนตัวของคุณเองในการซื้อ
+                    เลือกใช้รหัสตัวเองหรือเมลตัวเองในการซื้อ
                   </p>
-                  <div class="check-icon" v-if="selectedType === 'personal'">
-                    <feather-icon icon="CheckCircleIcon" size="24" />
-                  </div>
-                </div>
-              </b-col>
-
-              <b-col v-if="showUserEmail" cols="12" :md="getColumnSize" class="option-col">
-                <div class="option-card" :class="{ 'selected': selectedType === 'email' }"
-                  @click="selectType('email')">
-                  <div class="option-icon">
-                    <feather-icon icon="MailIcon" size="48" />
-                  </div>
-                  <h4 class="option-title">เมลตัวเอง</h4>
-                  <p class="option-description">
-                    ใช้อีเมลส่วนตัวของคุณในการซื้อ
-                  </p>
-                  <div class="check-icon" v-if="selectedType === 'email'">
+                  <div class="check-icon" v-if="selectedType === 'customer-email'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
                 </div>
@@ -184,11 +168,12 @@ export default {
   },
   data() {
     return {
-      selectedType: null, // 'shop', 'personal' หรือ 'email'
+      selectedType: null, // 'shop' หรือ 'customer-email'
       sourceUserId: null, // รับมาจาก LINE
       showShopCode: true, // แสดงปุ่มซื้อแบบรหัสร้าน
-      showUserCode: true, // แสดงปุ่มรหัสตัวเอง
-      showUserEmail: true, // แสดงปุ่มเมลตัวเอง
+      showUserCode: true, // แสดงปุ่มรหัสตัวเอง (ใช้สำหรับตรวจสอบว่าควรแสดง customer-email หรือไม่)
+      showUserEmail: true, // แสดงปุ่มเมลตัวเอง (ใช้สำหรับตรวจสอบว่าควรแสดง customer-email หรือไม่)
+      showCustomerEmail: true, // แสดงปุ่มซื้อแบบเมลลูกค้า
       isLoading: true, // สถานะการโหลดข้อมูล
       showTermsModal: true, // แสดง modal ข้อกำหนดทันทีที่เข้าหน้า
       agreedToTerms: false, // สถานะการยินยอมข้อกำหนด
@@ -198,10 +183,9 @@ export default {
   computed: {
     getColumnSize() {
       // คำนวณขนาดคอลัมน์ตามจำนวนปุ่มที่แสดง
-      const visibleButtons = [this.showShopCode, this.showUserCode, this.showUserEmail].filter(Boolean).length
+      const visibleButtons = [this.showShopCode, this.showCustomerEmail].filter(Boolean).length
       if (visibleButtons === 1) return 12
-      if (visibleButtons === 2) return 6
-      return 4 // 3 ปุ่ม
+      return 6 // 2 ปุ่ม
     },
   },
   async mounted() {
@@ -268,6 +252,8 @@ export default {
           this.showShopCode = btnStatus.show_shop_code === 1
           this.showUserCode = btnStatus.show_user_code === 1
           this.showUserEmail = btnStatus.show_user_email === 1
+          // แสดงปุ่มซื้อแบบเมลลูกค้าถ้าอย่างน้อยหนึ่งในสองตัวเลือก (รหัสตัวเองหรือเมลตัวเอง) เปิดอยู่
+          this.showCustomerEmail = (btnStatus.show_user_code === 1 || btnStatus.show_user_email === 1)
         }
       } catch (error) {
         console.error('Error fetching button status:', error)
@@ -303,22 +289,14 @@ export default {
         }
         console.log('SelectTopic - Navigating to select-plan-type with query:', query)
         this.$router.push({ name: 'select-plan-type', query })
-      } else if (this.selectedType === 'personal') {
-        // นำไปหน้าลงทะเบียนด้วยรหัสตัวเอง พร้อมส่ง sourceUserId
-        const query = { type: 'personal' }
+      } else if (this.selectedType === 'customer-email') {
+        // นำไปหน้าเลือกระหว่างรหัสตัวเองและเมลตัวเอง พร้อมส่ง sourceUserId
+        const query = {}
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
-        console.log('SelectTopic - Navigating to user-regis with query:', query)
-        this.$router.push({ name: 'user-regis', query })
-      } else if (this.selectedType === 'email') {
-        // นำไปหน้ากรอกเมลตัวเอง พร้อมส่ง sourceUserId
-        const query = { type: 'email' }
-        if (this.sourceUserId) {
-          query.sourceUserId = this.sourceUserId
-        }
-        console.log('SelectTopic - Navigating to registeremail with query:', query)
-        this.$router.push({ name: 'registeremail', query })
+        console.log('SelectTopic - Navigating to select-customer-email with query:', query)
+        this.$router.push({ name: 'select-customer-email', query })
       }
     },
     

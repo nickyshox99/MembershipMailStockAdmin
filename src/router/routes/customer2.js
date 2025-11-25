@@ -55,5 +55,13 @@ export default [
         layout: 'full',            
       },
     },
+    {
+      path: '/SelectCustomerEmail',
+      name: 'select-customer-email',
+      component: () => import('@/views/pages/customer2/SelectCustomerEmail.vue'),
+      meta: {
+        layout: 'full',            
+      },
+    },
   ]
   
