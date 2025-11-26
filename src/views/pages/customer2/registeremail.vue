@@ -95,44 +95,56 @@
       @hidden="resetEmailInfoModal"
     >
       <div class="email-info-content">
-        <div class="benefits-card">
-          <div v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage5'] && settingdata['line_token']['recommendImage5'].length > 0">            
-                <div style="display: block;">
-                  <img :src="settingdata['line_token']['recommendImage5']" width="100%" ></img>
-                </div>
-            </div>
-          <!-- <div class="benefits-grid">
-            <div class="benefit-item">
-              <feather-icon icon="VideoIcon" class="benefit-icon" />
-              <span>รับชมแบบไม่มีโฆษณา</span>
-            </div>
-            <div class="benefit-item">
-              <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
-              <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
-            </div>
-            <div class="benefit-item">
-              <feather-icon icon="DownloadIcon" class="benefit-icon" />
-              <span>ดาวโหลดวีดีโอออฟไลน์</span>
-            </div>
-            <div class="benefit-item">
-              <feather-icon icon="MusicIcon" class="benefit-icon" />
-              <span>สามารถใช้งาน youtube music</span>
-            </div>
-          </div> -->
+        <!-- image section -->
+        <div
+          v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage5'] && settingdata['line_token']['recommendImage5'].length > 0">
+          <div style="display: block;">
+            <img :src="settingdata['line_token']['recommendImage5']" width="100%" />
+          </div>
+          <div class="divider"></div>
         </div>
 
-        <div class="divider"></div>
+        <!-- benefits section -->
+        <div
+          v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage5'] || settingdata['line_token']['recommendImage5'].length === 0">
+          <div class="benefits-card">
+            <div class="benefits-header">
+              <feather-icon icon="AwardIcon" class="header-icon" />
+              <h6 class="benefits-title">สิทธิประโยชน์ที่คุณจะได้รับ</h6>
+            </div>
+            <div class="benefits-grid">
+              <div class="benefit-item">
+                <feather-icon icon="VideoIcon" class="benefit-icon" />
+                <span>รับชมแบบไม่มีโฆษณา</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
+                <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="DownloadIcon" class="benefit-icon" />
+                <span>ดาวโหลดวีดีโอออฟไลน์</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="MusicIcon" class="benefit-icon" />
+                <span>สามารถใช้งาน youtube music</span>
+              </div>
+            </div>
+          </div>
 
-        <!-- <div class="notices-card">
-          <div class="notice-item success">
-            <feather-icon icon="CheckCircleIcon" class="notice-icon" />
-            <span>มีแจ้งต่ออายุก่อนหมด</span>
+          <div class="divider"></div>
+
+          <div class="notices-card">
+            <div class="notice-item success">
+              <feather-icon icon="CheckCircleIcon" class="notice-icon" />
+              <span>มีแจ้งต่ออายุก่อนหมด</span>
+            </div>
+            <div class="notice-item danger">
+              <feather-icon icon="AlertTriangleIcon" class="notice-icon" />
+              <span>ห้ามนำเมลสำคัญในการใช้งาน หากนำมาใช้ร้านไม่สามารถรับผิดชอบได้ทุกกรณี</span>
+            </div>
           </div>
-          <div class="notice-item info">
-            <feather-icon icon="ClockIcon" class="notice-icon" />
-            <span>เปลี่ยนรหัสเมล ควรรออย่างน้อย 7 วัน</span>
-          </div>
-        </div> -->
+        </div>
 
         <div class="agreement-section">
           <b-form-checkbox v-model="agreedToEmailTerms" class="custom-checkbox">
@@ -797,6 +809,23 @@ export default {
 
         &:hover {
           background: rgba(23, 162, 184, 0.12);
+        }
+      }
+      &.danger {
+        background: rgba(220, 53, 69, 0.12);
+        border-left-color: #dc3545;
+        
+        .notice-icon {
+          color: #dc3545;
+        }
+        
+        span {
+          color: #721c24;
+          font-weight: 600;
+        }
+
+        &:hover {
+          background: rgba(220, 53, 69, 0.18);
         }
       }
     }

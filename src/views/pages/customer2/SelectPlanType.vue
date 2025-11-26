@@ -22,7 +22,8 @@
           <div class="options-section">
             <b-row>
               <b-col cols="12" md="6" class="mb-3 mb-md-0">
-                <div class="option-card" :class="{ 'selected': selectedPlan === 'personal' }" @click="selectPlan('personal')">
+                <div class="option-card" :class="{ 'selected': selectedPlan === 'personal' }"
+                  @click="selectPlan('personal')">
                   <div class="option-icon">
                     <feather-icon icon="UserIcon" size="48" />
                   </div>
@@ -62,12 +63,7 @@
           </div>
 
           <div class="back-section mt-2">
-            <b-button
-              variant="outline-secondary"
-              block
-              class="back-button"
-              @click="goBack"
-            >
+            <b-button variant="outline-secondary" block class="back-button" @click="goBack">
               <feather-icon icon="ArrowLeftIcon" class="button-icon" />
               กลับ
             </b-button>
@@ -77,40 +73,62 @@
     </div>
 
     <!-- Personal Plan Info Modal -->
-    <b-modal
-      id="modal-personal-info"
-      ref="modalPersonalInfo"
-      v-model="showPersonalInfoModal"
-      title="ข้อมูลสำคัญเกี่ยวกับการใช้งาน - Personal"
-      size="lg"
-      :hideHeaderClose="false"
-      hide-footer
-      @hidden="resetPersonalInfoModal"
-    >
+    <b-modal id="modal-personal-info" ref="modalPersonalInfo" v-model="showPersonalInfoModal"
+      title="ข้อมูลสำคัญเกี่ยวกับการใช้งาน - Personal" size="lg" :hideHeaderClose="false" hide-footer
+      @hidden="resetPersonalInfoModal">
       <div class="plan-info-content">
         <div class="plan-header">
           <feather-icon icon="UserIcon" class="plan-icon" />
           <h5 class="plan-name">เมลร้านแบบ Personal</h5>
         </div>
 
-        <div v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage2'] && settingdata['line_token']['recommendImage2'].length > 0">            
-            <div style="display: block;">
-              <img :src="settingdata['line_token']['recommendImage2']" width="100%" ></img>
-            </div>
+        <!-- image section -->
+        <div
+          v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage2'] && settingdata['line_token']['recommendImage2'].length > 0">
+          <div style="display: block;">
+            <img :src="settingdata['line_token']['recommendImage2']" width="100%" />
+          </div>
+          <div class="divider"></div>
         </div>
 
-        <div class="divider"></div>
+        <!-- benefits section -->
+        <div
+          v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage2'] || settingdata['line_token']['recommendImage2'].length === 0"
+          class="plan-info-content">
+          <div class="benefits-card">
+            <div class="benefits-grid">
+              <div class="benefit-item">
+                <feather-icon icon="VideoIcon" class="benefit-icon" />
+                <span>รับชมแบบไม่มีโฆษณา</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
+                <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="DownloadIcon" class="benefit-icon" />
+                <span>ดาวโหลดวีดีโอออฟไลน์</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="MusicIcon" class="benefit-icon" />
+                <span>สามารถใช้งาน youtube music</span>
+              </div>
+            </div>
+          </div>
 
-        <!-- <div class="notices-card">
-          <div class="notice-item success">
-            <feather-icon icon="CheckCircleIcon" class="notice-icon" />
-            <span>มีแจ้งต่ออายุก่อนหมด</span>
+          <div class="divider"></div>
+
+          <div class="notices-card">
+            <div class="notice-item success">
+              <feather-icon icon="CheckCircleIcon" class="notice-icon" />
+              <span>มีแจ้งต่ออายุก่อนหมด</span>
+            </div>
+            <div class="notice-item info">
+              <feather-icon icon="ClockIcon" class="notice-icon" />
+              <span>เปลี่ยนรหัสเมล ควรรออย่างน้อย 7 วัน</span>
+            </div>
           </div>
-          <div class="notice-item info">
-            <feather-icon icon="ClockIcon" class="notice-icon" />
-            <span>เปลี่ยนรหัสเมล ควรรออย่างน้อย 7 วัน</span>
-          </div>
-        </div> -->
+        </div>
 
         <div class="agreement-section">
           <b-form-checkbox v-model="agreedToPersonalTerms" class="custom-checkbox">
@@ -119,22 +137,12 @@
         </div>
 
         <div class="action-section">
-          <b-button
-            variant="primary"
-            block
-            class="confirm-button"
-            :disabled="!agreedToPersonalTerms"
-            @click="handlePersonalInfoConfirm"
-          >
+          <b-button variant="primary" block class="confirm-button" :disabled="!agreedToPersonalTerms"
+            @click="handlePersonalInfoConfirm">
             <feather-icon icon="CheckIcon" class="button-icon" />
             รับทราบและดำเนินการต่อ
           </b-button>
-          <b-button
-            variant="outline-secondary"
-            block
-            class="cancel-button mt-2"
-            @click="handlePersonalInfoCancel"
-          >
+          <b-button variant="outline-secondary" block class="cancel-button mt-2" @click="handlePersonalInfoCancel">
             <feather-icon icon="XIcon" class="button-icon" />
             ปิด
           </b-button>
@@ -143,46 +151,61 @@
     </b-modal>
 
     <!-- Family Plan Info Modal -->
-    <b-modal
-      id="modal-family-info"
-      ref="modalFamilyInfo"
-      v-model="showFamilyInfoModal"
-      title="ข้อมูลสำคัญเกี่ยวกับการใช้งาน - Family"
-      size="lg"
-      :hideHeaderClose="false"
-      hide-footer
-      @hidden="resetFamilyInfoModal"
-    >
+    <b-modal id="modal-family-info" ref="modalFamilyInfo" v-model="showFamilyInfoModal"
+      title="ข้อมูลสำคัญเกี่ยวกับการใช้งาน - Family" size="lg" :hideHeaderClose="false" hide-footer
+      @hidden="resetFamilyInfoModal">
       <div class="plan-info-content">
         <div class="plan-header">
           <feather-icon icon="UsersIcon" class="plan-icon" />
           <h5 class="plan-name">เมลร้านแบบครอบครัว</h5>
         </div>
 
-        <div class="benefits-card">
-          <div v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage3'] && settingdata['line_token']['recommendImage3'].length > 0">            
-                <div style="display: block;">
-                  <img :src="settingdata['line_token']['recommendImage3']" width="100%" ></img>
-                </div>
-            </div>
+        <!-- image section -->
+        <div
+          v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage3'] && settingdata['line_token']['recommendImage3'].length > 0">
+          <div style="display: block;">
+            <img :src="settingdata['line_token']['recommendImage3']" width="100%" />
+          </div>
+          <div class="divider"></div>
         </div>
 
-        <div class="divider"></div>
+        <!-- benefits section -->
+        <div
+          v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage3'] || settingdata['line_token']['recommendImage3'].length === 0"
+          class="plan-info-content">
+          <div class="benefits-card">
+            <div class="benefits-grid">
+              <div class="benefit-item">
+                <feather-icon icon="VideoIcon" class="benefit-icon" />
+                <span>รับชมแบบไม่มีโฆษณา</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
+                <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="DownloadIcon" class="benefit-icon" />
+                <span>ดาวโหลดวีดีโอออฟไลน์</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="MusicIcon" class="benefit-icon" />
+                <span>สามารถใช้งาน youtube music</span>
+              </div>
+            </div>
+          </div>
+          <div class="divider"></div>
 
-        <!-- <div class="notices-card">
-          <div class="notice-item success">
-            <feather-icon icon="CheckCircleIcon" class="notice-icon" />
-            <span>มีแจ้งต่ออายุก่อนหมด</span>
+          <div class="notices-card">
+            <div class="notice-item success">
+              <feather-icon icon="CheckCircleIcon" class="notice-icon" />
+              <span>มีแจ้งต่ออายุก่อนหมด</span>
+            </div>
+            <div class="notice-item info">
+              <feather-icon icon="ClockIcon" class="notice-icon" />
+              <span>เปลี่ยนรหัสเมล ควรรออย่างน้อย 7 วัน</span>
+            </div>
           </div>
-          <div class="notice-item warning">
-            <feather-icon icon="AlertCircleIcon" class="notice-icon" />
-            <span>ร้านจะต้องเข้าเมลไปต่อ"ทุกเดือน"</span>
-          </div>
-          <div class="notice-item info">
-            <feather-icon icon="ClockIcon" class="notice-icon" />
-            <span>เปลี่ยนรหัสเมล ควรรออย่างน้อย 7 วัน</span>
-          </div>
-        </div> -->
+        </div>
 
         <div class="agreement-section">
           <b-form-checkbox v-model="agreedToFamilyTerms" class="custom-checkbox">
@@ -191,22 +214,12 @@
         </div>
 
         <div class="action-section">
-          <b-button
-            variant="primary"
-            block
-            class="confirm-button"
-            :disabled="!agreedToFamilyTerms"
-            @click="handleFamilyInfoConfirm"
-          >
+          <b-button variant="primary" block class="confirm-button" :disabled="!agreedToFamilyTerms"
+            @click="handleFamilyInfoConfirm">
             <feather-icon icon="CheckIcon" class="button-icon" />
             รับทราบและดำเนินการต่อ
           </b-button>
-          <b-button
-            variant="outline-secondary"
-            block
-            class="cancel-button mt-2"
-            @click="handleFamilyInfoCancel"
-          >
+          <b-button variant="outline-secondary" block class="cancel-button mt-2" @click="handleFamilyInfoCancel">
             <feather-icon icon="XIcon" class="button-icon" />
             ปิด
           </b-button>
@@ -257,31 +270,31 @@ export default {
     } else {
       console.log('SelectPlanType - No sourceUserId in query parameters')
     }
-  
+
     const userData = JSON.parse(localStorage.getItem('userData'));
     const formData = new FormData();
 
     var headers = {
-        userid: 'big',
-        token: 'big',
+      userid: 'big',
+      token: 'big',
     }
 
     var body = {
-        userid: 'big',
-        token: 'big',
+      userid: 'big',
+      token: 'big',
     }
 
     let response;
     await axios.get("api/adminsetting/getadminsetting", {
-        headers: {
-            'Content-Type': 'application/json',
-            'userid': headers.userid,
-            'token': headers.token,
-        }
+      headers: {
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+      }
     }).then(
-        resp => {
-            response = resp.data.data;
-        }
+      resp => {
+        response = resp.data.data;
+      }
     );
 
     //console.log(response);
@@ -289,30 +302,30 @@ export default {
     let tmpSettingData = {};
 
     for (let index = 0; index < response.length; index++) {
-        const element = response[index];
-        let meta_name = element.meta;
-        let meta_data = JSON.parse(element.value);
-        for (const [key, value] of Object.entries(meta_data)) {
-            if (key.includes("enable")) {
-                meta_data[key] = value == 1 ? true : false;
-            }              
-            
+      const element = response[index];
+      let meta_name = element.meta;
+      let meta_data = JSON.parse(element.value);
+      for (const [key, value] of Object.entries(meta_data)) {
+        if (key.includes("enable")) {
+          meta_data[key] = value == 1 ? true : false;
         }
-        tmpSettingData[meta_name] = meta_data;        
+
+      }
+      tmpSettingData[meta_name] = meta_data;
     }
 
     this.settingdata = tmpSettingData;
 
     //console.log(this.settingdata['line_token']['recommendImage2']);
   },
- 
+
   methods: {
     selectPlan(plan) {
       this.selectedPlan = plan
     },
     handleConfirm() {
       if (!this.selectedPlan) return
-      
+
       // แสดง modal ตาม plan ที่เลือก
       if (this.selectedPlan === 'personal') {
         this.showPersonalInfoModal = true
@@ -326,12 +339,12 @@ export default {
     },
     handlePersonalInfoConfirm() {
       if (!this.agreedToPersonalTerms) return
-      
+
       // ปิด modal
       this.showPersonalInfoModal = false
-      
+
       // นำไปหน้าซื้อสินค้าพร้อมส่ง plan type และ sourceUserId
-      const query = { 
+      const query = {
         type: 'shop_personal',
         shop_type: 0,
       }
@@ -350,12 +363,12 @@ export default {
     },
     handleFamilyInfoConfirm() {
       if (!this.agreedToFamilyTerms) return
-      
+
       // ปิด modal
       this.showFamilyInfoModal = false
-      
+
       // นำไปหน้าซื้อสินค้าพร้อมส่ง plan type และ sourceUserId
-      const query = { 
+      const query = {
         type: 'shop_family',
         shop_type: 1,
       }
@@ -855,11 +868,11 @@ export default {
       &.success {
         background: rgba(40, 167, 69, 0.08);
         border-left-color: #28a745;
-        
+
         .notice-icon {
           color: #28a745;
         }
-        
+
         span {
           color: #155724;
         }
@@ -872,11 +885,11 @@ export default {
       &.info {
         background: rgba(23, 162, 184, 0.08);
         border-left-color: #17a2b8;
-        
+
         .notice-icon {
           color: #17a2b8;
         }
-        
+
         span {
           color: #0c5460;
         }
@@ -889,11 +902,11 @@ export default {
       &.warning {
         background: rgba(255, 193, 7, 0.12);
         border-left-color: #ffc107;
-        
+
         .notice-icon {
           color: #f39c12;
         }
-        
+
         span {
           color: #856404;
           font-weight: 500;
@@ -922,7 +935,7 @@ export default {
         padding-left: 0.5rem;
       }
 
-      ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
+      ::v-deep .custom-control-input:checked~.custom-control-label::before {
         background-color: #ff0000;
         border-color: #ff0000;
         box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
@@ -1037,5 +1050,3 @@ export default {
   }
 }
 </style>
-
-

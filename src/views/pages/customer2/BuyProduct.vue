@@ -16,7 +16,7 @@
 
           <div class="content-section" v-if="!showCompleteDialog">
             <div class="product-section">
-              <h3 class="section-title">เลือกแพ็กเกจสมาชิก</h3>
+              <h3 class="section-title">เลือกแพ็กเกจจำนวนกี่เดือน</h3>
 
               <div class="product-display" v-if="product.id != 0">
                 <div class="product-info">
@@ -412,27 +412,7 @@ export default {
       this.showModalProduct = false;
     },
     async confirmProduct() {
-      await this.$bvModal.msgBoxConfirm(this.$t('กรุณายืนยันการสั่งซื้อสินค้า'), {
-        title: this.$t('Please Confirm'),
-        size: 'sm',
-        buttonSize: 'sm',
-        okVariant: 'success',
-        okTitle: 'YES',
-        cancelTitle: 'NO',
-        footerClass: 'p-2',
-        hideHeaderClose: true,
-        centered: true,
-        headerBgVariant: 'success',
-        headerTextVariant: 'white'
-      })
-        .then(value => {
-          if (value) {
-            this.createSubScribeOrder();
-          }
-        })
-        .catch(err => {
-
-        })
+      this.createSubScribeOrder();
     },
     async createSubScribeOrder() {
       console.log('createSubScribeOrder');
@@ -1233,26 +1213,28 @@ export default {
       min-width: 120px;
 
       &.btn-success {
-        background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%);
+        background: #28a745;
         border: none;
         color: white;
-        box-shadow: 0 6px 20px rgba(152, 251, 152, 0.3);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 
         &:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 30px rgba(152, 251, 152, 0.4);
+          background: #218838;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
       }
 
       &.btn-secondary {
-        background: linear-gradient(135deg, #ffb6c1 0%, #ffa0b4 100%);
+        background: #6c757d;
         border: none;
         color: white;
-        box-shadow: 0 6px 20px rgba(255, 182, 193, 0.3);
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
 
         &:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+          background: #5a6268;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
         }
       }
     }

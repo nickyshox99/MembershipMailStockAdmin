@@ -26,10 +26,7 @@
                   <div class="option-icon">
                     <feather-icon icon="ShoppingBagIcon" size="48" />
                   </div>
-                  <h4 class="option-title">ซื้อแบบรหัสร้าน</h4>
-                  <p class="option-description">
-                    เหมาะสำหรับลูกค้าที่มีรหัสร้านจากทางเรา
-                  </p>
+                  <h4 class="option-title">ซื้อแบบเมลร้าน</h4>
                   <div class="check-icon" v-if="selectedType === 'shop'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
@@ -43,9 +40,6 @@
                     <feather-icon icon="UserCheckIcon" size="48" />
                   </div>
                   <h4 class="option-title">ซื้อแบบเมลลูกค้า</h4>
-                  <p class="option-description">
-                    เลือกใช้รหัสตัวเองหรือเมลตัวเองในการซื้อ
-                  </p>
                   <div class="check-icon" v-if="selectedType === 'customer-email'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
@@ -70,65 +64,54 @@
     </div>
 
     <!-- Terms and Conditions Modal -->
-    <b-modal
-      id="modal-terms"
-      ref="modalTerms"
-      v-model="showTermsModal"
-      :title="t('ข้อกำหนดและเงื่อนไข')"
-      size="lg"
-      :hideHeaderClose="true"
-      hide-footer
-      no-close-on-backdrop
-      no-close-on-esc
-      @hidden="resetTermsModal"
-    >
+    <b-modal id="modal-terms" ref="modalTerms" v-model="showTermsModal" :title="t('ข้อกำหนดและเงื่อนไข')" size="lg"
+      :hideHeaderClose="true" hide-footer no-close-on-backdrop no-close-on-esc @hidden="resetTermsModal">
       <div class="terms-content">
         <div class="terms-card">
-          <div class="terms-item important" v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage'] || settingdata['line_token']['recommendImage'].length<=0">
+          <div class="terms-item important"
+            v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage'] || settingdata['line_token']['recommendImage'].length <= 0">
             <feather-icon icon="AlertCircleIcon" class="terms-icon" />
             <div class="terms-text">
               <p class="terms-title">Youtube official มีข้อกำหนด และ official อาจมีการปรับเปลี่ยนกฎ</p>
               <p class="terms-desc">ทางร้านต้องยึดตามข้อกำหนดของ official</p>
             </div>
           </div>
-          <div v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage'] && settingdata['line_token']['recommendImage'].length>0">            
+          <div
+            v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage'] && settingdata['line_token']['recommendImage'].length > 0">
             <div style="display: block;">
-              <img :src="settingdata['line_token']['recommendImage']" width="100%" ></img>
+              <img :src="settingdata['line_token']['recommendImage']" width="100%" />
             </div>
           </div>
 
-          <!-- <div class="terms-item support">
-            <feather-icon icon="ShieldIcon" class="terms-icon" />
-            <div class="terms-text">
-              <p class="terms-title">หากเกิดปัญหา ทางร้านดูแลให้ลูกค้าตลอดการใช้งาน</p>
+          <div
+            v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage'] || settingdata['line_token']['recommendImage'].length === 0"
+            class="terms-card">
+
+            <div class="terms-item support">
+              <feather-icon icon="ShieldIcon" class="terms-icon" />
+              <div class="terms-text">
+                <p class="terms-title">หากเกิดปัญหา ทางร้านดูแลให้ลูกค้าตลอดการใช้งาน</p>
+              </div>
+            </div>
+
+            <div class="terms-item contact">
+              <feather-icon icon="MessageCircleIcon" class="terms-icon" />
+              <div class="terms-text">
+                <p class="terms-desc">ต้องการสอบถามเพิ่มเติมทักไลน์</p>
+              </div>
             </div>
           </div>
-
-          <div class="terms-item contact">
-            <feather-icon icon="MessageCircleIcon" class="terms-icon" />
-            <div class="terms-text">
-              <p class="terms-desc">ต้องการสอบถามเพิ่มเติมทักไลน์</p>
-            </div>
-          </div> -->
         </div>
 
         <div class="agreement-section">
-          <b-form-checkbox
-            v-model="agreedToTerms"
-            class="custom-checkbox"
-          >
+          <b-form-checkbox v-model="agreedToTerms" class="custom-checkbox">
             <span class="checkbox-label">ฉันได้อ่านและยินยอมตามข้อกำหนดและเงื่อนไขแล้ว</span>
           </b-form-checkbox>
         </div>
 
         <div class="action-section">
-          <b-button
-            variant="primary"
-            block
-            class="confirm-button"
-            :disabled="!agreedToTerms"
-            @click="handleTermsConfirm"
-          >
+          <b-button variant="primary" block class="confirm-button" :disabled="!agreedToTerms"
+            @click="handleTermsConfirm">
             <feather-icon icon="CheckIcon" class="button-icon" />
             เลือกซื้อสินค้า
           </b-button>
@@ -202,40 +185,40 @@ export default {
     const formData = new FormData();
 
     var headers = {
-        userid: 'big',
-        token: 'big',
+      userid: 'big',
+      token: 'big',
     }
 
     var body = {
-        userid: 'big',
-        token: 'big',
+      userid: 'big',
+      token: 'big',
     }
 
     let response;
     await axios.get("api/adminsetting/getadminsetting", {
-        headers: {
-            'Content-Type': 'application/json',
-            'userid': headers.userid,
-            'token': headers.token,
-        }
+      headers: {
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+      }
     }).then(
-        resp => {
-            response = resp.data.data;
-        }
+      resp => {
+        response = resp.data.data;
+      }
     );
 
     let tmpSettingData = {};
 
     for (let index = 0; index < response.length; index++) {
-        const element = response[index];
-        let meta_name = element.meta;
-        let meta_data = JSON.parse(element.value);
-        for (const [key, value] of Object.entries(meta_data)) {
-            if (key.includes("enable")) {
-                meta_data[key] = value == 1 ? true : false;
-            }
+      const element = response[index];
+      let meta_name = element.meta;
+      let meta_data = JSON.parse(element.value);
+      for (const [key, value] of Object.entries(meta_data)) {
+        if (key.includes("enable")) {
+          meta_data[key] = value == 1 ? true : false;
         }
-        tmpSettingData[meta_name] = meta_data;
+      }
+      tmpSettingData[meta_name] = meta_data;
     }
 
     this.settingdata = tmpSettingData;
@@ -267,7 +250,7 @@ export default {
     },
     handleConfirm() {
       if (!this.selectedType) return
-      
+
       // นำทางตาม type ที่เลือก
       this.navigateToNextPage()
     },
@@ -276,7 +259,7 @@ export default {
     },
     handleTermsConfirm() {
       if (!this.agreedToTerms) return
-      
+
       // ปิด modal
       this.showTermsModal = false
     },
@@ -299,7 +282,7 @@ export default {
         this.$router.push({ name: 'select-customer-email', query })
       }
     },
-    
+
   },
 }
 </script>
@@ -868,7 +851,7 @@ export default {
         padding-left: 0.5rem;
       }
 
-      ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
+      ::v-deep .custom-control-input:checked~.custom-control-label::before {
         background-color: #ff0000;
         border-color: #ff0000;
         box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);

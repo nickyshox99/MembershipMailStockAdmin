@@ -153,34 +153,64 @@
       @hidden="resetEmailInfoModal"
     >
       <div class="email-info-content">
-        <div class="benefits-card">
-            <div v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage4'] && settingdata['line_token']['recommendImage4'].length > 0">            
-                <div style="display: block;">
-                  <img :src="settingdata['line_token']['recommendImage4']" width="100%" ></img>
-                </div>
-            </div>
+        <!-- image section -->
+        <div
+          v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage4'] && settingdata['line_token']['recommendImage4'].length > 0">
+          <div style="display: block;">
+            <img :src="settingdata['line_token']['recommendImage4']" width="100%" />
+          </div>
+          <div class="divider"></div>
         </div>
 
-        <div class="divider"></div>
+        <!-- benefits section -->
+        <div
+          v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage4'] || settingdata['line_token']['recommendImage4'].length === 0">
+          <div class="benefits-card">
+            <div class="benefits-header">
+              <feather-icon icon="AwardIcon" class="header-icon" />
+              <h6 class="benefits-title">สิทธิประโยชน์ที่คุณจะได้รับ</h6>
+            </div>
+            <div class="benefits-grid">
+              <div class="benefit-item">
+                <feather-icon icon="VideoIcon" class="benefit-icon" />
+                <span>รับชมแบบไม่มีโฆษณา ดาวโหลดวีดีโอออฟไลน์</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="SmartphoneIcon" class="benefit-icon" />
+                <span>ใช้ขณะเปิดแอพอื่น/ปิดหน้าจอ</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="MusicIcon" class="benefit-icon" />
+                <span>สามารถใช้งาน youtube music</span>
+              </div>
+              <div class="benefit-item">
+                <feather-icon icon="MonitorIcon" class="benefit-icon" />
+                <span>ดูพร้อมกันได้ 4 เครื่อง(อิงตามข้อกำหนดแอพ)</span>
+              </div>
+            </div>
+          </div>
 
-        <!-- <div class="notices-card">
-          <div class="notice-item success">
-            <feather-icon icon="CheckCircleIcon" class="notice-icon" />
-            <span>มีแจ้งต่ออายุก่อนหมด</span>
+          <div class="divider"></div>
+
+          <div class="notices-card">
+            <div class="notice-item success">
+              <feather-icon icon="CheckCircleIcon" class="notice-icon" />
+              <span>มีแจ้งต่ออายุก่อนหมด</span>
+            </div>
+            <div class="notice-item neutral">
+              <feather-icon icon="InfoIcon" class="notice-icon" />
+              <span>ต้องใช้เมลและรหัสลูกค้า</span>
+            </div>
+            <div class="notice-item warning">
+              <feather-icon icon="AlertCircleIcon" class="notice-icon" />
+              <span>ร้านจะต้องเข้าเมลลูกค้าไปต่อ"ทุกเดือน"</span>
+            </div>
+            <div class="notice-item danger">
+              <feather-icon icon="AlertTriangleIcon" class="notice-icon" />
+              <span>ห้ามนำเมลสำคัญในการใช้งาน หากนำมาใช้ร้านไม่สามารถรับผิดชอบได้ทุกกรณี</span>
+            </div>
           </div>
-          <div class="notice-item neutral">
-            <feather-icon icon="InfoIcon" class="notice-icon" />
-            <span>ต้องใช้เมลและรหัสลูกค้า</span>
-          </div>
-          <div class="notice-item warning">
-            <feather-icon icon="AlertCircleIcon" class="notice-icon" />
-            <span>ร้านจะต้องเข้าเมลลูกค้าไปต่อ"ทุกเดือน"</span>
-          </div>
-          <div class="notice-item danger">
-            <feather-icon icon="AlertTriangleIcon" class="notice-icon" />
-            <span>ห้ามนำเมลสำคัญในการใช้งาน มาใช้ หากนำมาใช้ร้านไม่รับผิดชอบทุกกรณี</span>
-          </div>
-        </div> -->
+        </div>
 
         <div class="agreement-section">
           <b-form-checkbox v-model="agreedToEmailTerms" class="custom-checkbox">

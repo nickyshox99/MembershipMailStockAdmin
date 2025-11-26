@@ -155,12 +155,11 @@
 
               <!-- Action Buttons -->
               <div v-if="!showCompleteDialog && !showSlipCorrect" class="action-section">
-                <b-button 
-                  variant="success" 
-                  class="confirm-btn" 
-                  @click="confirmPayment()"
-                  :disabled="isProcessingPayment"
-                >
+                <div class="slip-upload">
+                  <p class="upload-hint">หากชำระเงินแล้ว จะไม่สามารถขอคืนเงินได้แต่เปลี่ยนเป็นแพ็กเกจอื่นได้</p>
+                </div>
+                <b-button variant="success" class="confirm-btn" @click="confirmPayment()"
+                  :disabled="isProcessingPayment">
                   <b-spinner v-if="isProcessingPayment" small class="button-spinner" />
                   <feather-icon v-else icon="CheckIcon" class="button-icon" />
                   {{ isProcessingPayment ? 'กำลังตรวจสอบการชำระเงิน...' : 'ยืนยันการชำระเงิน' }}
@@ -623,7 +622,7 @@ export default {
 
         const response = await this.CheckOutStripe(formData);
         console.log('CheckOutStripe response:', response);
-        
+
         // เช็คว่าชำระเงินไปแล้วหรือยัง
         if (response && response.data && response.data.status === 'already_paid') {
           this.isProcessingPayment = false;
@@ -638,15 +637,15 @@ export default {
           });
           return;
         }
-        
+
         //เอา URL จาก response.data.data.url มาแล้ว redirect ไปหน้าใหม่ จาก URL ที่ส่งมา
         const stripeUrl = response.data.data.url;
         if (response && response.data && response.data.status == 'success') {
           window.open(stripeUrl, '_blank');
-          
+
           // เริ่ม polling เช็ค payment status
           this.startPaymentPolling();
-          
+
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -910,11 +909,11 @@ export default {
     async loadPaymentType() {
       try {
         console.log('=== LOADING PAYMENT TYPE ===');
-        
+
         // ลองดึงจาก localStorage ก่อน
         const localPaymentType = localStorage.getItem('selectedPaymentType');
         console.log('Payment type from localStorage:', localPaymentType);
-        
+
         if (localPaymentType) {
           this.paymentType = localPaymentType;
           console.log('Using payment type from localStorage:', this.paymentType);
@@ -936,11 +935,11 @@ export default {
         if (response.data.status === 'success' && response.data.data && response.data.data.length > 0) {
           // หา payment type ที่มี ID = 1 (ตามที่เราตั้งค่าไว้)
           const activePaymentType = response.data.data.find(pt => pt.id === 1);
-          
+
           if (activePaymentType) {
             this.paymentType = activePaymentType.type_code;
             console.log('Using payment type from API:', this.paymentType);
-            
+
             // บันทึกลง localStorage เพื่อใช้ครั้งต่อไป
             localStorage.setItem('selectedPaymentType', this.paymentType);
           } else {
@@ -1203,30 +1202,30 @@ export default {
     },
     startPaymentPolling() {
       console.log('Starting payment polling...');
-      
+
       // Clear existing interval if any
       if (this.paymentPollingInterval) {
         clearInterval(this.paymentPollingInterval);
       }
-      
+
       if (this.paymentPollingTimeout) {
         clearTimeout(this.paymentPollingTimeout);
       }
-      
+
       // บันทึกเวลาเริ่มต้น
       this.pollingStartTime = Date.now();
-      
+
       // Poll every 3 seconds
       this.paymentPollingInterval = setInterval(async () => {
         await this.checkPaymentStatus();
       }, 3000);
-      
+
       // ตั้ง timeout 10 นาที (600,000 ms)
       this.paymentPollingTimeout = setTimeout(() => {
         console.log('Payment polling timeout after 10 minutes');
         this.stopPaymentPolling();
         this.isProcessingPayment = false;
-        
+
         this.$toast({
           component: ToastificationContent,
           props: {
@@ -1240,7 +1239,7 @@ export default {
     async checkPaymentStatus() {
       try {
         console.log('Checking payment status...');
-        
+
         const formData = new FormData();
         formData.append("userid", "-");
         formData.append("token", "-");
@@ -1249,30 +1248,30 @@ export default {
         formData.append("user_id", this.$route.query.user_id || "");
 
         const response = await this.GetOrderData(formData);
-        
+
         if (response && response.data && response.data.status === 'success' && response.data.data && response.data.data.length > 0) {
           const orderData = response.data.data[0];
-          
+
           console.log('Payment status check:', {
             slip_correct: orderData.slip_correct,
             wait_check_payment: orderData.wait_check_payment
           });
-          
+
           // เช็คว่าชำระเงินสำเร็จหรือยัง
           if (orderData.payment_status === 'success') {
             console.log('Payment successful!');
-            
+
             // หยุด polling
             this.stopPaymentPolling();
-            
+
             // อัพเดท order data
             this.orderData = orderData;
             this.showSlipCorrect = true;
             this.isProcessingPayment = false;
-            
+
             // Insert email data
             // await this.insertUserEmailData();
-            
+
             // แสดง success message
             this.$toast({
               component: ToastificationContent,
@@ -1843,18 +1842,31 @@ export default {
 
       .slip-upload {
         text-align: center;
+        width: 100%;
+        padding: 0 0.5rem;
 
         .file-input {
+          width: 100%;
+          max-width: 100%;
           margin-bottom: 1rem;
-          padding: 0.5rem;
+          padding: 0.75rem 1rem;
           border: 2px dashed #ff0000;
           border-radius: 12px;
           background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 100%);
           transition: all 0.3s ease;
+          font-family: 'MiSansMU', sans-serif;
+          font-size: 0.95rem;
+          cursor: pointer;
 
           &:hover {
             border-color: #cc0000;
             background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.1) 100%);
+          }
+
+          &:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
           }
         }
 
@@ -1866,6 +1878,9 @@ export default {
           margin-top: 0.5rem;
           margin-bottom: 0;
           text-align: center;
+          line-height: 1.5;
+          padding: 0 0.5rem;
+          word-wrap: break-word;
         }
       }
     }
@@ -1889,7 +1904,8 @@ export default {
         margin: 0 auto;
         justify-content: center;
 
-        .button-icon, .button-spinner {
+        .button-icon,
+        .button-spinner {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
@@ -2177,8 +2193,16 @@ export default {
         }
 
         .slip-upload {
+          padding: 0 0.25rem;
+
+          .file-input {
+            padding: 0.65rem 0.875rem;
+            font-size: 0.9rem;
+          }
+
           .upload-hint {
             font-size: 0.85rem;
+            padding: 0 0.25rem;
           }
         }
       }
@@ -2429,13 +2453,18 @@ export default {
         }
 
         .slip-upload {
+          padding: 0 0.25rem;
+
           .file-input {
-            padding: 0.375rem;
+            padding: 0.5rem 0.75rem;
             border-radius: 10px;
+            font-size: 0.85rem;
           }
 
           .upload-hint {
             font-size: 0.8rem;
+            padding: 0 0.25rem;
+            line-height: 1.4;
           }
         }
       }
