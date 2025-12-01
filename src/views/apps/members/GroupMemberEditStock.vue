@@ -538,7 +538,7 @@ export default {
     pRowData: function (newVal, oldVal) {
       this.statusActive = newVal.status;
       this.subscribeTypeSelected = newVal.subscription_type_id; 
-      this.getSubscribeMemberByGroupById();
+      this.getSubscribeMemberByGroupStockById();
     },
     isModeMemberEdit: function (newVal, oldVal) {
       if (newVal == true) {
@@ -675,7 +675,7 @@ export default {
             }
 
             },
-    async getSubscribeMemberByGroupById()
+    async getSubscribeMemberByGroupStockById()
       {
           console.log("getSubscribeMemberByGroupStockById")
           const userData = JSON.parse(localStorage.getItem('userData'));
@@ -815,7 +815,7 @@ export default {
         }
 
         let response;
-        await axios.post("api/subscriptiongroup/deleteMemberFromGroupByID",body,
+        await axios.post("api/subscriptiongroup/deleteMemberFromGroupStockByID",body,
         {
             headers: {            
             'Content-Type': 'application/json',
@@ -830,7 +830,7 @@ export default {
         );
     
         if (response.data.status == 'success') {
-            this.getSubscribeMemberByGroupById();
+            this.getSubscribeMemberByGroupStockById();
         }
         else {
             this.$toast(
@@ -878,7 +878,7 @@ export default {
             }
 
             let response;
-            await axios.post("api/subscriptiongroup/addMemberToGroup",body,
+            await axios.post("api/subscriptiongroup/addMemberToGroupStock",body,
             {
                 headers: {            
                 'Content-Type': 'application/json',
@@ -909,7 +909,7 @@ export default {
         this.newMemberPassword = '';
         this.showNewPassword = false;
         
-        this.getSubscribeMemberByGroupById();
+        this.getSubscribeMemberByGroupStockById();
         this.$emit("refetch-data");
       }
       else {
@@ -954,7 +954,7 @@ export default {
         this.updateMemberData();
     },
     async updateMemberData() {
-        console.log('updateMemberData');
+        console.log('updateMemberStockData');
         
         const userData = JSON.parse(localStorage.getItem('userData'));
         
@@ -973,7 +973,7 @@ export default {
         }
 
         let response;
-        await axios.post("api/subscriptiongroup/updateMemberData",body,
+        await axios.post("api/subscriptiongroup/updateMemberStockData",body,
         {
             headers: {            
             'Content-Type': 'application/json',
@@ -1007,7 +1007,7 @@ export default {
             this.editingLineUserId = '';
             this.note ='';
             
-            this.getSubscribeMemberByGroupById();
+            this.getSubscribeMemberByGroupStockById();
             this.$emit("refetch-data");
         }
         else {

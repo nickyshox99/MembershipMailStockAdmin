@@ -346,7 +346,7 @@ export default {
     pRowData: function (newVal, oldVal) {
       this.statusActive = newVal.status;
       this.subscribeTypeSelected = newVal.subscription_type_id; 
-      this.getSubscribePaymentById();
+      this.getSubscribePaymentStockById();
     },
     isModeNote: function (newVal, oldVal) {
       if (newVal == true) {
@@ -491,7 +491,7 @@ export default {
           autoHideDelay: 3000,
         });
 
-        this.getSubscribePaymentById();
+        this.getSubscribePaymentStockById();
 
       } else {
         this.$toast({
