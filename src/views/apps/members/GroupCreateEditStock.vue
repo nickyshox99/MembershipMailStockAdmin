@@ -94,6 +94,21 @@
                   </b-form-group>
                 </b-col>
 
+                <b-col md="6">
+                  <b-form-group
+                    label="link คำเชิญ"
+                    label-for="inviteurl"
+                  >
+                    <b-form-input
+                      id="inviteurl"
+                      placeholder="Link คำเชิญ"
+                      v-model="pRowData.invite_url"
+                      type="text"
+                      required
+                    />
+                  </b-form-group>
+                </b-col>
+
                 <b-col md="12">
                   <b-button
                     v-ripple.400="'rgba(255, 255, 255, 0.15)'"
@@ -255,6 +270,7 @@ export default {
         password: this.pRowData.password,
         status: this.pRowData.status,
         page_name: this.$route.name,
+        invite_url: this.pRowData.invite_url,
       }
 
       let response;

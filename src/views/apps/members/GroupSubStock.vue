@@ -390,7 +390,7 @@ export default {
   },
   methods: {
     ...mapActions(["GetPagePermission"]),    
-    ...mapActions(["GetSubscriptionGroup"]),
+    ...mapActions(["GetSubscriptionGroupStock"]),
     async getPagePermission() {
       console.log('getPagePermission');
 
@@ -436,7 +436,7 @@ export default {
       formData.append("searchWord", this.searchTerm);      
       formData.append("page_name", this.$route.name);
 
-      const response = await this.GetSubscriptionGroup(formData);
+      const response = await this.GetSubscriptionGroupStock(formData);
       if (response.data.status == 'success') {  
         //console.log(response.data.data);
         this.rows = response.data.data;
@@ -621,7 +621,7 @@ export default {
 
       // console.log(body);
       let response;
-      await axios.post("api/subscriptiongroup/deleteById/", body,
+      await axios.post("api/subscriptiongroup/deleteStockById/", body,
         {
           headers: {
             'Content-Type': 'application/json',
