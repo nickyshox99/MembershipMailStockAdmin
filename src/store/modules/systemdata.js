@@ -3111,6 +3111,45 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async GetSubscriptionGroupStock({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        searchWord: inputData.get("searchWord"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscriptionGroupStock",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetSubscriptionGroupForReport({commit}, inputData) {
         
     var headers = {
@@ -3222,6 +3261,45 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async GetSubscribeMemberByGroupStockById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        id: inputData.get("id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscribeMemberByGroupStockById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetGroupOfMemberByMemberId({commit}, inputData) {
         
     var headers = {
@@ -3280,6 +3358,45 @@ async GetActiveAdminBank({commit}, search) {
 
     let response;
     await axios.post("api/subscriptiongroup/getSubscribePaymentById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetSubscribePaymentStockById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        group_id: inputData.get("group_id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscribePaymentStockById",body,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -3441,6 +3558,49 @@ async GetActiveAdminBank({commit}, search) {
 
     let response;
     await axios.post("api/subscriptiongroup/addPaymentNoteGroup",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async AddPaymentNoteGroupStock({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {        
+        username : inputData.get("admin_id"),
+        page_name: inputData.get("page_name"),        
+        group_id: inputData.get("group_id"),
+        start_at: inputData.get("start_at"),
+        end_at: inputData.get("end_at"),
+        paid_amount: inputData.get("paid_amount"),
+        paid_by: inputData.get("paid_by"),
+        ref_img1: inputData.get("ref_img1"),
+        ref_img2: inputData.get("ref_img2"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/addPaymentNoteGroupStock",body,
     {
         headers: {            
         'Content-Type': 'application/json',

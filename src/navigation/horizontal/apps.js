@@ -1,7 +1,7 @@
 export default [
   {
     header: "Manage Member",
-    submenu: ["apps-members-manage", "apps-alliances-manage", "apps-agent-refer", "apps-group-sub", "apps-personal-email-manage", "apps-individual-email-stock"],
+    submenu: ["apps-group-sub-stock","apps-members-manage", "apps-alliances-manage", "apps-agent-refer", "apps-group-sub", "apps-personal-email-manage", "apps-individual-email-stock"],
   },
   {
     title: "Member",
@@ -13,9 +13,13 @@ export default [
         route: "apps-group-sub",
       },
       {
-        title: "Manage Member personal",
-        route: "apps-members-manage",
+        title: "Group Invite Stock",
+        route: "apps-group-sub-stock",
       },
+      // {
+      //   title: "Manage Member personal",
+      //   route: "apps-members-manage",
+      // },
       {
         title: "Personal Email",
         route: "apps-personal-email-manage",

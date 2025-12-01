@@ -736,5 +736,7 @@
   "Loading":"กำลังโหลด",
   "Daily Revenue Trend":"แนวโน้มรายได้รายวัน",
   "Average Order Value":"มูลค่าเฉลี่ยต่อคำสั่งซื้อ",
-  "type_purchase":"ประเภทการสั่งซื้อ"
+  "type_purchase":"ประเภทการสั่งซื้อ",
+  "Group Invite Stock":"สต๊อกคำเชิญสมาชิก",
+  "Group Subscription Stock":"สต๊อกกลุ่มสมาชิก"
 }
