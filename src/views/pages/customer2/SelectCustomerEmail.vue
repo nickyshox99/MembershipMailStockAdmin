@@ -27,9 +27,9 @@
                   <div class="option-icon">
                     <feather-icon icon="UserIcon" size="48" />
                   </div>
-                  <h4 class="option-title">รหัสตัวเอง</h4>
+                  <h4 class="option-title">Personal</h4>
                   <p class="option-description">
-                    ใช้รหัสส่วนตัวของคุณเองในการซื้อ
+                    แพ็กเก็จสำหรับใช้งานส่วนบุคคล
                   </p>
                   <div class="check-icon" v-if="selectedType === 'personal'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
@@ -43,9 +43,9 @@
                   <div class="option-icon">
                     <feather-icon icon="MailIcon" size="48" />
                   </div>
-                  <h4 class="option-title">เมลตัวเอง</h4>
+                  <h4 class="option-title">Family</h4>
                   <p class="option-description">
-                    ใช้อีเมลส่วนตัวของคุณในการซื้อ
+                    แพ็กเก็จสำหรับใช้งานแบบครอบครัว
                   </p>
                   <div class="check-icon" v-if="selectedType === 'email'">
                     <feather-icon icon="CheckCircleIcon" size="24" />

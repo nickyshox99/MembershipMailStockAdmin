@@ -42,7 +42,7 @@
                   <div class="option-icon">
                     <feather-icon icon="UserIcon" size="48" />
                   </div>
-                  <h4 class="option-title">รหัสตัวเอง</h4>
+                  <h4 class="option-title">d</h4>
                   <p class="option-description">
                     ใช้รหัสส่วนตัวของคุณเองในการซื้อ
                   </p>

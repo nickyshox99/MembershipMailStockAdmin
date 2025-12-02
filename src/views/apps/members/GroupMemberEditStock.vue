@@ -25,7 +25,7 @@
                   </b-form-group>
                 </b-col>
 
-                <b-col md="12">
+                <!-- <b-col md="12">
                   <b-form-group
                     :label="t('Password')"
                     label-for="password"
@@ -48,7 +48,7 @@
                       </b-input-group-append>
                     </b-input-group>
                   </b-form-group>
-                </b-col>
+                </b-col> -->
 
                 <b-col md="12">
                   <b-form-group
@@ -60,6 +60,21 @@
                       placeholder="ใส่ข้อความที่อยากใส่ให้ลูกค้าตอนอนุมัติ"
                       v-model="note"
                       type="text"
+                    />
+                  </b-form-group>
+                </b-col>
+
+                <b-col md="12">
+                  <b-form-group
+                    label="link คำเชิญ"
+                    label-for="inviteurl"
+                  >
+                    <b-form-input
+                      id="inviteurl"
+                      placeholder="Link คำเชิญ"
+                      v-model="invite_url"
+                      type="text"
+                      required
                     />
                   </b-form-group>
                 </b-col>
@@ -115,7 +130,7 @@
                   </b-form-group>
                 </b-col>
 
-                <b-col md="6">
+                <!-- <b-col md="6">
                   <b-form-group
                     :label="t('Password')"
                     label-for="edit-password"
@@ -138,7 +153,7 @@
                       </b-input-group-append>
                     </b-input-group>
                   </b-form-group>
-                </b-col>
+                </b-col> -->
 
                 <b-col md="12">
                   <b-form-group
@@ -154,6 +169,21 @@
                   </b-form-group>
                 </b-col>
 
+                <b-col md="12">
+                  <b-form-group
+                    :label="t('Invite Url')"
+                    label-for="invite_url"
+                  >
+                    <b-form-input
+                      id="invite_url"
+                      placeholder="ลิงค์คำเชิญ"
+                      v-model="invite_url"
+                      type="text"
+                    />
+                  </b-form-group>
+                </b-col>
+
+                
                 <b-col md="12">
                   <b-form-group
                     :label="t('Line User ID')"
@@ -447,6 +477,10 @@ export default {
           field: 'user_id2',
         },
         {
+          label: 'Invite Url',
+          field: 'invite_url',
+        },
+        {
           label: t('Action'),
           field: 'action',
           width: '15%',
@@ -493,7 +527,7 @@ export default {
       selectedLineContact: null,
       isLoadingLineContacts: false,
       note : '',
-      
+      invite_url:'',
     };
   },
   model: {
@@ -538,7 +572,7 @@ export default {
     pRowData: function (newVal, oldVal) {
       this.statusActive = newVal.status;
       this.subscribeTypeSelected = newVal.subscription_type_id; 
-      this.getSubscribeMemberByGroupStockById();
+      this.getSubscribeMemberByGroupStockById();      
     },
     isModeMemberEdit: function (newVal, oldVal) {
       if (newVal == true) {
@@ -849,17 +883,17 @@ export default {
             console.log('addMemberEmail');
             
             // Validate input
-            if (!this.newMemberEmail || !this.newMemberPassword) {
-                this.$toast({
-                    component: ToastificationContent,
-                    props: {
-                        title: 'Please enter both email and password',
-                        icon: 'AlertTriangleIcon',
-                        variant: 'warning',
-                    },
-                });
-                return;
-            }
+            // if (!this.newMemberEmail || !this.newMemberPassword) {
+            //     this.$toast({
+            //         component: ToastificationContent,
+            //         props: {
+            //             title: 'Please enter both email and password',
+            //             icon: 'AlertTriangleIcon',
+            //             variant: 'warning',
+            //         },
+            //     });
+            //     return;
+            // }
             
             const userData = JSON.parse(localStorage.getItem('userData'));
             
@@ -875,6 +909,7 @@ export default {
                 group_id: this.pRowData.id,
                 page_name: this.$route.name,
                 note : this.note,
+                invite_url:this.invite_url,
             }
 
             let response;
@@ -933,22 +968,23 @@ export default {
         this.editingPassword = memberRow.password || '';
         this.editingLineUserId = memberRow.user_id || '';
         this.selectedLineContact = memberRow.user_id || null;
+        this.invite_url = memberRow.invite_url || '';
     },
     saveMemberEdit() {
         console.log('saveMemberEdit');
         
         // Validate input
-        if (!this.editingEmail) {
-            this.$toast({
-                component: ToastificationContent,
-                props: {
-                    title: 'Please enter email',
-                    icon: 'AlertTriangleIcon',
-                    variant: 'warning',
-                },
-            });
-            return;
-        }
+        // if (!this.editingEmail) {
+        //     this.$toast({
+        //         component: ToastificationContent,
+        //         props: {
+        //             title: 'Please enter email',
+        //             icon: 'AlertTriangleIcon',
+        //             variant: 'warning',
+        //         },
+        //     });
+        //     return;
+        // }
         
         // Call API to update member
         this.updateMemberData();
@@ -970,6 +1006,7 @@ export default {
             user_id: this.editingLineUserId,
             page_name: this.$route.name,
             note : this.note,
+            invite_url:this.invite_url,
         }
 
         let response;

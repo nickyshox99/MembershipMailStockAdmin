@@ -54,7 +54,7 @@
                   </b-form-group>
                 </b-col>
 
-                <b-col md="6">
+                <!-- <b-col md="6">
                   <b-form-group
                     :label="t('Password')"
                     label-for="password"
@@ -78,7 +78,7 @@
                       </b-input-group-append>
                     </b-input-group>
                   </b-form-group>
-                </b-col>
+                </b-col> -->
 
                 <b-col md="6">
                   <b-form-group
@@ -94,7 +94,7 @@
                   </b-form-group>
                 </b-col>
 
-                <b-col md="6">
+                <!-- <b-col md="6">
                   <b-form-group
                     label="link คำเชิญ"
                     label-for="inviteurl"
@@ -107,7 +107,7 @@
                       required
                     />
                   </b-form-group>
-                </b-col>
+                </b-col> -->
 
                 <b-col md="12">
                   <b-button
@@ -270,7 +270,7 @@ export default {
         password: this.pRowData.password,
         status: this.pRowData.status,
         page_name: this.$route.name,
-        invite_url: this.pRowData.invite_url,
+        invite_url: this.invite_url,
       }
 
       let response;
