@@ -139,10 +139,10 @@
               <feather-icon icon="CheckCircleIcon" class="notice-icon" />
               <span>มีแจ้งต่ออายุก่อนหมด</span>
             </div>
-            <div class="notice-item danger">
+            <!-- <div class="notice-item danger">
               <feather-icon icon="AlertTriangleIcon" class="notice-icon" />
               <span>ห้ามนำเมลสำคัญในการใช้งาน หากนำมาใช้ร้านไม่สามารถรับผิดชอบได้ทุกกรณี</span>
-            </div>
+            </div> -->
           </div>
         </div>
 
