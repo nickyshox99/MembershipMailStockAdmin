@@ -85,6 +85,14 @@
             }}
           </span>
 
+          <span v-if="props.column.field === 'end_date2'">
+            {{
+              props.row.create_date != null
+                ? formatDateAssigned(props.row.end_date)
+                : ""
+            }}
+          </span>
+
           <span v-if="props.column.field === 'slip_file_at2'">
             {{
               props.row.create_date != null
@@ -167,17 +175,17 @@
               <span class="d-none d-sm-inline">{{ props.row.personal_email_status === 1 ? t("Active") : t("Inactive") }}</span>
             </b-badge>
 
-            <!-- ปุ่มส่งรหัส (แสดงเสมอ แต่ disable เมื่อ status = 0) -->
+            <!-- ปุ่มส่งรหัส (แสดงเสมอ แต่ disable เมื่อ status = 0) -->             
             <b-badge v-if="props.row.purchase_type === 'personal' || props.row.purchase_type === 'email'"
               :style="{
-                cursor: props.row.personal_email_status === 1 ? 'pointer' : 'not-allowed',
+                cursor: props.row.personal_email_status === 1 || props.row.status_regis==1 ? 'pointer' : 'not-allowed',
                 marginRight: '2px',
                 minWidth: '100px',
                 display: 'inline-block',
                 marginBottom: '2px',
-                opacity: props.row.personal_email_status === 1 ? '1' : '0.5'
+                opacity: props.row.personal_email_status === 1  ? '1' : '0.5'
               }"
-              :variant="props.row.personal_email_status === 1 ? 'success' : 'secondary'" 
+              :variant="props.row.personal_email_status === 1  ? 'success' : 'secondary'" 
               @click="props.row.personal_email_status === 1 ? sendEmailPassword(props.row) : null">
               <feather-icon icon="SendIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Send Code") }}</span>
@@ -496,6 +504,11 @@ export default {
       {
         label: t('Create Date'),
         field: 'create_date2',
+        width: '10%',
+      },
+      {
+        label: t('End Date'),
+        field: 'end_date2',
         width: '10%',
       },
       {

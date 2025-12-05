@@ -1927,9 +1927,7 @@ async GetActiveAdminBank({commit}, search) {
         note: inputData.get("note"),
         purchase_type: inputData.get("purchase_type"),
     }
-
-    console.log('CreateAndApproveSubScribeOrder - body:', body);
-
+    
     let response;
     await axios.post("api/product/CreateAndApproveSubScribeOrder",body,
     {
@@ -2640,7 +2638,7 @@ async GetActiveAdminBank({commit}, search) {
     const orderId = inputData.get("orderId");
 
     let response;
-    await axios.get(`api/personalemail/getPersonalEmailStatusByOrderId/${orderId}`,
+    await axios.get(`api/personal_email/getPersonalEmailStatusByOrderId/${orderId}`,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -2775,7 +2773,7 @@ async GetActiveAdminBank({commit}, search) {
     const username = inputData.get("username");
 
     let response;
-    await axios.get(`api/personalemail/getPersonalEmailByOrderId/${orderId}`,
+    await axios.get(`api/personal_email/getPersonalEmailByOrderId/${orderId}`,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -4813,7 +4811,7 @@ async GetActiveAdminBank({commit}, search) {
     const orderId = inputData.get("orderId");
 
     let response;
-    await axios.get(`api/personal_email/getPersonalEmailByOrderId/${orderId}`,
+    await axios.get(`api/personalemail/getPersonalEmailByOrderId/${orderId}`,
     {
         headers: {            
         'Content-Type': 'application/json',

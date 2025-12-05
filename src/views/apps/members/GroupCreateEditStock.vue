@@ -210,8 +210,7 @@ export default {
     isFormValid() {
       return this.pRowData.group_name && 
              this.pRowData.subscription_type_id && 
-             this.pRowData.head_email && 
-             this.pRowData.password;
+             this.pRowData.head_email 
     }
   },
   props: {
