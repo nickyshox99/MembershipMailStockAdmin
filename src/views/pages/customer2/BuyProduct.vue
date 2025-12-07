@@ -436,8 +436,6 @@ export default {
 
       if (response.data.status == 'success') {
 
-        // await this.insertUserEmailData();
-
         this.$toast(
           {
             component: ToastificationContent,
