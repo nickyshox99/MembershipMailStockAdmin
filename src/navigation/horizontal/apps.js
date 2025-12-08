@@ -9,27 +9,31 @@ export default [
     children: [
 
       {
-        title: "Group Subscription",
-        route: "apps-group-sub",
+        title: "เมลร้านบุคคล",
+        route: "apps-individual-email-stock",
+        icon: "MailIcon",
       },
       {
-        title: "Group Invite Stock",
+        title: "เมลร้านแฟมมิลี่",
+        route: "apps-group-sub",
+        icon: "MailIcon",
+      },
+      {
+        title: "เมลลูกค้าแบบบุคคล",
+        route: "apps-personal-email-manage",
+        icon: "MailIcon",
+      },
+      {
+        title: "เมลลูกค้าแฟมมิลี่",
         route: "apps-group-sub-stock",
+        icon: "MailIcon",
       },
       // {
       //   title: "Manage Member personal",
       //   route: "apps-members-manage",
       // },
-      {
-        title: "Personal Email",
-        route: "apps-personal-email-manage",
-        icon: "MailIcon",
-      },
-      {
-        title: "Email Stock แบบบุคคล",
-        route: "apps-individual-email-stock",
-        icon: "MailIcon",
-      },
+     
+      
     ],
   },
   // {

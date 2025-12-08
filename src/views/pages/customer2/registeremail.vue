@@ -291,7 +291,7 @@ export default {
 
       // นำไปหน้าซื้อสินค้าพร้อมข้อมูล email, sourceUserId, shop_type และ purchaseType
       const query = {
-        email: this.email,
+        emailx: this.email,
         shop_type: 3,
         purchase_type: 'email'
       }

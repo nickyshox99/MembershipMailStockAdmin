@@ -3598,7 +3598,7 @@ async GetActiveAdminBank({commit}, search) {
     // console.log(body);
 
     let response;
-    await axios.post("api/subscriptiongroup/addPaymentNoteGroupStock",body,
+    await axios.post("api/addPaymentNoteGroupStock/addPaymentNoteGroupStock",body,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -4780,7 +4780,7 @@ async GetActiveAdminBank({commit}, search) {
     const orderId = inputData.get("orderId");
 
     let response;
-    await axios.get(`api/personal_email/getPersonalEmailStatusByOrderId/${orderId}`,
+    await axios.get(`api/personalemail/getPersonalEmailStatusByOrderId/${orderId}`,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -4811,7 +4811,7 @@ async GetActiveAdminBank({commit}, search) {
     const orderId = inputData.get("orderId");
 
     let response;
-    await axios.get(`api/personalemail/getPersonalEmailByOrderId/${orderId}`,
+    await axios.get(`api/personal_email/getPersonalEmailByOrderId/${orderId}`,
     {
         headers: {            
         'Content-Type': 'application/json',

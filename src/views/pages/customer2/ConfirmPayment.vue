@@ -318,14 +318,14 @@ export default {
   },
   async created() {
     // this.getOrderData();
-    const { id, user_id, purchase_type, email } = this.$route.query || {};
-    if (!id || !user_id) { this.showErrorParam = true; return; }
+    const { id, user_id, purchase_type, emailx } = this.$route.query || {};
+    if (!id || !user_id) { this.showErrorParam = true; return; }    
 
     // เก็บ purchase_type และ email ไว้ใช้
     this.purchaseType = purchase_type || '';
-    this.email = email || '';
+    this.email = emailx || '';
     console.log('ConfirmPayment - purchase_type:', this.purchaseType);
-    console.log('ConfirmPayment - email:', this.email);
+    console.log('ConfirmPayment - email:', this.emailx);
 
     await this.loadSetting();
     await this.loadPaymentType();

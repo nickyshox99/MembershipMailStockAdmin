@@ -690,5 +690,6 @@
   "Send Message Succesful":"Send Message Succesful",
   "Order Expired":"Order Expired",
   "Group Invite Stock":"Group Invite Stock",
-  "Group Subscription Stock":"Group Subscription Stock"
+  "Group Subscription Stock":"Group Subscription Stock",
+  "Inactive":"Inactive"
 }

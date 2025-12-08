@@ -251,11 +251,13 @@ export default {
 
   // },
   async created() {
+    console.log("created")
     await this.loadSetting()        // <— โหลดค่าก่อน
+    
+    // รับค่าจาก Vue Router Query  
 
-    // รับค่าจาก Vue Router Query
     this.sourceUserId = this.$route.query.sourceUserId;
-    this.email = this.$route.query.email;
+    this.email = this.$route.query.emailx;
     this.purchaseType = this.$route.query.purchase_type || this.$route.query.purchaseType || this.$route.query.type;
     this.shopType = this.$route.query.shop_type;
 
@@ -415,23 +417,20 @@ export default {
       this.createSubScribeOrder();
     },
     async createSubScribeOrder() {
-      console.log('createSubScribeOrder');
-      console.log('purchase_type before send:', this.purchaseType);
+      console.log('createSubScribeOrder');      
 
       const formData = new FormData();
-      formData.append("user_id", this.userid);
-      console.log(this.userid);
+      formData.append("user_id", this.userid);      
       formData.append("token", "-");
-      formData.append("line_id", this.sourceUserId);
-      console.log(this.sourceUserId);
-      formData.append("email", this.selectedSubScribeEmail);
+      formData.append("line_id", this.sourceUserId);      
+      formData.append("email", this.email);
       formData.append("product_id", this.product.id);
       formData.append("note", "");
       formData.append("page_name", this.$route.name);
       formData.append("purchase_type", this.purchaseType); // เพิ่ม purchase_type
 
-
       formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"
+      
       const response = await this.CreateAndApproveSubScribeOrder(formData)
 
       if (response.data.status == 'success') {
