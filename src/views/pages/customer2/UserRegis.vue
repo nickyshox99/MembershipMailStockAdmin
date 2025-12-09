@@ -406,7 +406,7 @@ export default {
       const query = { 
         purchase_type: 'personal',
         shop_type: 2,
-        email: this.email,
+        emailx: this.email,
         // sourceUserId: this.sourceUserId 
       }
       if (this.sourceUserId) {

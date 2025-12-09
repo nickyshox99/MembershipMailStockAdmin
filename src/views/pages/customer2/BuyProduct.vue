@@ -452,6 +452,7 @@ export default {
         if (orderId) {
 
           await this.insertUserEmailData(orderId);
+          
 
           this.$router.replace(
             {

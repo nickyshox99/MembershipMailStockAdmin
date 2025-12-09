@@ -2638,7 +2638,7 @@ async GetActiveAdminBank({commit}, search) {
     const orderId = inputData.get("orderId");
 
     let response;
-    await axios.get(`api/personal_email/getPersonalEmailStatusByOrderId/${orderId}`,
+    await axios.get(`api/personalemail/getPersonalEmailStatusByOrderId/${orderId}`,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -2773,7 +2773,7 @@ async GetActiveAdminBank({commit}, search) {
     const username = inputData.get("username");
 
     let response;
-    await axios.get(`api/personal_email/getPersonalEmailByOrderId/${orderId}`,
+    await axios.get(`api/personalemail/getPersonalEmailByOrderId/${orderId}`,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -4780,7 +4780,7 @@ async GetActiveAdminBank({commit}, search) {
     const orderId = inputData.get("orderId");
 
     let response;
-    await axios.get(`api/personalemail/getPersonalEmailStatusByOrderId/${orderId}`,
+    await axios.get(`api/personal_email/getPersonalEmailStatusByOrderId/${orderId}`,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -4844,8 +4844,14 @@ async GetActiveAdminBank({commit}, search) {
         status: inputData.get("status"),
     }
 
+    var purchase_type = inputData.get("purchase_type")
+    var url = "api/personalemail/updatePersonalEmailStatusByOrderId"
+    if (purchase_type=="email") {
+        url = "api/personal_email/updatePersonalEmailStatusByOrderId"
+    }
+
     let response;
-    await axios.post("api/personal_email/updatePersonalEmailStatusByOrderId", body,
+    await axios.post(url, body,
     {
         headers: {            
         'Content-Type': 'application/json',

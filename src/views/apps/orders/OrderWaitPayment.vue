@@ -1324,10 +1324,12 @@ export default {
         form.append("token", userData.token);
         form.append("orderId", this.updateStatusItem.id);
         form.append("status", newStatus);
+        form.append("purchase_type", this.updateStatusItem.purchase_type);
         
         // ใช้ API ที่แตกต่างกันตาม purchase_type
         let response;
         if (this.updateStatusItem.purchase_type === 'email') {
+          
             response = await this.UpdateEmailStatus(form);
         } else {
             response = await this.UpdatePersonalEmailStatus(form);
@@ -1371,9 +1373,9 @@ export default {
       
       // ใช้ API ที่แตกต่างกันตาม purchase_type
       if (itemData.purchase_type === 'email') {
-          await this.loadEmailData(itemData.id);
-      } else {
-          await this.loadPersonalEmailData(itemData.id);
+        await this.loadEmailData(itemData.id);
+      } else {        
+        await this.loadPersonalEmailData(itemData.id);          
       }
     },
     

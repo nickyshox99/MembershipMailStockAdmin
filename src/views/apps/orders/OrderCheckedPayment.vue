@@ -699,6 +699,7 @@ export default {
           } else if (element.purchase_type === 'email') {
             await this.fetchEmailStatus(element.id, index);
           }
+          
         }
       } else {
         this.$toast(
@@ -1204,6 +1205,7 @@ export default {
         // ส่ง status parameter (toggle ระหว่าง 0 และ 1)
         const newStatus = order.personal_email_status === 1 ? 0 : 1;
         form.append("status", newStatus);
+        form.append("purchase_type",order.purchase_type)
 
         const response = await this.UpdateEmailStatus(form);
 
