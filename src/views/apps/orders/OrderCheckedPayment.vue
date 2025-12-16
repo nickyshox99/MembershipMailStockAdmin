@@ -1364,7 +1364,8 @@ export default {
         form.append("token", userData.token);        
         form.append("username", userData.username);
 
-        form.append("id", selectChangeDate.id);
+        form.append("id", this.selectChangeDate.id);
+        form.append("end_date", this.selectChangeDate.end_date);
                 
         const response = await this.UpdateEndDateById(form);
         
