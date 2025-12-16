@@ -922,10 +922,17 @@ export default {
               for (let index = 0; index < this.rowsOrderHistory.length; index++) {
                   const element = this.rowsOrderHistory[index];
                   
+                  // if (element.purchase_type === 'personal') {
+                  //     await this.fetchPersonalEmailStatus(element.id, index);
+                  // } else if (element.purchase_type === 'email') {
+                  //     await this.fetchEmailStatus(element.id, index);
+                  // }
                   if (element.purchase_type === 'personal') {
-                      await this.fetchPersonalEmailStatus(element.id, index);
+                    //await this.fetchPersonalEmailStatus(element, index);
+                    this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].personal_email_status_regis
                   } else if (element.purchase_type === 'email') {
-                      await this.fetchEmailStatus(element.id, index);
+                    //await this.fetchEmailStatus(element, index);
+                    this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].user_email_status_regis
                   }
               }
           } else {

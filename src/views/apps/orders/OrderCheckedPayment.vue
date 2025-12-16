@@ -85,7 +85,7 @@
             }}
           </span>
 
-          <span v-if="props.column.field === 'end_date2'">
+          <span v-if="props.column.field === 'end_date2'" style="cursor: pointer;" @click="showModalChangeDate(props.row)">
             {{
               props.row.create_date != null
                 ? formatDateAssigned(props.row.end_date)
@@ -330,7 +330,7 @@
 
     </b-modal>
 
-    <!-- Personal Email Modal -->
+    
     <b-modal id="modal-personal-email" ref="modalPersonalEmail" v-model="showModalPersonalEmail"
       :title="t('Personal Email Information')" @show="resetModalPersonalEmail" @hidden="resetModalPersonalEmail"
       @ok="handleOkPersonalEmail" size="lg" :hideHeaderClose="false" ok-variant="primary" :okTitle="t('Close')"
@@ -398,6 +398,30 @@
       <div v-else class="text-center">
         <p class="text-muted">{{ t("No personal email data found for this order") }}</p>
       </div>
+    </b-modal>
+
+    <b-modal id="modal-change-date" ref="modalChangeDate" v-model="showChangeDate"
+      :title="t('End Date')" @show="resetModalChangeDate" @hidden="resetModalChangeDate"
+      @ok="handleOkChangeDate" size="sm" :hideHeaderClose="false" ok-variant="primary" :okTitle="t('Save')"
+      :cancelTitle="t('Cancel')" 
+      buttonSize="sm" >
+     
+      <div >        
+        
+          <div class="end-date">
+            <div class="info-item">
+              <div class="info-label">
+                <feather-icon icon="CalendarIcon" size="16" />
+                {{ t("End date") }} : 
+              </div>
+              <div class="">
+                <b-form-datepicker id="endDate" v-model="selectChangeDate.end_date" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" locale="th"></b-form-datepicker>
+              </div>
+            </div>
+          </div>
+                
+      </div>
+     
     </b-modal>
 
   </div>
@@ -597,6 +621,8 @@ export default {
       loadingPersonalEmail: false,
       selectedOrderId: null,
 
+      showChangeDate: false,
+      selectChangeDate : [],
     };
   },
   computed: {
@@ -652,7 +678,8 @@ export default {
     ...mapActions(["UpdateEmailStatus"]),
     ...mapActions(["GetEmailStatusByOrderId"]),
     ...mapActions(["GetEmailByOrderId"]),
-
+    ...mapActions(["UpdateEndDateById"]),
+    
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
       formattedDate = new Date(formattedDate.getTime() - 3600000); // 60 * 60 * 1000 * 1
@@ -695,9 +722,11 @@ export default {
           const element = this.rowsOrderHistory[index];
 
           if (element.purchase_type === 'personal') {
-            await this.fetchPersonalEmailStatus(element.id, index);
+            //await this.fetchPersonalEmailStatus(element, index);
+            this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].personal_email_status_regis
           } else if (element.purchase_type === 'email') {
-            await this.fetchEmailStatus(element.id, index);
+            //await this.fetchEmailStatus(element, index);
+            this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].user_email_status_regis
           }
           
         }
@@ -713,22 +742,25 @@ export default {
           });
       }
     },
-    async fetchPersonalEmailStatus(orderId, rowIndex) {
+    async fetchPersonalEmailStatus(data, rowIndex) {
       try {
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        const form = new FormData();
+        // const userData = JSON.parse(localStorage.getItem('userData'));
+        // const form = new FormData();
 
-        form.append("userid", userData.username);
-        form.append("token", userData.token);
-        form.append("orderId", orderId);
+        // form.append("userid", userData.username);
+        // form.append("token", userData.token);
+        // form.append("orderId", orderId);
 
-        const response = await this.GetPersonalEmailStatusByOrderId(form);
+        // const response = await this.GetPersonalEmailStatusByOrderId(form);
 
-        if (response.data.status === 'success' && response.data.data.length > 0) {
-          this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', response.data.data[0].status_regis);
-        } else {
-          this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
-        }
+        // if (response.data.status === 'success' && response.data.data.length > 0) {
+        //   this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', response.data.data[0].status_regis);
+        // } else {
+        //   this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
+        // }
+
+        this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', data.status_regis);
+
       } catch (error) {
         console.error('Error fetching personal email status:', error);
         this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
@@ -1103,22 +1135,24 @@ export default {
       }
     },
 
-    async fetchEmailStatus(orderId, rowIndex) {
+    async fetchEmailStatus(data, rowIndex) {
       try {
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        const form = new FormData();
+        // const userData = JSON.parse(localStorage.getItem('userData'));
+        // const form = new FormData();
 
-        form.append("userid", userData.username);
-        form.append("token", userData.token);
-        form.append("orderId", orderId);
+        // form.append("userid", userData.username);
+        // form.append("token", userData.token);
+        // form.append("orderId", orderId);
 
-        const response = await this.GetEmailStatusByOrderId(form);
+        // const response = await this.GetEmailStatusByOrderId(form);
 
-        if (response.data.status === 'success' && response.data.data.length > 0) {
-          this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', response.data.data[0].status_regis);
-        } else {
-          this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
-        }
+        // if (response.data.status === 'success' && response.data.data.length > 0) {
+        //   this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', response.data.data[0].status_regis);
+        // } else {
+        //   this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
+        // }
+
+        this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', data.status_regis);
       } catch (error) {
         console.error('Error fetching email status:', error);
         this.$set(this.rowsOrderHistory[rowIndex], 'personal_email_status', null);
@@ -1310,7 +1344,60 @@ export default {
 
     async loadData() {
       await this.search();
-    }
+    },
+    showModalChangeDate(val){
+      this.showChangeDate = true;
+      this.selectChangeDate = val
+    },
+    resetModalChangeDate() {      
+      this.showChangeDate = false;
+    },
+    handleOkChangeDate(){
+      this.updateEndDate();
+    },
+    async updateEndDate() {
+      try {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const form = new FormData();
+
+        form.append("userid", userData.username);
+        form.append("token", userData.token);        
+        form.append("username", userData.username);
+
+        form.append("id", selectChangeDate.id);
+                
+        const response = await this.UpdateEndDateById(form);
+        
+
+        // API UpdateEmailStatus return axios response object
+        if (response && response.data && response.data.status === 'success') {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'อัพเดทสถานะสำเร็จ',
+              icon: 'CheckIcon',
+              variant: 'success',
+            },
+          });
+
+          // Refresh data
+          await this.search();
+        } else {
+          throw new Error((response && response.data && response.data.message) || 'เกิดข้อผิดพลาด');
+        }
+
+      } catch (error) {
+        console.error('Error updating email status:', error);
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'เกิดข้อผิดพลาด: ' + (error.message || error),
+            icon: 'AlertCircleIcon',
+            variant: 'danger',
+          },
+        });
+      }
+    },
 
   },
 };

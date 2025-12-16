@@ -2452,6 +2452,44 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async UpdateEndDateById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        id: inputData.get("id"),               
+        end_date :  inputData.get("end_date"),               
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/UpdateEndDateById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetOrderNearExpire({commit}, inputData) {
         
     var headers = {
