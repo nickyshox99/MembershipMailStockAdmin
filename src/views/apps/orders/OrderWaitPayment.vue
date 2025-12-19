@@ -929,10 +929,10 @@ export default {
                   // }
                   if (element.purchase_type === 'personal') {
                     //await this.fetchPersonalEmailStatus(element, index);
-                    this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].personal_email_status_regis
+                    this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].user_email_status_regis            
                   } else if (element.purchase_type === 'email') {
                     //await this.fetchEmailStatus(element, index);
-                    this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].user_email_status_regis
+                    this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].personal_email_status_regis
                   }
               }
           } else {
