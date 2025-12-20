@@ -98,7 +98,7 @@
 
           <span v-if="props.column.field === 'end_date2'" style="cursor: pointer;" @click="showModalChangeDate(props.row)">
             {{
-              props.row.create_date != null
+              props.row.end_date != null
                 ? formatDateAssigned(props.row.end_date)
                 : ""
             }}

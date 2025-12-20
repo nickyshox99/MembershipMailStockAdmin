@@ -129,32 +129,7 @@
                     />
                   </b-form-group>
                 </b-col>
-
-                <!-- <b-col md="6">
-                  <b-form-group
-                    :label="t('Password')"
-                    label-for="edit-password"
-                  >
-                    <b-input-group>
-                      <b-form-input
-                        :type="showEditPassword ? 'text' : 'password'"
-                        id="edit-password"
-                        placeholder="Enter password/code"
-                        v-model="editingPassword"
-                      />
-                      <b-input-group-append>
-                        <b-button 
-                          :variant="showEditPassword ? 'outline-info' : 'outline-secondary'"
-                          @click="toggleEditPasswordVisibility"
-                          type="button"
-                        >
-                          <feather-icon :icon="showEditPassword ? 'EyeOffIcon' : 'EyeIcon'" />
-                        </b-button>
-                      </b-input-group-append>
-                    </b-input-group>
-                  </b-form-group>
-                </b-col> -->
-
+             
                 <b-col md="12">
                   <b-form-group
                     :label="t('Note')"
@@ -168,6 +143,16 @@
                     />
                   </b-form-group>
                 </b-col>
+
+                <b-col md="12">
+                  <b-form-group
+                    :label="t('Start Date')"
+                    label-for="update_at"
+                  >
+                  <b-form-datepicker id="endDate" v-model="selectChangeDate.update_at" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" locale="th"></b-form-datepicker>
+                  </b-form-group>
+                </b-col>
+                
 
                 <b-col md="12">
                   <b-form-group
@@ -329,6 +314,14 @@
                   </b-badge>                    
                 </span>
 
+                <span v-if="props.column.field === 'update_at2'"> 
+                  {{
+                    props.row.update_at != null
+                      ? formatDateAssigned(props.row.update_at)
+                      : ""
+                  }}                                   
+                </span>
+
                 <span v-if="props.column.field === 'action'">
                     <b-badge  style="cursor: pointer; margin-right:2px" variant="info" @click="editMemberData(props.row)">
                       <feather-icon icon="EditIcon" size="16" class="mr-0 mr-sm-50" />
@@ -477,9 +470,14 @@ export default {
           field: 'user_id2',
         },
         {
-          label: 'Invite Url',
-          field: 'invite_url',
+          label: t('Start Date'),
+          field: 'update_at2',              
         },
+        {
+          label: 'Invite Url',
+          field: 'invite_url',          
+        },
+       
         {
           label: t('Action'),
           field: 'action',
@@ -528,6 +526,7 @@ export default {
       isLoadingLineContacts: false,
       note : '',
       invite_url:'',
+      selectChangeDate : [],
     };
   },
   model: {
@@ -969,6 +968,7 @@ export default {
         this.editingLineUserId = memberRow.user_id || '';
         this.selectedLineContact = memberRow.user_id || null;
         this.invite_url = memberRow.invite_url || '';
+        this.selectChangeDate = memberRow;
     },
     saveMemberEdit() {
         console.log('saveMemberEdit');
@@ -1007,6 +1007,7 @@ export default {
             page_name: this.$route.name,
             note : this.note,
             invite_url:this.invite_url,
+            update_at: this.selectChangeDate.update_at,
         }
 
         let response;
