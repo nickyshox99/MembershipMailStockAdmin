@@ -87,7 +87,7 @@
 
           <span v-if="props.column.field === 'action'">
             <b-badge
-              style="cursor: pointer; margin-right: 2px"
+              style="cursor: pointer; width: 100%;margin-right: 2px"
               variant="info"
               @click="viewPersonalEmailDetail(props.row)"
             >
@@ -95,14 +95,25 @@
               <span class="d-none d-sm-inline">{{ t("View") }}</span>
             </b-badge>
             <b-badge
-              style="cursor: pointer; margin-right: 2px"
+              style="cursor: pointer; width: 100%;margin-right: 2px"
               :variant="props.row.status_regis == 1 ? 'warning' : 'success'"
               @click="togglePersonalEmailStatus(props.row)"
             >
               <feather-icon icon="PowerIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ props.row.status_regis == 1 ? t('Deactivate') : t('Activate') }}</span>
             </b-badge>
+
+            <b-badge              
+              style="cursor: pointer; width: 100%; display: block; text-align: center"
+              variant="danger"
+              @click="deleteitem(props.row)"
+            >
+              <feather-icon icon="TrashIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Delete")}}</span>
+            </b-badge>
+
           </span>
+
 
           <span>
             {{ props.formattedRow[props.column.field] }}
@@ -305,6 +316,7 @@ import { mapActions } from "vuex";
 import { useUtils as useI18nUtils } from "@core/libs/i18n";
 
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import axios from 'axios'
 
 export default {
   components: {
@@ -675,6 +687,99 @@ export default {
         formattedDate.toLocaleTimeString("th-TH", { hour12: false })
       );
     },
+    async deleteitem(row) {
+      this.boxTwo = '';
+      await this.$bvModal.msgBoxConfirm('Please confirm that you want to Delete.', {
+        title: this.$t('Please Confirm'),
+        size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'danger',
+        okTitle: 'YES',
+        cancelTitle: 'NO',
+        footerClass: 'p-2',
+        hideHeaderClose: false,
+        centered: true
+      })
+        .then(value => {
+
+          if (value) {
+            let selectID = [];
+            selectID.push(row.id);            
+            this.deleteEmail(selectID);
+
+          }
+
+        })
+        .catch(err => {
+
+        })
+    },
+    async deleteEmail(listId) {
+      //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+
+      console.log("deleteEmail");
+
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const formData = new FormData();
+
+      var headers = {
+        userid: userData.username,
+        token: userData.token,
+      }
+
+      var body = {
+        listId: listId
+      }
+
+      // console.log(body);
+
+      let response;
+      await axios.post("api/personalemail/deletePersonalEmail/", body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+          }
+        }).then(
+          resp => {
+            response = resp;
+          }
+        );
+
+      // console.log(response);
+      if (response.data.status == "success") {
+        //
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Delete`,
+            icon: 'PowerIcon',
+            variant: 'warning',
+            text: `Delete Succesful.`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.loadPersonalEmails();
+
+      }
+      else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Delete`,
+            icon: 'PowerIcon',
+            variant: 'danger',
+            text: `Delete UnSuccesful ${response.data.message}`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.loadPersonalEmails();
+      }
+
+    }, 
   },
 };
 </script>

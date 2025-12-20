@@ -691,5 +691,14 @@
   "Order Expired":"Order Expired",
   "Group Invite Stock":"Group Invite Stock",
   "Group Subscription Stock":"Group Subscription Stock",
-  "Inactive":"Inactive"
+  "Inactive":"Inactive",
+  "Invite Link":"Invite Link",
+  "Confirm Update Status":"Confirm Update Status",
+  "Personal Email Information":"Personal Email Information",
+  "No personal email data found for this order":"No personal email data found for this order",
+  "LINE":"LINE",
+  "Personal":"Personal",
+  "Update Status":"Update Status",
+  "Unregistered":"Unregistered"  
+
 }

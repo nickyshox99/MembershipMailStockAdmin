@@ -29,9 +29,20 @@
     <b-card :title="t('Checked Payment')">
 
       <vue-good-table ref="my-table-order-history" :columns="columnsOrderHistory" :rows="rowsOrderHistory"
-        :rtl="directionOrderHistory" :line-numbers="true" :search-options="{
-          enabled: false,
-        }" :select-options="{
+        :rtl="directionOrderHistory" :line-numbers="true" 
+        :sort-options="{
+          enabled: true,
+          initialSortBy: {
+            field: 'create_date2',
+            type: 'desc', // 'asc' | 'desc'
+          },
+        }"
+        :search-options="{
+          enabled: true,
+          externalQuery: searchTerm,
+          searchFn: searchOnTable,
+        }"
+        :select-options="{
           enabled: false,
           selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
           selectionInfoClass: 'custom-class',
@@ -39,7 +50,7 @@
           clearSelectionText: 'clear',
           disableSelectInfo: true, // disable the select info panel on top
           selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-          searchFn: searchOnTable,
+          
         }" :pagination-options="{
           enabled: true,
           perPage: pageLengthOrderHistory,
@@ -189,6 +200,15 @@
               @click="props.row.personal_email_status === 1 ? sendEmailPassword(props.row) : null">
               <feather-icon icon="SendIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Send Code") }}</span>
+            </b-badge>
+
+            <b-badge              
+              style="cursor: pointer; width: 100%; display: block; text-align: center"
+              variant="danger"
+              @click="deleteitem(props.row)"
+            >
+              <feather-icon icon="TrashIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Delete")}}</span>
             </b-badge>
           </span>
         </template>
@@ -344,7 +364,7 @@
         <div v-for="email in personalEmailData" :key="email.id" class="personal-email-card">
           <div class="text-center mb-4">
             <feather-icon icon="MailIcon" size="48" class="text-primary mb-2" />
-            <h5 class="mb-1">{{ t("Personal Email Account") }}</h5>
+            <h5 class="mb-1">{{ t("Email Account") }}</h5>
             <p class="text-muted">{{ t("Order ID") }}: {{ email.order_id }}</p>
           </div>
 
@@ -352,23 +372,31 @@
             <div class="info-item">
               <div class="info-label">
                 <feather-icon icon="MailIcon" size="16" />
-                {{ t("Email Address") }}
+                {{ t("Email Address") }} : 
               </div>
               <div class="info-value email-value">{{ email.email }}</div>
             </div>
 
-            <div class="info-item">
+            <div class="info-item" v-if="loadPurchaseType=='personal'">
               <div class="info-label">
                 <feather-icon icon="LockIcon" size="16" />
-                {{ t("Password") }}
+                {{ t("Password") }} :  
               </div>
               <div class="info-value password-value">{{ email.password }}</div>
+            </div>
+
+            <div class="info-item" v-if="loadPurchaseType!='personal'">
+              <div class="info-label">
+                <feather-icon icon="LockIcon" size="16" />
+                กลุ่มผู้ใช้งาน : 
+              </div>
+              <div class="info-value password-value"> {{ personalEmailData.group_name }}</div>
             </div>
 
             <div class="info-item">
               <div class="info-label">
                 <feather-icon icon="UserIcon" size="16" />
-                {{ t("User ID") }}
+                {{ t("User ID") }} : 
               </div>
               <div class="info-value userid-value">{{ email.user_id }}</div>
             </div>
@@ -509,46 +537,128 @@ export default {
         label: t('type_purchase'),
         field: 'type_purchase',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.purchase_type || ''
+              const b = rowY.purchase_type || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Email'),
         field: 'email',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.email || ''
+              const b = rowY.email || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('LINE'),
         field: 'line_name',
         width: '15%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.line_name || ''
+              const b = rowY.line_name || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Product'),
         field: 'subscription_img2',
         width: '20%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.product_name || ''
+              const b = rowY.product_name || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Create Date'),
         field: 'create_date2',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.create_date
+                ? new Date(rowX.create_date).getTime()
+                : 0
+              const b = rowY.create_date
+                ? new Date(rowY.create_date).getTime()
+                : 0
+
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+            },
       },
       {
         label: t('End Date'),
         field: 'end_date2',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.end_date
+                ? new Date(rowX.end_date).getTime()
+                : 0
+              const b = rowY.end_date
+                ? new Date(rowY.end_date).getTime()
+                : 0
+
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+            },
       },
       {
         label: t('Slip'),
         field: 'slip',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.slip || ''
+              const b = rowY.slip || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Verify'),
         field: 'approved',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.approved ? 1 : 0
+              const b = rowY.approved ? 1 : 0
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+            },
       },
       {
         label: t('Verify By'),
         field: 'check_slip_by',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.check_slip_by || ''
+              const b = rowY.check_slip_by || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Action'),
@@ -623,6 +733,8 @@ export default {
 
       showChangeDate: false,
       selectChangeDate : [],
+      loadPurchaseType: "",
+      
     };
   },
   computed: {
@@ -978,25 +1090,7 @@ export default {
     },
     closeInspectionApprove() {
       this.showInspectApprove = false;
-    },
-    searchOnTable(row, col, cellValue, searchTerm) {
-      if (searchTerm.length < 3) {
-        return true;
-      }
-
-      let found = false;
-
-      Object.keys(row).forEach((key) => {
-        if (row[key]) {
-          if (row[key].toString().indexOf(searchTerm) > -1) {
-            found = true;
-            return true;
-          }
-        }
-      });
-
-      return found;
-    },
+    },    
     showImage(item) {
       this.selectImageData = item;
       this.imageModal = item.slip_file_url;
@@ -1044,9 +1138,11 @@ export default {
 
       // ใช้ API ที่แตกต่างกันตาม purchase_type
       if (itemData.purchase_type === 'email') {
-        await this.loadEmailData(itemData.id);
+        this.loadPurchaseType = "email"
+        await this.loadEmailData(itemData.id);        
       } else {
         await this.loadPersonalEmailData(itemData.id);
+        this.loadPurchaseType = "personal"
       }
     },
 
@@ -1054,6 +1150,7 @@ export default {
       try {
         this.loadingPersonalEmail = true;
         this.personalEmailData = [];
+        
 
         console.log('Loading personal email data for order ID:', orderId);
 
@@ -1163,6 +1260,7 @@ export default {
       try {
         this.loadingPersonalEmail = true;
         this.personalEmailData = [];
+        
 
         console.log('Loading email data for order ID:', orderId);
 
@@ -1399,7 +1497,118 @@ export default {
         });
       }
     },
+    async deleteitem(row) {
+      this.boxTwo = '';
+      await this.$bvModal.msgBoxConfirm('Please confirm that you want to Delete.', {
+        title: this.$t('Please Confirm'),
+        size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'danger',
+        okTitle: 'YES',
+        cancelTitle: 'NO',
+        footerClass: 'p-2',
+        hideHeaderClose: false,
+        centered: true
+      })
+        .then(value => {
 
+          if (value) {
+            let selectID = [];
+            selectID.push(row.id);
+            console.log(selectID);
+            this.deleteOrder(selectID);
+
+          }
+
+        })
+        .catch(err => {
+
+        })
+    },
+    async deleteOrder(listId) {
+      //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+
+      console.log("deleteOrder");
+
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const formData = new FormData();
+
+      var headers = {
+        userid: userData.username,
+        token: userData.token,
+      }
+
+      var body = {
+        listId: listId
+      }
+
+      // console.log(body);
+
+      let response;
+      await axios.post("api/product/deleteOrderById/", body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+          }
+        }).then(
+          resp => {
+            response = resp;
+          }
+        );
+
+      // console.log(response);
+      if (response.data.status == "success") {
+        //
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Delete`,
+            icon: 'PowerIcon',
+            variant: 'warning',
+            text: `Delete Succesful.`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.search();
+
+      }
+      else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Delete`,
+            icon: 'PowerIcon',
+            variant: 'danger',
+            text: `Delete UnSuccesful ${response.data.message}`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.search();
+      }
+
+    }, 
+    searchOnTable(row, col, cellValue, searchTerm) {
+      
+      if (searchTerm.length < 2) {
+        return true;
+      }
+
+      let found = false;
+      Object.keys(row).forEach((key) => {
+        if (row[key]) {
+          if (row[key].toString().indexOf(searchTerm) > -1) {
+            found = true;
+            return true;
+          }
+        }
+      });
+
+      return found;
+    },
   },
 };
 </script>

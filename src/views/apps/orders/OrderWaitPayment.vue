@@ -49,8 +49,17 @@
         :rows="rowsOrderHistory"
         :rtl="directionOrderHistory"
         :line-numbers="true"
+        :sort-options="{
+          enabled: true,
+          initialSortBy: {
+            field: 'create_date2',
+            type: 'desc', // 'asc' | 'desc'
+          },
+        }"
         :search-options="{
-          enabled: false,
+          enabled: true,
+          externalQuery: searchTerm,
+          searchFn: searchOnTable,
         }"
         :select-options="{
           enabled: false,
@@ -59,8 +68,7 @@
           selectionText: 'rows selected',
           clearSelectionText: 'clear',
           disableSelectInfo: true, // disable the select info panel on top
-          selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-          searchFn: searchOnTable,
+          selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group          
         }"
         :pagination-options="{
           enabled: true,
@@ -256,6 +264,15 @@
             >
               <feather-icon icon="UserIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ props.row.purchase_type === 'email' ? t("Email") : t("Personal") }}</span>
+            </b-badge>
+
+            <b-badge              
+              style="cursor: pointer; width: 100%; display: block; text-align: center"
+              variant="danger"
+              @click="deleteitem(props.row)"
+            >
+              <feather-icon icon="TrashIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Delete")}}</span>
             </b-badge>
           </span>
         </template>
@@ -524,10 +541,10 @@
             <b-row>
                 <b-col md="12">
                     <p v-if="updateStatusItem.personal_email_status === 1">
-                      {{ t('คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้สมัครสมาชิก" ใช่หรือไม่?') }}
+                      {{ 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้สมัครสมาชิก" ใช่หรือไม่?' }}
                     </p>
                     <p v-else>
-                      {{ t('คุณต้องการยืนยันการเปลี่ยนสถานะเป็น "สมัครสมาชิกแล้ว" ใช่หรือไม่?') }}
+                      {{ 'คุณต้องการยืนยันการเปลี่ยนสถานะเป็น "สมัครสมาชิกแล้ว" ใช่หรือไม่?' }}
                     </p>
                     <p v-if="updateStatusItem && updateStatusItem.email" style="font-weight: bold; color: #7367f0;">
                       Email: {{ updateStatusItem.email }}
@@ -670,6 +687,7 @@ import LoanKeyFine from "../loan/LoanKeyFine.vue";
 import LoanForwardPayment from "../loan/LoanForwardPayment.vue";
 import LoanTotalPayment from "../loan/LoanTotalPayment.vue";
 import { imageOverlay } from "leaflet";
+import axios from "axios";
 
 export default {
   components: {
@@ -706,52 +724,145 @@ export default {
   setup() {
     const { t } = useI18nUtils();
 
-    const columnsOrderHistory =  [
-            {
+    const columnsOrderHistory = [
+          // ---------------- Type Purchase ----------------
+          {
             label: t('type_purchase'),
-            field: 'type_purchase',  
-            width: '10%',          
+            field: 'type_purchase',
+            width: '10%',
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.purchase_type || ''
+              const b = rowY.purchase_type || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
             },
-            {
+          },
+
+          // ---------------- LINE Name ----------------
+          {
             label: t('LINE'),
-            field: 'line_name',  
-            width: '15%',          
+            field: 'line_name',
+            width: '15%',
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a =
+                rowX.line_display_name ||
+                rowX.line_user_id ||
+                ''
+              const b =
+                rowY.line_display_name ||
+                rowY.line_user_id ||
+                ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
             },
-            {
+          },
+
+          // ---------------- Product ----------------
+          {
             label: t('Product'),
-            field: 'subscription_img2',  
-            width: '20%',          
+            field: 'subscription_img2',
+            width: '20%',
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.product_name || ''
+              const b = rowY.product_name || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
             },
-            {
+          },
+
+          // ---------------- Create Date ----------------
+          {
             label: t('Create Date'),
             field: 'create_date2',
             width: '10%',
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.create_date
+                ? new Date(rowX.create_date).getTime()
+                : 0
+              const b = rowY.create_date
+                ? new Date(rowY.create_date).getTime()
+                : 0
+
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
             },
-            {
+          },
+
+          // ---------------- Sent Message Date ----------------
+          {
             label: t('Sent Message Date'),
             field: 'sent_message_at2',
             width: '10%',
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.sent_message_at
+                ? new Date(rowX.sent_message_at).getTime()
+                : 0
+              const b = rowY.sent_message_at
+                ? new Date(rowY.sent_message_at).getTime()
+                : 0
+
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
             },
-            {
+          },
+
+          // ---------------- Sent By ----------------
+          {
             label: t('Sent By'),
             field: 'sent_message_by',
             width: '10%',
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.sent_message_by || ''
+              const b = rowY.sent_message_by || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
             },
-            {
+          },
+
+          // ---------------- Slip ----------------
+          {
             label: t('Slip'),
             field: 'slip',
             width: '10%',
-            },   
-            {
+            sortable: false, // ❌ เป็นรูป ไม่ควร sort
+          },
+
+          // ---------------- Verify ----------------
+          {
             label: t('Verify'),
             field: 'approved',
             width: '10%',
-            },   
-            {
-                label: t('Action'),
-                field: 'action',                
-            },             
-        ];
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.slip_correct ? 1 : 0
+              const b = rowY.slip_correct ? 1 : 0
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+            },
+          },
+
+          // ---------------- Action ----------------
+          {
+            label: t('Action'),
+            field: 'action',
+            sortable: false, // ❌ ปุ่ม ไม่ควร sort
+          },
+        ]
+
+
 
     return {
       t,
@@ -847,7 +958,7 @@ export default {
       this.dir = false;
       return this.dir;
     },
-    directionOrderHistory() {
+    directionOrderHistory() {        
         if (store.state.appConfig.isRTL) {
             // eslint-disable-next-line vue/no-side-effects-in-computed-properties
             this.dirOrderHistory = true
@@ -1217,12 +1328,12 @@ export default {
         this.showInspectApprove = false;
     },
     searchOnTable(row, col, cellValue, searchTerm) {
-      if (searchTerm.length < 3) {
+      
+      if (searchTerm.length < 2) {
         return true;
       }
 
       let found = false;
-
       Object.keys(row).forEach((key) => {
         if (row[key]) {
           if (row[key].toString().indexOf(searchTerm) > -1) {
@@ -1560,7 +1671,101 @@ export default {
     handleImageError(event) {
       console.error('Image load error:', event.target.src);
       event.target.style.display = 'none';
-    }
+    },
+    async deleteitem(row) {
+      this.boxTwo = '';
+      await this.$bvModal.msgBoxConfirm('Please confirm that you want to Delete.', {
+        title: this.$t('Please Confirm'),
+        size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'danger',
+        okTitle: 'YES',
+        cancelTitle: 'NO',
+        footerClass: 'p-2',
+        hideHeaderClose: false,
+        centered: true
+      })
+        .then(value => {
+
+          if (value) {
+            let selectID = [];
+            selectID.push(row.id);
+            console.log(selectID);
+            this.deleteOrder(selectID);
+
+          }
+
+        })
+        .catch(err => {
+
+        })
+    },
+    async deleteOrder(listId) {
+      //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+
+      console.log("deleteOrder");
+
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const formData = new FormData();
+
+      var headers = {
+        userid: userData.username,
+        token: userData.token,
+      }
+
+      var body = {
+        listId: listId
+      }
+
+      // console.log(body);
+
+      let response;
+      await axios.post("api/product/deleteOrderById/", body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+          }
+        }).then(
+          resp => {
+            response = resp;
+          }
+        );
+
+      // console.log(response);
+      if (response.data.status == "success") {
+        //
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Delete`,
+            icon: 'PowerIcon',
+            variant: 'warning',
+            text: `Delete Succesful.`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.search();
+
+      }
+      else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Delete`,
+            icon: 'PowerIcon',
+            variant: 'danger',
+            text: `Delete UnSuccesful ${response.data.message}`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.search();
+      }
+
+    },    
   },
 };
 </script>

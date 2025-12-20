@@ -739,5 +739,13 @@
   "type_purchase":"ประเภทการสั่งซื้อ",
   "Group Invite Stock":"สต๊อกคำเชิญสมาชิก",
   "Group Subscription Stock":"สต๊อกกลุ่มสมาชิก",
-  "Inactive":"ไม่ใช้งาน"
+  "Inactive":"ไม่ใช้งาน",
+  "Invite Link":"Invite Link",
+  "Confirm Update Status":"Confirm Update Status",
+  "Personal Email Information":"Personal Email Information",
+  "No personal email data found for this order":"No personal email data found for this order",
+  "LINE":"LINE",
+  "Personal":"Personal",
+  "Update Status":"Update Status",
+  "Unregistered":"Unregistered"
 }

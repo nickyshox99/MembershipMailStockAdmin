@@ -29,9 +29,21 @@
     <b-card :title="t('All')">
 
       <vue-good-table ref="my-table-order-history" :columns="columnsOrderHistory" :rows="rowsOrderHistory"
-        :rtl="directionOrderHistory" :line-numbers="true" :search-options="{
-          enabled: false,
-        }" :select-options="{
+        :rtl="directionOrderHistory" :line-numbers="true" 
+
+        :search-options="{
+          enabled: true,
+          externalQuery: searchTerm,
+          searchFn: searchOnTable,
+        }"
+        :sort-options="{
+          enabled: true,
+          initialSortBy: {
+            field: 'create_date2',
+            type: 'desc', // 'asc' | 'desc'
+          },
+        }"
+        :select-options="{
           enabled: false,
           selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
           selectionInfoClass: 'custom-class',
@@ -39,7 +51,7 @@
           clearSelectionText: 'clear',
           disableSelectInfo: true, // disable the select info panel on top
           selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-          searchFn: searchOnTable,
+          
         }" :pagination-options="{
           enabled: true,
           perPage: pageLengthOrderHistory,
@@ -404,7 +416,7 @@
             <div v-for="email in personalEmailData" :key="email.id" class="personal-email-card">
                 <div class="text-center mb-4">
                     <feather-icon icon="MailIcon" size="48" class="text-primary mb-2" />
-                    <h5 class="mb-1">{{ t("Personal Email Account") }}</h5>
+                    <h5 class="mb-1">{{ t("Email Account") }}</h5>
                     <p class="text-muted">{{ t("Order ID") }}: {{ email.order_id }}</p>
                 </div>
                 
@@ -417,12 +429,20 @@
                         <div class="info-value email-value">{{ email.email }}</div>
                     </div>
                     
-                    <div class="info-item">
-                        <div class="info-label">
-                            <feather-icon icon="LockIcon" size="16" />
-                            {{ t("Password") }}
-                        </div>
-                        <div class="info-value password-value">{{ email.password }}</div>
+                    <div class="info-item" v-if="loadPurchaseType=='personal'">
+                      <div class="info-label">
+                        <feather-icon icon="LockIcon" size="16" />
+                        {{ t("Password") }} :  
+                      </div>
+                      <div class="info-value password-value">{{ email.password }}</div>
+                    </div>
+
+                    <div class="info-item" v-if="loadPurchaseType!='personal'">
+                      <div class="info-label">
+                        <feather-icon icon="LockIcon" size="16" />
+                        กลุ่มผู้ใช้งาน : 
+                      </div>
+                      <div class="info-value password-value"> {{ personalEmailData.group_name }}</div>
                     </div>
                     
                     <div class="info-item">
@@ -555,46 +575,123 @@ export default {
         label: t('type_purchase'),
         field: 'type_purchase',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.purchase_type || ''
+              const b = rowY.purchase_type || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Email'),
         field: 'email',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.email || ''
+              const b = rowY.email || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('LINE'),
         field: 'line_name',
         width: '15%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.line_name || ''
+              const b = rowY.line_name || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Product'),
         field: 'subscription_img2',
         width: '20%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.product_name || ''
+              const b = rowY.product_name || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Create Date'),
         field: 'create_date2',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.create_date
+                ? new Date(rowX.create_date).getTime()
+                : 0
+              const b = rowY.create_date
+                ? new Date(rowY.create_date).getTime()
+                : 0
+
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+            },
       },
       {
         label: t('Group Name'),
         field: 'group_name2',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.group_name || ''
+              const b = rowY.group_name || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Slip'),
         field: 'slip',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.slip || ''
+              const b = rowY.slip || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Verify'),
         field: 'approved',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.approved ? 1 : 0
+              const b = rowY.approved ? 1 : 0
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+            },
       },
       {
         label: t('Verify By'),
         field: 'check_slip_by',
         width: '10%',
+        sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.check_slip_by || ''
+              const b = rowY.check_slip_by || ''
+              return col.sortDirection === 'asc'
+                ? a.localeCompare(b)
+                : b.localeCompare(a)
+            },
       },
       {
         label: t('Action'),
@@ -681,6 +778,7 @@ export default {
       personalEmailData: [],
       loadingPersonalEmail: false,
       selectedOrderId: null,
+      loadPurchaseType: "",
 
     };
   },
@@ -1192,8 +1290,10 @@ export default {
       // ใช้ API ที่แตกต่างกันตาม purchase_type
       if (itemData.purchase_type === 'email') {
           await this.loadEmailData(itemData.id);
+          this.loadPurchaseType = "email"
       } else {
           await this.loadPersonalEmailData(itemData.id);
+          this.loadPurchaseType = "personal"
       }
     },
     

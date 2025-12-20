@@ -50,7 +50,16 @@
         :rtl="directionOrderHistory"
         :line-numbers="true"
         :search-options="{
-          enabled: false,
+          enabled: true,
+          externalQuery: searchTerm,
+          searchFn: searchOnTable,
+        }"
+        :sort-options="{
+          enabled: true,
+          initialSortBy: {
+            field: 'start_date2',
+            type: 'desc', // 'asc' | 'desc'
+          },
         }"
         :select-options="{
           enabled: false,
@@ -60,7 +69,7 @@
           clearSelectionText: 'clear',
           disableSelectInfo: true, // disable the select info panel on top
           selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-          searchFn: searchOnTable,
+          
         }"
         :pagination-options="{
           enabled: true,
@@ -708,42 +717,126 @@ export default {
             {
             label: t('type_purchase'),
             field: 'type_purchase',  
-            width: '10%',          
+            width: '10%',      
+            sortable: true,
+              sortFn: (x, y, col, rowX, rowY) => {
+                const a = rowX.purchase_type || ''
+                const b = rowY.purchase_type || ''
+                return col.sortDirection === 'asc'
+                  ? a.localeCompare(b)
+                  : b.localeCompare(a)
+              },    
             },
             {
             label: t('Email'),
             field: 'email',  
-            width: '10%',          
+            width: '10%',      
+            sortable: true,
+              sortFn: (x, y, col, rowX, rowY) => {
+                const a = rowX.email || ''
+                const b = rowY.email || ''
+                return col.sortDirection === 'asc'
+                  ? a.localeCompare(b)
+                  : b.localeCompare(a)
+              },    
             },
             {
             label: t('LINE'),
             field: 'line_name',  
-            width: '15%',          
+            width: '15%',     
+            sortable: true,
+              sortFn: (x, y, col, rowX, rowY) => {
+                const a = rowX.line_name || ''
+                const b = rowY.line_name || ''
+                return col.sortDirection === 'asc'
+                  ? a.localeCompare(b)
+                  : b.localeCompare(a)
+              },     
             },
             {
             label: t('Product'),
             field: 'subscription_img2',  
-            width: '20%',          
+            width: '20%',   
+            sortable: true,
+              sortFn: (x, y, col, rowX, rowY) => {
+                const a = rowX.product_name || ''
+                const b = rowY.product_name || ''
+                return col.sortDirection === 'asc'
+                  ? a.localeCompare(b)
+                  : b.localeCompare(a)
+              },       
             },
             {
             label: t('Start Date'),
             field: 'start_date2',
             width: '10%',
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.start_date
+                ? new Date(rowX.start_date).getTime()
+                : 0
+              const b = rowY.start_date
+                ? new Date(rowY.start_date).getTime()
+                : 0
+
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+            },
             },
             {
             label: t('End Date'),
             field: 'end_date2',
             width: '10%',
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.end_date
+                ? new Date(rowX.end_date).getTime()
+                : 0
+              const b = rowY.end_date
+                ? new Date(rowY.end_date).getTime()
+                : 0
+
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+            },
             },     
             {
             label: t('Days Left'),
             field: 'days_left2',
             width: '10%',
-            },         
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.days_left
+                ? new Date(rowX.days_left).getTime()
+                : 0
+              const b = rowY.days_left
+                ? new Date(rowY.days_left).getTime()
+                : 0
+
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+              }        
+            },
             {
             label: t('Latest Sent Message'),
             field: 'latest_offer_message_at2',
             width: '20%',
+            sortable: true,
+            sortFn: (x, y, col, rowX, rowY) => {
+              const a = rowX.latest_offer_message_at
+                ? new Date(rowX.latest_offer_message_at).getTime()
+                : 0
+              const b = rowY.latest_offer_message_at
+                ? new Date(rowY.latest_offer_message_at).getTime()
+                : 0
+
+              return col.sortDirection === 'asc'
+                ? a - b
+                : b - a
+            },
             },    
             {
                 label: t('Action'),

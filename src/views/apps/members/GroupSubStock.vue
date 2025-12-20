@@ -131,6 +131,16 @@
                 </span>
             </span>
 
+            <span v-if="props.column.field === 'status2'">
+              <b-badge
+                :variant="props.row.status == 1 ? 'light-success' : 'light-danger'"
+                pill
+                class="text-capitalize"
+              >
+                
+              </b-badge>
+            </span>
+
             <span v-if="props.column.field === 'action'">
               <span>
                 <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
@@ -271,6 +281,10 @@ export default {
         {
           label: t('Expired'),
           field: 'expire_date2',          
+        },
+        {
+          label: t('Status'),
+          field: 'status2',          
         },
         {
           label: t('Member Count'),
