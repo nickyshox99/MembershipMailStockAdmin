@@ -2480,6 +2480,47 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async UpdatePersonalData({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        email: inputData.get("email"),
+        password: inputData.get("password"),
+        order_id: inputData.get("order_id"),
+        purchase_type: inputData.get("purchase_type"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/UpdatePersonalData",body,    
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async UpdateEndDateById({commit}, inputData) {
         
     var headers = {

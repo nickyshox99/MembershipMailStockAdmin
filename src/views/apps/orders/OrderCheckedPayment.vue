@@ -762,6 +762,8 @@ export default {
         text: 'Select Group'
       },],
       selectedGroupStock: null,
+
+      selectedGroupPurchaseType: null,
       
     };
   },
@@ -822,6 +824,7 @@ export default {
     ...mapActions(["UpdateEndDateById"]),
     ...mapActions(["RenewSubScribeOrder"]),
     ...mapActions(["GetSubscriptionGroupStock"]),
+    ...mapActions(["UpdatePersonalData"]),
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
       formattedDate = new Date(formattedDate.getTime() - 3600000); // 60 * 60 * 1000 * 1
@@ -1537,33 +1540,31 @@ export default {
       form.append("token", userData.token);
       form.append("email", email.email);
       form.append("password", email.password);
-      form.append("id", email.id);
-      form.append("purchase_type", email.purchase_type);
+      form.append("order_id", email.id);
+      form.append("purchase_type", this.loadPurchaseType);
       form.append("group_id", this.selectedGroupStock);
 
-      console.log(form);
+      const response = await this.UpdatePersonalData(form);
 
-      // const response = await this.UpdatePersonalData(form);
-
-      // if (response.data.status === 'success') {
-      //   this.$toast({
-      //     component: ToastificationContent,
-      //     props: {
-      //       title: 'อัพเดทสถานะสำเร็จ',
-      //       icon: 'CheckIcon',
-      //       variant: 'success',
-      //     },
-      //   });
-      // } else {
-      //   this.$toast({
-      //     component: ToastificationContent,
-      //     props: {
-      //       title: 'เกิดข้อผิดพลาด: ' + (response.data.message || error),
-      //       icon: 'AlertCircleIcon',
-      //       variant: 'danger',
-      //     },
-      //   });
-      // }
+      if (response.data.status === 'success') {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'อัพเดทสถานะสำเร็จ',
+            icon: 'CheckIcon',
+            variant: 'success',
+          },
+        });
+      } else {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'เกิดข้อผิดพลาด: ' + (response.data.message || error),
+            icon: 'AlertCircleIcon',
+            variant: 'danger',
+          },
+        });
+      }
     },
     async loadData() {
       await this.search();
