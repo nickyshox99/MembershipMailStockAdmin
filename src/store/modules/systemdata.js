@@ -1950,6 +1950,34 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async RenewSubScribeOrder({commit}, inputData) {
+    var headers = {
+      userid: inputData.get("userid"),
+      token: inputData.get("token"),
+    }
+    
+    var body = {
+        previous_order_id: inputData.get("previous_order_id"),
+    }
+
+    let response;
+    await axios.post("api/product/RenewSubScribeOrder",body,
+    {
+      headers: {            
+      'Content-Type': 'application/json',
+      'userid': headers.userid,
+      'token': headers.token,
+    }
+    }).then(
+      resp => 
+      {
+        response = resp;
+      }
+    );
+
+    return response;
+  },
+
   async GetHistorySubScribeOrderByMemberID({commit}, inputData) {
         
     var headers = {

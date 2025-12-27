@@ -744,8 +744,10 @@
   "Confirm Update Status":"Confirm Update Status",
   "Personal Email Information":"Personal Email Information",
   "No personal email data found for this order":"No personal email data found for this order",
-  "LINE":"LINE",
-  "Personal":"Personal",
-  "Update Status":"Update Status",
-  "Unregistered":"Unregistered"
+  "LINE":"ไลน์",
+  "Personal":"ส่วนตัว",
+  "Update Status":"อัพเดตสถานะ",
+  "Unregistered":"ยังไม่ได้สมัครสมาชิก",
+  "Renew":"ต่ออายุ",
+  "Please confirm that you want to Renew.":"กรุณายืนยันการต่ออายุ"
 }

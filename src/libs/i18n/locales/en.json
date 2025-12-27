@@ -699,6 +699,8 @@
   "LINE":"LINE",
   "Personal":"Personal",
   "Update Status":"Update Status",
-  "Unregistered":"Unregistered"  
+  "Unregistered":"Unregistered",
+  "Renew":"Renew",
+  "Please confirm that you want to Renew.":"Please confirm that you want to Renew."
 
 }

@@ -186,7 +186,7 @@
               <span class="d-none d-sm-inline">{{ props.row.personal_email_status === 1 ? t("Active") : t("Inactive") }}</span>
             </b-badge>
 
-            <!-- ปุ่มส่งรหัส (แสดงเสมอ แต่ disable เมื่อ status = 0) -->             
+                    
             <b-badge v-if="props.row.purchase_type === 'personal' || props.row.purchase_type === 'email'"
               :style="{
                 cursor: props.row.personal_email_status === 1 || props.row.status_regis==1 ? 'pointer' : 'not-allowed',
@@ -200,6 +200,14 @@
               @click="props.row.personal_email_status === 1 ? sendEmailPassword(props.row) : null">
               <feather-icon icon="SendIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Send Code") }}</span>
+            </b-badge>
+
+            <b-badge v-if="props.row.purchase_type === 'personal' || props.row.purchase_type === 'email'" 
+              style="cursor: pointer; margin-right: 2px; min-width: 100px; display: inline-block; margin-bottom: 2px"
+              variant="success" 
+              @click="renewOrder(props.row)">
+              <feather-icon icon="EditIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline"> {{ t("Renew")}}</span>
             </b-badge>
 
             <b-badge              
@@ -791,6 +799,7 @@ export default {
     ...mapActions(["GetEmailStatusByOrderId"]),
     ...mapActions(["GetEmailByOrderId"]),
     ...mapActions(["UpdateEndDateById"]),
+    ...mapActions(["RenewSubScribeOrder"]),
     
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
@@ -1609,6 +1618,56 @@ export default {
 
       return found;
     },
+    async renewOrder(row) {
+      
+      const confirmed = await this.$bvModal.msgBoxConfirm(this.$t('Please confirm that you want to Renew.'), {
+        title: this.$t('Please Confirm'),
+        size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'success',
+        okTitle: 'YES',
+        cancelTitle: 'NO',
+      });
+
+      if (confirmed) {
+        this.renewOrderAction(row);
+      }
+      
+    },
+    async renewOrderAction(row) {
+      console.log('renewOrderAction', row);
+
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const form = new FormData();
+
+      form.append("userid", userData.username);
+      form.append("token", userData.token);
+      form.append("previous_order_id", row.id);
+      form.append("username", userData.username);
+
+      const response = await this.RenewSubScribeOrder(form);
+
+      if (response.data.status === 'success') {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'ต่ออายุสำเร็จ',
+            icon: 'CheckIcon',
+            variant: 'success',
+          },
+        });
+      } else {
+        //toast error
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'เกิดข้อผิดพลาด: ' + (response.data.message || 'เกิดข้อผิดพลาด'),
+            icon: 'AlertCircleIcon',
+            variant: 'danger',
+          },
+        });
+      }
+    }
   },
 };
 </script>

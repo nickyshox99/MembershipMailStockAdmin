@@ -519,12 +519,12 @@ export default {
           return;
         }
 
-        console.log('Registration data:', {
-          email: this.email,
-          user_id: this.sourceUserId,
-          order_id: orderId,
-          purchase_type: this.purchaseType
-        });
+        // console.log('Registration data:', {
+        //   email: this.email,
+        //   user_id: this.sourceUserId,
+        //   order_id: orderId,
+        //   purchase_type: this.purchaseType
+        // });
 
         // Validate data
         if (!this.sourceUserId || !this.email || !orderId) {
