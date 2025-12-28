@@ -823,6 +823,7 @@ export default {
         email : this.selectedPersonalEmail.email,
         password : this.selectedPersonalEmail.password,
         updated_at : this.selected_update_at,
+        order_id : this.selectedPersonalEmail.order_id,
       }
 
       console.log(body);

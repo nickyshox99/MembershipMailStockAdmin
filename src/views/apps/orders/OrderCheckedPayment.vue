@@ -382,7 +382,7 @@
                 <feather-icon icon="MailIcon" size="16" />
                 {{ t("Email Address") }} : 
               </div>
-              <div class="info-value email-value">{{ email.email }}</div>
+              <b-form-input v-model="email.email" type="text"></b-form-input>
             </div>
 
             <div class="info-item" v-if="loadPurchaseType=='personal'">
@@ -1539,7 +1539,7 @@ export default {
       form.append("userid", userData.username);
       form.append("token", userData.token);
       form.append("email", email.email);
-      form.append("password", email.password);
+      form.append("password", email.password||'');
       form.append("order_id", email.id);
       form.append("purchase_type", this.loadPurchaseType);
       form.append("group_id", this.selectedGroupStock);
@@ -1815,7 +1815,7 @@ export default {
     .info-label {
       display: flex;
       align-items: center;
-      min-width: 120px;
+      min-width: 150px;
       font-weight: 600;
       color: #6c757d;
       font-size: 14px;
