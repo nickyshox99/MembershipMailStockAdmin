@@ -28,8 +28,14 @@
                     <feather-icon icon="UserIcon" size="48" />
                   </div>
                   <h4 class="option-title">Personal</h4>
-                  <p class="option-description">
-                    แพ็กเกจสำหรับใช้งานส่วนบุคคล
+                  <p class="option-description" >
+                    แพ็กเกจสำหรับใช้งานส่วนบุคคล                     
+                  </p>
+                  <p class="option-description" v-if="!useOldUserIdStockPersonal">                    
+                    (มีสินค้าเหลืออีก {{ remainEmailStockPersonal }} รายการ)
+                  </p>
+                  <p class="option-description" v-if="useOldUserIdStockPersonal">                    
+                    (ต่ออายุใช้ User เดิม)
                   </p>
                   <div class="check-icon" v-if="selectedPlan === 'personal'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
@@ -46,6 +52,12 @@
                   <h4 class="option-title">Family</h4>
                   <p class="option-description">
                     แพ็กเกจสำหรับใช้งานแบบครอบครัว
+                  </p>
+                  <p class="option-description" v-if="!useOldUserIdStockFamily">                    
+                    (มีสินค้าเหลืออีก {{ remainEmailStockFamily }} รายการ)
+                  </p>
+                  <p class="option-description" v-if="useOldUserIdStockFamily">                    
+                    (ต่ออายุใช้ User เดิม)
                   </p>
                   <div class="check-icon" v-if="selectedPlan === 'family'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
@@ -239,6 +251,7 @@ import {
   BFormCheckbox,
 } from 'bootstrap-vue'
 import axios from 'axios'
+import { mapActions } from "vuex";
 
 export default {
   name: 'SelectPlanType',
@@ -259,6 +272,10 @@ export default {
       agreedToPersonalTerms: false, // สถานะการยินยอม Personal
       agreedToFamilyTerms: false, // สถานะการยินยอม Family
       settingdata: {},
+      useOldUserIdStockPersonal: false,
+      remainEmailStockPersonal: 0,
+      useOldUserIdStockFamily: false,
+      remainEmailStockFamily: 0,
     }
   },
   async mounted() {
@@ -316,10 +333,56 @@ export default {
 
     this.settingdata = tmpSettingData;
 
+    await this.checkRemainEmailStockPersonal();
+    await this.checkRemainEmailStockFamily();
     //console.log(this.settingdata['line_token']['recommendImage2']);
   },
 
   methods: {
+    ...mapActions(["CheckRemainEmailStockPersonal"]),
+    ...mapActions(["CheckRemainEmailStockFamily"]),
+    async checkRemainEmailStockPersonal() {
+      
+      const formData = new FormData();
+
+      //formData.append("userid", "-");
+      formData.append("token", "-");
+
+      formData.append("userid", this.sourceUserId);      
+
+      const response = await this.CheckRemainEmailStockPersonal(formData);
+      if (response.data.status == 'success') {
+        if (response.data.data.use_old_id == 1) {
+          this.useOldUserIdStockPersonal = true;
+          this.remainEmailStockPersonal = response.data.data.remain;
+        }
+        else {
+          this.useOldUserIdStockPersonal = false;
+          this.remainEmailStockPersonal = response.data.data.remain;
+        }
+      }
+    },
+    async checkRemainEmailStockFamily() {
+      
+      const formData = new FormData();
+
+      //formData.append("userid", "-");
+      formData.append("token", "-");
+
+      formData.append("userid", this.sourceUserId);      
+
+      const response = await this.CheckRemainEmailStockFamily(formData);
+      if (response.data.status == 'success') {
+        if (response.data.data.use_old_id == 1) {
+          this.useOldUserIdStockFamily = true;
+          this.remainEmailStockFamily = response.data.data.remain;
+        }
+        else {
+          this.useOldUserIdStockFamily = false;
+          this.remainEmailStockFamily = response.data.data.remain;
+        }
+      }
+    },
     selectPlan(plan) {
       this.selectedPlan = plan
     },
@@ -328,8 +391,21 @@ export default {
 
       // แสดง modal ตาม plan ที่เลือก
       if (this.selectedPlan === 'personal') {
+
+        if (!this.useOldUserIdStockPersonal && this.remainEmailStockPersonal == 0) {
+          //show toast message
+          this.$toast.error('สินค้าหมด กรุณาติดต่อเจ้าหน้าที่');
+          return;
+        }
         this.showPersonalInfoModal = true
+        
       } else if (this.selectedPlan === 'family') {
+
+        if (!this.useOldUserIdStockFamily && this.remainEmailStockFamily == 0) {
+          //show toast message
+          this.$toast.error('สินค้าหมด กรุณาติดต่อเจ้าหน้าที่');
+          return;
+        }
         this.showFamilyInfoModal = true
       }
     },

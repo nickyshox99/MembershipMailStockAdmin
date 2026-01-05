@@ -31,6 +31,12 @@
                   <p class="option-description">
                     แพ็กเก็จสำหรับใช้งานส่วนบุคคล
                   </p>
+                  <p class="option-description" v-if="!useOldUserIdInviteStockFamily">                    
+                    (มีสินค้าเหลืออีก {{ remainInviteStockFamily }} รายการ)
+                  </p>
+                  <p class="option-description" v-if="useOldUserIdInviteStockFamily">                    
+                    (ต่ออายุใช้ User เดิม)
+                  </p>
                   <div class="check-icon" v-if="selectedType === 'personal'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
@@ -93,6 +99,7 @@ import {
   BSpinner,
 } from 'bootstrap-vue'
 import axios from 'axios'
+import { mapActions } from "vuex";
 
 export default {
   name: 'SelectCustomerEmail',
@@ -110,6 +117,8 @@ export default {
       showUserCode: true, // แสดงปุ่มรหัสตัวเอง
       showUserEmail: true, // แสดงปุ่มเมลตัวเอง
       isLoading: true, // สถานะการโหลดข้อมูล
+      useOldUserIdInviteStockFamily: false,
+      remainInviteStockFamily: 0,
     }
   },
   computed: {
@@ -128,10 +137,28 @@ export default {
     } else {
       console.log('SelectCustomerEmail - No sourceUserId in query parameters')
     }
+
+    await this.checkRemainInviteStockFamily();
     // โหลดสถานะการแสดงปุ่ม
     this.fetchButtonStatus()
   },
   methods: {
+    ...mapActions(["CheckRemainInviteStockFamily"]),
+    async checkRemainInviteStockFamily() {
+      const formData = new FormData();
+      formData.append("userid", this.sourceUserId);
+      const response = await this.CheckRemainInviteStockFamily(formData);
+      if (response.data.status == 'success') {
+        if (response.data.data.use_old_id == 1) {
+          this.useOldUserIdInviteStockFamily = true;
+          this.remainInviteStockFamily = response.data.data.remain;
+        }
+        else {
+          this.useOldUserIdInviteStockFamily = false;
+          this.remainInviteStockFamily = response.data.data.remain;
+        }
+      }
+    },
     async fetchButtonStatus() {
       try {
         const response = await axios.get('/api/btnStatus/GetBtnStatus')
@@ -152,6 +179,12 @@ export default {
     },
     handleConfirm() {
       if (!this.selectedType) return
+      
+      if (!this.useOldUserIdInviteStockFamily && this.remainInviteStockFamily == 0) {
+        //show toast message
+        this.$toast.error('สินค้าหมด กรุณาติดต่อเจ้าหน้าที่');
+        return;
+      }
       
       // นำทางตาม type ที่เลือก
       this.navigateToNextPage()

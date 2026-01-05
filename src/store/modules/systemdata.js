@@ -2666,6 +2666,104 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async CheckRemainEmailStockPersonal({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),        
+    }
+
+    let response;
+    await axios.post("api/product/CheckRemainEmailStockPersonal", body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async CheckRemainEmailStockFamily({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),        
+    }
+
+    let response;
+    await axios.post("api/product/CheckRemainEmailStockFamily", body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+
+  async CheckRemainInviteStockFamily({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),        
+    }
+
+    let response;
+    await axios.post("api/product/CheckRemainInviteStockFamily", body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+
   async GetPersonalEmailStatusByOrderId({commit}, inputData) {
         
     var headers = {
