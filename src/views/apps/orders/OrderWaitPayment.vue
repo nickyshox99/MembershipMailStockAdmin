@@ -104,6 +104,15 @@
               >
                 สมัครสมาชิกแล้ว
               </b-badge>
+              <b-badge
+                v-if="props.row.previous_order_id !== 0"
+                pill
+                variant="warning"
+                class="text-capitalize mt-1"
+                style="font-size: 10px;"
+              >
+                ต่ออายุ
+              </b-badge>
             </div>
           </span>
           <span v-if="props.column.field === 'line_name'">

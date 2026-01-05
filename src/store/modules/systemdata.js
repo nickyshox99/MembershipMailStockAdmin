@@ -1950,6 +1950,34 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async RenewSubScribeOrder({commit}, inputData) {
+    var headers = {
+      userid: inputData.get("userid"),
+      token: inputData.get("token"),
+    }
+    
+    var body = {
+        previous_order_id: inputData.get("previous_order_id"),
+    }
+
+    let response;
+    await axios.post("api/product/RenewSubScribeOrder",body,
+    {
+      headers: {            
+      'Content-Type': 'application/json',
+      'userid': headers.userid,
+      'token': headers.token,
+    }
+    }).then(
+      resp => 
+      {
+        response = resp;
+      }
+    );
+
+    return response;
+  },
+
   async GetHistorySubScribeOrderByMemberID({commit}, inputData) {
         
     var headers = {
@@ -2432,6 +2460,48 @@ async GetActiveAdminBank({commit}, search) {
 
     let response;
     await axios.post("api/product/VerifySlipOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async UpdatePersonalData({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        email: inputData.get("email"),
+        password: inputData.get("password"),
+        order_id: inputData.get("order_id"),
+        purchase_type: inputData.get("purchase_type"),
+        group_id: inputData.get("group_id"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/UpdatePersonalData",body,    
     {
         headers: {            
         'Content-Type': 'application/json',

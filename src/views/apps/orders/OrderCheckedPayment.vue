@@ -186,7 +186,7 @@
               <span class="d-none d-sm-inline">{{ props.row.personal_email_status === 1 ? t("Active") : t("Inactive") }}</span>
             </b-badge>
 
-            <!-- ปุ่มส่งรหัส (แสดงเสมอ แต่ disable เมื่อ status = 0) -->             
+                    
             <b-badge v-if="props.row.purchase_type === 'personal' || props.row.purchase_type === 'email'"
               :style="{
                 cursor: props.row.personal_email_status === 1 || props.row.status_regis==1 ? 'pointer' : 'not-allowed',
@@ -200,6 +200,14 @@
               @click="props.row.personal_email_status === 1 ? sendEmailPassword(props.row) : null">
               <feather-icon icon="SendIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ t("Send Code") }}</span>
+            </b-badge>
+
+            <b-badge v-if="props.row.purchase_type === 'personal' || props.row.purchase_type === 'email'" 
+              style="cursor: pointer; margin-right: 2px; min-width: 100px; display: inline-block; margin-bottom: 2px"
+              variant="success" 
+              @click="renewOrder(props.row)">
+              <feather-icon icon="EditIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline"> {{ t("Renew")}}</span>
             </b-badge>
 
             <b-badge              
@@ -374,7 +382,7 @@
                 <feather-icon icon="MailIcon" size="16" />
                 {{ t("Email Address") }} : 
               </div>
-              <div class="info-value email-value">{{ email.email }}</div>
+              <b-form-input v-model="email.email" type="text"></b-form-input>
             </div>
 
             <div class="info-item" v-if="loadPurchaseType=='personal'">
@@ -382,7 +390,10 @@
                 <feather-icon icon="LockIcon" size="16" />
                 {{ t("Password") }} :  
               </div>
-              <div class="info-value password-value">{{ email.password }}</div>
+              <div class="info-value password-value">
+                <b-form-input v-model="email.password" type="text"></b-form-input>
+                
+              </div>
             </div>
 
             <div class="info-item" v-if="loadPurchaseType!='personal'">
@@ -390,7 +401,9 @@
                 <feather-icon icon="LockIcon" size="16" />
                 กลุ่มผู้ใช้งาน : 
               </div>
-              <div class="info-value password-value"> {{ personalEmailData.group_name }}</div>
+              <div class="info-value password-value"> 
+                <b-form-select v-model="selectedGroupStock" :options="optionGroupStock" @change="groupStockChange()"></b-form-select>
+              </div>
             </div>
 
             <div class="info-item">
@@ -418,6 +431,15 @@
             <b-button variant="outline-primary" size="sm" @click="copyToClipboard(email.email + '\n' + email.password)">
               <feather-icon icon="CopyIcon" size="14" />
               {{ t("Copy Credentials") }}
+            </b-button>
+            &nbsp;&nbsp;
+            <b-button
+              variant="success"
+              size="sm"
+              @click="updatePersonalData(email)"
+            >
+              <feather-icon icon="EditIcon" size="14" />
+              {{ t("Update Data") }}
             </b-button>
           </div>
         </div>
@@ -734,6 +756,14 @@ export default {
       showChangeDate: false,
       selectChangeDate : [],
       loadPurchaseType: "",
+
+      optionGroupStock: [{
+        value: 0,
+        text: 'Select Group'
+      },],
+      selectedGroupStock: null,
+
+      selectedGroupPurchaseType: null,
       
     };
   },
@@ -776,9 +806,10 @@ export default {
     this.page_name = this.$route.name;
 
     await this.getPagePermission();
+    await this.getSubscriptionGroupStock();
     await this.search();
 
-    console.log(this.page_name);
+    
   },
   methods: {
 
@@ -791,7 +822,9 @@ export default {
     ...mapActions(["GetEmailStatusByOrderId"]),
     ...mapActions(["GetEmailByOrderId"]),
     ...mapActions(["UpdateEndDateById"]),
-    
+    ...mapActions(["RenewSubScribeOrder"]),
+    ...mapActions(["GetSubscriptionGroupStock"]),
+    ...mapActions(["UpdatePersonalData"]),
     formatDateAssigned(value) {
       let formattedDate = new Date(value);
       formattedDate = new Date(formattedDate.getTime() - 3600000); // 60 * 60 * 1000 * 1
@@ -853,6 +886,61 @@ export default {
             },
           });
       }
+    },
+    async getSubscriptionGroupStock() {
+      
+
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const formData = new FormData();
+
+      formData.append("userid", userData.username);
+      formData.append("token", userData.token);
+
+      formData.append("searchWord", "");      
+      formData.append("page_name", this.$route.name);
+
+      const response = await this.GetSubscriptionGroupStock(formData);
+      if (response.data.status == 'success') {  
+        //console.log(response.data.data);
+        var tmpRows = response.data.data || [];
+        
+        // Filter out group with id 0 (Individual Email Stock)
+        tmpRows = Array.isArray(tmpRows) ? tmpRows.filter(row => row.id !== 0) : [];
+
+        this.optionGroupStock = [];
+        this.optionGroupStock.push({
+          value: -1,
+          text: 'Select Group'
+        });
+        
+        for (let index = 0; index < tmpRows.length; index++) {
+            const element = tmpRows[index];
+            this.optionGroupStock.push({
+              value: element.id,
+              text: element.group_name
+            });
+            
+        }
+
+      }
+      else {
+        this.$toast(
+          {
+            component: ToastificationContent,
+            props: {
+              title: response.data.message,
+              icon: 'EditIcon',
+              variant: 'error',
+            },
+          });
+      }
+
+
+    },
+    groupStockChange() {
+      // Handle group stock selection change
+      // The value is already bound via v-model to selectedGroupStock
+      console.log("groupStockChange", this.selectedGroupStock);
     },
     async fetchPersonalEmailStatus(data, rowIndex) {
       try {
@@ -1260,7 +1348,6 @@ export default {
       try {
         this.loadingPersonalEmail = true;
         this.personalEmailData = [];
-        
 
         console.log('Loading email data for order ID:', orderId);
 
@@ -1276,9 +1363,13 @@ export default {
 
         if (response.data.status === 'success') {
           this.personalEmailData = response.data.data;
-          console.log('Email data loaded:', this.personalEmailData);
+          if (this.personalEmailData.group_id != null) {
+            this.selectedGroupStock = this.personalEmailData.group_id;
+          } else {
+            this.selectedGroupStock = -1;
+          }
         } else {
-          console.log('No email data found:', response.data.message);
+          
           this.personalEmailData = [];
         }
 
@@ -1440,6 +1531,41 @@ export default {
       }
     },
 
+    async updatePersonalData(email) {
+
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const form = new FormData();
+
+      form.append("userid", userData.username);
+      form.append("token", userData.token);
+      form.append("email", email.email);
+      form.append("password", email.password||'');
+      form.append("order_id", email.id);
+      form.append("purchase_type", this.loadPurchaseType);
+      form.append("group_id", this.selectedGroupStock);
+
+      const response = await this.UpdatePersonalData(form);
+
+      if (response.data.status === 'success') {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'อัพเดทสถานะสำเร็จ',
+            icon: 'CheckIcon',
+            variant: 'success',
+          },
+        });
+      } else {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'เกิดข้อผิดพลาด: ' + (response.data.message || error),
+            icon: 'AlertCircleIcon',
+            variant: 'danger',
+          },
+        });
+      }
+    },
     async loadData() {
       await this.search();
     },
@@ -1609,6 +1735,56 @@ export default {
 
       return found;
     },
+    async renewOrder(row) {
+      
+      const confirmed = await this.$bvModal.msgBoxConfirm(this.$t('Please confirm that you want to Renew.'), {
+        title: this.$t('Please Confirm'),
+        size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'success',
+        okTitle: 'YES',
+        cancelTitle: 'NO',
+      });
+
+      if (confirmed) {
+        this.renewOrderAction(row);
+      }
+      
+    },
+    async renewOrderAction(row) {
+      console.log('renewOrderAction', row);
+
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const form = new FormData();
+
+      form.append("userid", userData.username);
+      form.append("token", userData.token);
+      form.append("previous_order_id", row.id);
+      form.append("username", userData.username);
+
+      const response = await this.RenewSubScribeOrder(form);
+
+      if (response.data.status === 'success') {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'ต่ออายุสำเร็จ',
+            icon: 'CheckIcon',
+            variant: 'success',
+          },
+        });
+      } else {
+        //toast error
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'เกิดข้อผิดพลาด: ' + (response.data.message || 'เกิดข้อผิดพลาด'),
+            icon: 'AlertCircleIcon',
+            variant: 'danger',
+          },
+        });
+      }
+    }
   },
 };
 </script>
@@ -1639,7 +1815,7 @@ export default {
     .info-label {
       display: flex;
       align-items: center;
-      min-width: 120px;
+      min-width: 150px;
       font-weight: 600;
       color: #6c757d;
       font-size: 14px;
