@@ -69,6 +69,17 @@
               <b-badge v-if="props.row.personal_email_status === 1" pill variant="light-success"
                 class="text-capitalize mt-1" style="font-size: 10px;">
                 สมัครสมาชิกแล้ว
+              </b-badge>      
+                    
+            </div>
+            <div v-if="props.row.previous_order_id != null && props.row.previous_order_id != 0" >
+              <b-badge                
+                pill
+                variant="warning"
+                class="text-capitalize mt-1"
+                style="font-size: 10px;"
+              >
+                ต่ออายุ
               </b-badge>
             </div>
           </span>

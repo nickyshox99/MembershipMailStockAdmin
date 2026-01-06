@@ -105,7 +105,7 @@
                 สมัครสมาชิกแล้ว
               </b-badge>
               <b-badge
-                v-if="props.row.previous_order_id !== 0"
+                v-if="props.row.previous_order_id != null && props.row.previous_order_id != 0"
                 pill
                 variant="warning"
                 class="text-capitalize mt-1"
