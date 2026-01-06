@@ -31,12 +31,7 @@
                   <p class="option-description">
                     แพ็กเก็จสำหรับใช้งานส่วนบุคคล
                   </p>
-                  <p class="option-description" v-if="!useOldUserIdInviteStockFamily">                    
-                    (มีสินค้าเหลืออีก {{ remainInviteStockFamily }} รายการ)
-                  </p>
-                  <p class="option-description" v-if="useOldUserIdInviteStockFamily">                    
-                    (ต่ออายุใช้ User เดิม)
-                  </p>
+                  
                   <div class="check-icon" v-if="selectedType === 'personal'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
@@ -52,6 +47,12 @@
                   <h4 class="option-title">Family</h4>
                   <p class="option-description">
                     แพ็กเก็จสำหรับใช้งานแบบครอบครัว
+                  </p>
+                  <p class="option-description" v-if="!useOldUserIdInviteStockFamily">                    
+                    (มีสินค้าเหลืออีก {{ remainInviteStockFamily }} รายการ)
+                  </p>
+                  <p class="option-description" v-if="useOldUserIdInviteStockFamily">                    
+                    (ต่ออายุใช้ User เดิม)
                   </p>
                   <div class="check-icon" v-if="selectedType === 'email'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
@@ -180,7 +181,7 @@ export default {
     handleConfirm() {
       if (!this.selectedType) return
       
-      if (!this.useOldUserIdInviteStockFamily && this.remainInviteStockFamily == 0) {
+      if (this.selectedType === 'email' && !this.useOldUserIdInviteStockFamily && this.remainInviteStockFamily == 0) {
         //show toast message
         this.$toast.error('สินค้าหมด กรุณาติดต่อเจ้าหน้าที่');
         return;
