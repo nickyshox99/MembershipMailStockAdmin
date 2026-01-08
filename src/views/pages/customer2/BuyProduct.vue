@@ -245,10 +245,6 @@ export default {
   //           this.getEmailByLineSourceId(),                  
   //       ]); 
   //   }
-
-
-
-
   // },
   async created() {
     console.log("created")
@@ -260,11 +256,6 @@ export default {
     this.email = this.$route.query.emailx;
     this.purchaseType = this.$route.query.purchase_type || this.$route.query.purchaseType || this.$route.query.type;
     this.shopType = this.$route.query.shop_type;
-
-    console.log('BuyProduct - sourceUserId:', this.sourceUserId);
-    console.log('BuyProduct - email:', this.email);
-    console.log('BuyProduct - purchaseType:', this.purchaseType);
-    console.log('BuyProduct - shopType:', this.shopType);
 
     await this.getSourceProfile();
     console.log('lineId:', this.lineId);
@@ -417,8 +408,7 @@ export default {
       this.createSubScribeOrder();
     },
     async createSubScribeOrder() {
-      console.log('createSubScribeOrder');      
-
+      
       const formData = new FormData();
       formData.append("user_id", this.userid);      
       formData.append("token", "-");
@@ -448,7 +438,7 @@ export default {
 
         // const orderId = response.data.orderId || response.data.data?.id || '';
         const orderId = response.data.order_id;
-        console.log('orderId:', orderId);
+        
         if (orderId) {
 
           await this.insertUserEmailData(orderId);
@@ -465,9 +455,6 @@ export default {
               }
             })
         }
-
-
-
 
         this.showCompleteDialog = true;
 
@@ -515,7 +502,7 @@ export default {
       try {
         // เช็คว่ามี email หรือไม่
         if (!this.email) {
-          console.log('No email provided, skipping insert');
+          // console.log('No email provided, skipping insert');
           return;
         }
 
@@ -528,24 +515,24 @@ export default {
 
         // Validate data
         if (!this.sourceUserId || !this.email || !orderId) {
-          console.log('Missing required data for insert:', {
-            user_id: this.sourceUserId,
-            order_id: orderId,
-            email: !!this.email
-          });
+          // console.log('Missing required data for insert:', {
+          //   user_id: this.sourceUserId,
+          //   order_id: orderId,
+          //   email: !!this.email
+          // });
           return;
         }
 
         // เช็ค purchase_type และเลือก API ที่เหมาะสม
         if (this.purchaseType === 'personal') {
           // สำหรับ personal: insert ลง users_email (ใช้ password จาก store)
-          console.log('Inserting to users_email table (personal)');
+          // console.log('Inserting to users_email table (personal)');
 
           // ดึง password จาก store
           const password = this.getPassword;
 
           if (!password) {
-            console.error('Password not found in store');
+            // console.error('Password not found in store');
             return;
           }
 
@@ -557,22 +544,22 @@ export default {
             status_regis: 0,
           };
 
-          console.log('Calling API with data:', { ...data, password: '***' }); // ซ่อน password ใน log
+          // console.log('Calling API with data:', { ...data, password: '***' }); // ซ่อน password ใน log
 
           const response = await this.InsertUserEmail(data);
 
-          console.log('Insert response:', response);
+          // console.log('Insert response:', response);
 
           if (response && response.data && response.data.status === 'success') {
-            console.log('Users email (personal) inserted successfully');
+            // console.log('Users email (personal) inserted successfully');
           } else {
             const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
-            console.error('Insert users email failed:', errorMessage);
+            // console.error('Insert users email failed:', errorMessage);
           }
 
         } else if (this.purchaseType === 'email') {
           // สำหรับ email: insert ลง personal_email (ไม่ใช้ password)
-          console.log('Inserting to personal_email table');
+          // console.log('Inserting to personal_email table');
 
           const data = {
             user_id: this.sourceUserId,
@@ -581,25 +568,25 @@ export default {
             status_regis: 0,
           };
 
-          console.log('Calling API with data:', data);
+          // console.log('Calling API with data:', data);
 
           const response = await this.InsertPersonalEmail(data);
 
-          console.log('Insert response:', response);
+          // console.log('Insert response:', response);
 
           if (response && response.data && response.data.status === 'success') {
-            console.log('Personal email inserted successfully');
+            // console.log('Personal email inserted successfully');
           } else {
             const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
-            console.error('Insert personal email failed:', errorMessage);
+            // console.error('Insert personal email failed:', errorMessage);
           }
 
         } else {
-          console.log('Unknown purchase_type, skipping insert:', this.purchaseType);
+          // console.log('Unknown purchase_type, skipping insert:', this.purchaseType);
         }
 
       } catch (error) {
-        console.error('Error in insertUserEmailData:', error);
+        // console.error('Error in insertUserEmailData:', error);
       }
     },
   },

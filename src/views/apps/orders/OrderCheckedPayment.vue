@@ -147,7 +147,7 @@
                 props.row.slip_file_at != null
                   ? formatDateAssigned(props.row.slip_file_at)
                   : ""
-              }}ทน
+              }}
             </b-badge>
             <b-badge v-if="
               props.row.slip_correct == 0
@@ -1551,7 +1551,7 @@ export default {
       form.append("token", userData.token);
       form.append("email", email.email);
       form.append("password", email.password||'');
-      form.append("order_id", email.id);
+      form.append("order_id", email.order_id);
       form.append("purchase_type", this.loadPurchaseType);
       form.append("group_id", this.selectedGroupStock);
 
@@ -1566,6 +1566,7 @@ export default {
             variant: 'success',
           },
         });
+        this.search();
       } else {
         this.$toast({
           component: ToastificationContent,
