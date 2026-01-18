@@ -1926,6 +1926,7 @@ async GetActiveAdminBank({commit}, search) {
         product_id: inputData.get("product_id"),
         note: inputData.get("note"),
         purchase_type: inputData.get("purchase_type"),
+        previous_order_id: inputData.get("previous_order_id"),
     }
     
     let response;

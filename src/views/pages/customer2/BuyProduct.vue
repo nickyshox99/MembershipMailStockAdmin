@@ -211,7 +211,8 @@ export default {
       enableSkipApproval: false,
       sourceUserId: '',
       purchaseType: '',
-      shopType: '' // shop_type ที่รับมาจาก query
+      shopType: '', // shop_type ที่รับมาจาก query
+      previous_order_id: 0,
     }
   },
   computed: {
@@ -256,6 +257,9 @@ export default {
     this.email = this.$route.query.emailx;
     this.purchaseType = this.$route.query.purchase_type || this.$route.query.purchaseType || this.$route.query.type;
     this.shopType = this.$route.query.shop_type;
+    this.sourceUserId = this.$route.query.sourceUserId;
+    this.previous_order_id = this.$route.query.previous_order_id||0;
+    
 
     await this.getSourceProfile();
     console.log('lineId:', this.lineId);
@@ -418,6 +422,7 @@ export default {
       formData.append("note", "");
       formData.append("page_name", this.$route.name);
       formData.append("purchase_type", this.purchaseType); // เพิ่ม purchase_type
+      formData.append("previous_order_id", this.previous_order_id);
 
       formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"
       
