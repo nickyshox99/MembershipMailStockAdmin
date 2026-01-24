@@ -322,6 +322,25 @@
                   }}                                   
                 </span>
 
+                <span v-if="props.column.field === 'RemainingDays2'"> 
+                  <b-badge
+                    v-if="props.row.RemainingDays<=0"
+                    pill
+                    :variant="`light-danger`"
+                    class="text-capitalize"
+                  >                                                                 
+                    {{ t('Expired') }}
+                  </b-badge>  
+                  <b-badge
+                    v-if="props.row.RemainingDays>0"
+                    pill
+                    :variant="`light-success`"
+                    class="text-capitalize"
+                  >                                                                 
+                    {{ t('Remaining') }} {{props.row.RemainingDays}} {{t('Day')}}
+                  </b-badge> 
+                </span>
+
                 <span v-if="props.column.field === 'action'">
                     <b-badge  style="cursor: pointer; margin-right:2px" variant="info" @click="editMemberData(props.row)">
                       <feather-icon icon="EditIcon" size="16" class="mr-0 mr-sm-50" />
@@ -472,6 +491,10 @@ export default {
         {
           label: t('Start Date'),
           field: 'update_at2',              
+        },
+        {
+          label: t('Remaining'),
+          field: 'RemainingDays2',              
         },
         {
           label: 'Invite Url',

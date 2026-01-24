@@ -126,9 +126,17 @@
             </span>
 
             <span v-if="props.column.field === 'memberCountDisplay'">
-                <span class="member-count-display">
+                <div class="member-count-display" style="text-align: center;">
                     {{ (props.row.CountUsedMember || 0) }}/{{ (props.row.CountMember || 0) }}
-                </span>
+                </div>
+                <b-badge                  
+                      v-if="props.row.CountExpiredUsedMember>0"
+                      pill
+                      :variant="`light-danger`"
+                      class="text-capitalize"
+                  >                                                                 
+                  Expired:{{ (props.row.CountExpiredUsedMember || 0) }}
+                </b-badge> 
             </span>
 
             <span v-if="props.column.field === 'status2'">
