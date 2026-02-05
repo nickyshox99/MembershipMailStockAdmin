@@ -645,6 +645,24 @@ export default {
         // เช็คว่าชำระเงินไปแล้วหรือยัง
         if (response && response.data && response.data.status === 'already_paid') {
           this.isProcessingPayment = false;
+          
+          // ถ้าเป็น Stripe และมี URL ให้เปลี่ยนหน้าไปหน้าชำระแทน
+          if (this.paymentType === 'stripe' && response.data.data && response.data.data.url) {
+            const stripeUrl = response.data.data.url;
+            // ปิดหน้าต่างที่เปิดไว้ถ้ายังเปิดอยู่
+            if (this.stripeWindow && !this.stripeWindow.closed) {
+              this.stripeWindow.close();
+            }
+            if (this.stripeLink) {
+              document.body.removeChild(this.stripeLink);
+              this.stripeLink = null;
+            }
+            // เปลี่ยนหน้าไปหน้าชำระ
+            window.location.href = stripeUrl;
+            return;
+          }
+          
+          // ถ้าไม่ใช่ Stripe หรือไม่มี URL ให้แสดง toast ตามเดิม
           // ปิดหน้าต่างที่เปิดไว้ถ้ายังเปิดอยู่
           if (this.stripeWindow && !this.stripeWindow.closed) {
             this.stripeWindow.close();
