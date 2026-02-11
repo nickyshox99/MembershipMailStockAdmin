@@ -21,7 +21,7 @@
 
           <div class="options-section" v-if="!isLoading">
             <b-row class="option-row">
-              <b-col v-if="showUserCode" cols="12" :md="getColumnSize" class="option-col">
+              <!-- <b-col v-if="showUserCode" cols="12" :md="getColumnSize" class="option-col">
                 <div class="option-card" :class="{ 'selected': selectedType === 'personal' }"
                   @click="selectType('personal')">
                   <div class="option-icon">
@@ -36,7 +36,7 @@
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
                 </div>
-              </b-col>
+              </b-col> -->
 
               <b-col v-if="showUserEmail" cols="12" :md="getColumnSize" class="option-col">
                 <div class="option-card" :class="{ 'selected': selectedType === 'email' }"
