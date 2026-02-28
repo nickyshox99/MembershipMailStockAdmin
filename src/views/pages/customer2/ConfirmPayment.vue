@@ -617,7 +617,7 @@ export default {
         formData.append("server_id", this.orderData.id);
         formData.append("order_id", this.orderData.id);
         formData.append("description", this.orderData.product_name);
-        formData.append("imageurl", "http://localhost:9900/img/image.10008f5a.png");
+        formData.append("imageurl", "https://allpremium.online//logo1.png");
         formData.append("email", this.email);
         formData.append("purchase_type", this.purchaseType);
 

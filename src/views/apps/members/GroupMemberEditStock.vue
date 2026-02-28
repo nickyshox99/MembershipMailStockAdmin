@@ -322,9 +322,9 @@
                   }}                                   
                 </span>
 
-                <span v-if="props.column.field === 'RemainingDays2'"> 
+                <span v-if="props.column.field === 'RemainingDays2'">                  
                   <b-badge
-                    v-if="props.row.RemainingDays<=0"
+                    v-if="props.row.RemainingDays!=null && props.row.RemainingDays<=0"
                     pill
                     :variant="`light-danger`"
                     class="text-capitalize"
@@ -332,7 +332,7 @@
                     {{ t('Expired') }}
                   </b-badge>  
                   <b-badge
-                    v-if="props.row.RemainingDays>0"
+                    v-if="props.row.RemainingDays!=null && props.row.RemainingDays>0"
                     pill
                     :variant="`light-success`"
                     class="text-capitalize"
