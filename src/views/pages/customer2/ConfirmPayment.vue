@@ -602,23 +602,6 @@ export default {
         // เริ่ม loading
         this.isProcessingPayment = true;
 
-        // เปิดหน้าต่างใหม่ทันทีเมื่อ user click (ก่อน async call) เพื่อให้ Safari ยอมรับ
-        // Safari จะ block popup ที่ไม่ได้เกิดจาก user interaction โดยตรง
-        this.stripeWindow = window.open('about:blank', '_blank');
-        
-        // ถ้า Safari block popup ให้ใช้วิธี fallback
-        if (!this.stripeWindow || this.stripeWindow.closed || typeof this.stripeWindow.closed == 'undefined') {
-          // Fallback: สร้าง <a> tag แล้ว trigger click
-          const link = document.createElement('a');
-          link.href = '#'; // จะเปลี่ยน URL หลังจากได้ response
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          document.body.appendChild(link);
-          
-          // เก็บ reference สำหรับเปลี่ยน URL ภายหลัง
-          this.stripeLink = link;
-        }
-
         // await this.insertUserEmailData();
 
         const formData = new FormData();
@@ -683,38 +666,10 @@ export default {
           return;
         }
 
-        //เอา URL จาก response.data.data.url มาแล้ว redirect ไปหน้าใหม่ จาก URL ที่ส่งมา
+        //เอา URL จาก response.data.data.url มาแล้ว redirect ไปหน้าชำระ Stripe
         const stripeUrl = response.data.data.url;
         if (response && response.data && response.data.status == 'success') {
-          // ถ้ามีหน้าต่างที่เปิดไว้แล้ว ให้เปลี่ยน URL
-          if (this.stripeWindow && !this.stripeWindow.closed) {
-            this.stripeWindow.location.href = stripeUrl;
-          } else if (this.stripeLink) {
-            // Fallback: ใช้ link element
-            this.stripeLink.href = stripeUrl;
-            this.stripeLink.click();
-            document.body.removeChild(this.stripeLink);
-            this.stripeLink = null;
-          } else {
-            // ถ้าไม่มีหน้าต่างที่เปิดไว้ ให้ลองเปิดใหม่ (อาจถูก block)
-            this.stripeWindow = window.open(stripeUrl, '_blank');
-            if (!this.stripeWindow || this.stripeWindow.closed || typeof this.stripeWindow.closed == 'undefined') {
-              // ถ้ายังถูก block ให้ใช้วิธีเปิดในหน้าต่างเดิม
-              window.location.href = stripeUrl;
-            }
-          }
-
-          // เริ่ม polling เช็ค payment status
-          this.startPaymentPolling();
-
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'กรุณาทำการชำระเงินในหน้าต่างใหม่ ระบบกำลังตรวจสอบการชำระเงิน...',
-              icon: 'InfoIcon',
-              variant: 'info',
-            },
-          });
+          window.location.href = stripeUrl;
         }
         else {
           this.isProcessingPayment = false;
