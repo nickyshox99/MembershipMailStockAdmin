@@ -156,7 +156,7 @@
               <!-- Action Buttons -->
               <div v-if="!showCompleteDialog && !showSlipCorrect" class="action-section">
                 <div class="slip-upload">
-                  <p class="upload-hint">หากชำระเงินแล้ว จะไม่สามารถขอคืนเงินได้แต่เปลี่ยนเป็นแพ็กเกจอื่นได้</p>
+                  <p class="upload-hint">ขอคืนเงินกรุณาติดต่อแอดมินและทางร้านอาจใช้เวลาดำเนินการ 5-10 วัน</p>
                 </div>
                 <b-button variant="success" class="confirm-btn" @click="confirmPayment()"
                   :disabled="isProcessingPayment">
