@@ -322,6 +322,14 @@
                   }}                                   
                 </span>
 
+                <div v-if="props.column.field === 'ExpiryDate2'"> 
+                  {{
+                    props.row.ExpiryDate != null
+                      ? formatDateAssigned(props.row.ExpiryDate)
+                      : ""
+                  }}                                   
+                </div>
+                
                 <span v-if="props.column.field === 'RemainingDays2'">                  
                   <b-badge
                     v-if="props.row.RemainingDays!=null && props.row.RemainingDays<=0"
@@ -490,7 +498,13 @@ export default {
         },
         {
           label: t('Start Date'),
-          field: 'update_at2',              
+          field: 'update_at2',
+          width: '120px',
+        },
+        {
+          label: t('Expire Date'),
+          field: 'ExpiryDate2',
+          width: '140px',
         },
         {
           label: t('Remaining'),
@@ -1101,8 +1115,23 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '@core/scss/vue/libs/vue-select.scss';
+
+/* คอลัมน์ Expire Date (checkbox + line-numbers + Email + Line User แล้ว = column ที่ 5) */
+#history-edit ::v-deep .vgt-table th:nth-child(5),
+#history-edit ::v-deep .vgt-table td:nth-child(5) {
+  min-width: 140px;
+  width: 140px;
+}
+
+/* คอลัมน์ Invite Url = column ที่ 8 */
+#history-edit ::v-deep .vgt-table th:nth-child(8),
+#history-edit ::v-deep .vgt-table td:nth-child(8) {
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .bounce-enter-active {
   animation: bounce-in 0.5s;
