@@ -9,7 +9,8 @@ import dashboard from './routes/dashboard'
 import pages from './routes/pages'
 import customer from './routes/customer'
 import customer2 from './routes/customer2'
-
+import customer3 from './routes/customer3'
+import customer4 from './routes/customer4'
 import store from '@/store/index'
 import useJwt from '@/auth/jwt/useJwt'
 
@@ -26,8 +27,10 @@ const router = new VueRouter({
     ...apps,
     ...dashboard,    
     ...pages,      
-    // ...customer,
+    //...customer,
     ...customer2,
+    // ...customer3,
+    // ...customer4,
     {
       path: '*',
       redirect: 'error-404',
@@ -42,7 +45,7 @@ const router = new VueRouter({
   // console.log("Is login");  
   // console.log(isLoggedIn);
 
-  if (to.name=="recommend-join-family"||to.name=="registeremail"||to.name=="buy-product"||to.name=="confirm-payment"||to.name=="select-topic"||to.name=="select-plan-type"||to.name=="user-regis" ) {
+  if (to.name=="recommend-join-family"||to.name=="registeremail"||to.name=="buy-product"||to.name=="confirm-payment"||to.name=="select-topic"||to.name=="select-plan-type"||to.name=="user-regis"||to.name=="select-customer-email" ) {
     return next()
   }
   

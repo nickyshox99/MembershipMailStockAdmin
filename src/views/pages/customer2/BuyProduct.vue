@@ -16,7 +16,7 @@
 
           <div class="content-section" v-if="!showCompleteDialog">
             <div class="product-section">
-              <h3 class="section-title">เลือกแพ็กเกจสมาชิก</h3>
+              <h3 class="section-title">เลือกแพ็กเกจจำนวนกี่เดือน</h3>
 
               <div class="product-display" v-if="product.id != 0">
                 <div class="product-info">
@@ -134,6 +134,7 @@ import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 import { mapActions } from "vuex";
+import { mapGetters } from "vuex";
 import axios from "axios"
 import useJwt from '@/auth/jwt/useJwt'
 
@@ -210,10 +211,12 @@ export default {
       enableSkipApproval: false,
       sourceUserId: '',
       purchaseType: '',
-      shopType: '' // shop_type ที่รับมาจาก query
+      shopType: '', // shop_type ที่รับมาจาก query
+      previous_order_id: 0,
     }
   },
   computed: {
+    ...mapGetters('userRegistration', ['getEmail', 'getPassword', 'hasRegistrationData']),
     passwordToggleIcon() {
       return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
     },
@@ -243,27 +246,23 @@ export default {
   //           this.getEmailByLineSourceId(),                  
   //       ]); 
   //   }
-
-
-
-
   // },
   async created() {
+    console.log("created")
     await this.loadSetting()        // <— โหลดค่าก่อน
+    
+    // รับค่าจาก Vue Router Query  
 
-    // รับค่าจาก Vue Router Query
     this.sourceUserId = this.$route.query.sourceUserId;
-    this.email = this.$route.query.email;
+    this.email = this.$route.query.emailx;
     this.purchaseType = this.$route.query.purchase_type || this.$route.query.purchaseType || this.$route.query.type;
     this.shopType = this.$route.query.shop_type;
-
-    console.log('BuyProduct - sourceUserId:', this.sourceUserId);
-    console.log('BuyProduct - email:', this.email);
-    console.log('BuyProduct - purchaseType:', this.purchaseType);
-    console.log('BuyProduct - shopType:', this.shopType);
+    this.sourceUserId = this.$route.query.sourceUserId;
+    this.previous_order_id = this.$route.query.previous_order_id||0;
+    
 
     await this.getSourceProfile();
-
+    console.log('lineId:', this.lineId);
     if (this.lineId == '') {
       this.showProduct = false;
     } else {
@@ -280,6 +279,8 @@ export default {
     ...mapActions(["CreateSubScribeOrder"]),
     ...mapActions(["GetEmailByLineSourceId"]),
     ...mapActions(["CreateAndApproveSubScribeOrder"]),
+    ...mapActions(["InsertUserEmail"]),
+    ...mapActions(["InsertPersonalEmail"]),
     async validationForm() {
 
     },
@@ -408,50 +409,26 @@ export default {
       this.showModalProduct = false;
     },
     async confirmProduct() {
-      await this.$bvModal.msgBoxConfirm(this.$t('กรุณายืนยันการสั่งซื้อสินค้า'), {
-        title: this.$t('Please Confirm'),
-        size: 'sm',
-        buttonSize: 'sm',
-        okVariant: 'success',
-        okTitle: 'YES',
-        cancelTitle: 'NO',
-        footerClass: 'p-2',
-        hideHeaderClose: true,
-        centered: true,
-        headerBgVariant: 'success',
-        headerTextVariant: 'white'
-      })
-        .then(value => {
-          if (value) {
-            this.createSubScribeOrder();
-          }
-        })
-        .catch(err => {
-
-        })
+      this.createSubScribeOrder();
     },
     async createSubScribeOrder() {
-      console.log('createSubScribeOrder');
-      console.log('purchase_type before send:', this.purchaseType);
-
+      
       const formData = new FormData();
-      formData.append("user_id", this.userid);
-      console.log(this.userid);
+      formData.append("user_id", this.userid);      
       formData.append("token", "-");
-      formData.append("line_id", this.sourceUserId);
-      console.log(this.sourceUserId);
-      formData.append("email", this.selectedSubScribeEmail);
+      formData.append("line_id", this.sourceUserId);      
+      formData.append("email", this.email);
       formData.append("product_id", this.product.id);
       formData.append("note", "");
       formData.append("page_name", this.$route.name);
       formData.append("purchase_type", this.purchaseType); // เพิ่ม purchase_type
-
+      formData.append("previous_order_id", this.previous_order_id);
 
       formData.append("admin_id", "System") // controller รองรับค่าว่างจะ default เป็น "System"
+      
       const response = await this.CreateAndApproveSubScribeOrder(formData)
 
       if (response.data.status == 'success') {
-
 
         this.$toast(
           {
@@ -466,8 +443,12 @@ export default {
 
         // const orderId = response.data.orderId || response.data.data?.id || '';
         const orderId = response.data.order_id;
-        console.log('orderId:', orderId);
+        
         if (orderId) {
+
+          await this.insertUserEmailData(orderId);
+          
+
           this.$router.replace(
             {
               name: 'confirm-payment',
@@ -479,9 +460,6 @@ export default {
               }
             })
         }
-
-
-
 
         this.showCompleteDialog = true;
 
@@ -522,6 +500,98 @@ export default {
       } catch (e) {
         // เงียบไว้/หรือ toast ตามสะดวก
         this.enableSkipApproval = false
+      }
+    },
+    // เพิ่มใน methods (หลัง createSubScribeOrder)
+    async insertUserEmailData(orderId) {
+      try {
+        // เช็คว่ามี email หรือไม่
+        if (!this.email) {
+          // console.log('No email provided, skipping insert');
+          return;
+        }
+
+        // console.log('Registration data:', {
+        //   email: this.email,
+        //   user_id: this.sourceUserId,
+        //   order_id: orderId,
+        //   purchase_type: this.purchaseType
+        // });
+
+        // Validate data
+        if (!this.sourceUserId || !this.email || !orderId) {
+          // console.log('Missing required data for insert:', {
+          //   user_id: this.sourceUserId,
+          //   order_id: orderId,
+          //   email: !!this.email
+          // });
+          return;
+        }
+
+        // เช็ค purchase_type และเลือก API ที่เหมาะสม
+        if (this.purchaseType === 'personal') {
+          // สำหรับ personal: insert ลง users_email (ใช้ password จาก store)
+          // console.log('Inserting to users_email table (personal)');
+
+          // ดึง password จาก store
+          const password = this.getPassword;
+
+          if (!password) {
+            // console.error('Password not found in store');
+            return;
+          }
+
+          const data = {
+            user_id: this.sourceUserId,
+            order_id: parseInt(orderId),
+            email: this.email,
+            password: password,
+            status_regis: 0,
+          };
+
+          // console.log('Calling API with data:', { ...data, password: '***' }); // ซ่อน password ใน log
+
+          const response = await this.InsertUserEmail(data);
+
+          // console.log('Insert response:', response);
+
+          if (response && response.data && response.data.status === 'success') {
+            // console.log('Users email (personal) inserted successfully');
+          } else {
+            const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
+            // console.error('Insert users email failed:', errorMessage);
+          }
+
+        } else if (this.purchaseType === 'email') {
+          // สำหรับ email: insert ลง personal_email (ไม่ใช้ password)
+          // console.log('Inserting to personal_email table');
+
+          const data = {
+            user_id: this.sourceUserId,
+            order_id: parseInt(orderId),
+            email: this.email,
+            status_regis: 0,
+          };
+
+          // console.log('Calling API with data:', data);
+
+          const response = await this.InsertPersonalEmail(data);
+
+          // console.log('Insert response:', response);
+
+          if (response && response.data && response.data.status === 'success') {
+            // console.log('Personal email inserted successfully');
+          } else {
+            const errorMessage = (response && response.data && response.data.message) || 'เกิดข้อผิดพลาด';
+            // console.error('Insert personal email failed:', errorMessage);
+          }
+
+        } else {
+          // console.log('Unknown purchase_type, skipping insert:', this.purchaseType);
+        }
+
+      } catch (error) {
+        // console.error('Error in insertUserEmailData:', error);
       }
     },
   },
@@ -1133,26 +1203,28 @@ export default {
       min-width: 120px;
 
       &.btn-success {
-        background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%);
+        background: #28a745;
         border: none;
         color: white;
-        box-shadow: 0 6px 20px rgba(152, 251, 152, 0.3);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 
         &:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 30px rgba(152, 251, 152, 0.4);
+          background: #218838;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
       }
 
       &.btn-secondary {
-        background: linear-gradient(135deg, #ffb6c1 0%, #ffa0b4 100%);
+        background: #6c757d;
         border: none;
         color: white;
-        box-shadow: 0 6px 20px rgba(255, 182, 193, 0.3);
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
 
         &:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+          background: #5a6268;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
         }
       }
     }

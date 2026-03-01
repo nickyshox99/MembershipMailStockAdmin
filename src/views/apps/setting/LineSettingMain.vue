@@ -3,18 +3,6 @@
         nav-class="nav-left">
 
 
-
-
-        <b-tab active>
-            <template #title>
-                <feather-icon icon="SettingsIcon" size="18" class="mr-50" />
-                <span class="font-weight-bold">Line Token</span>
-            </template>
-
-            <line-setting-token v-if="settingdata.line_token" :setting-data="settingdata.line_token"
-                :readOnlyControl="settingTokenReadonly" />
-        </b-tab>
-
         <b-tab>
             <template #title>
                 <feather-icon icon="SettingsIcon" size="18" class="mr-50" />
@@ -32,6 +20,16 @@
             </template>
 
             <payment-type-setting :readOnlyControl="settingTokenReadonly" />
+        </b-tab>
+
+        <b-tab>
+            <template #title>
+                <feather-icon icon="CreditCardIcon" size="18" class="mr-50" />
+                <span class="font-weight-bold">ข้อความตอบกลับในระบบ</span>
+            </template>
+
+            <line-setting-message v-if="settingdata.line_message" :setting-data="settingdata.line_message"
+                :readOnlyControl="settingTokenReadonly" />
         </b-tab>
         
 
@@ -67,6 +65,7 @@ import LineSettingDepositFormat from './LineSettingDepositFormat.vue'
 import LineSettingWithdrawFormat from './LineSettingWithdrawFormat.vue'
 import LineSettingExpire from './LineSettingExpire.vue'
 import PaymentTypeSetting from './PaymentTypeSetting.vue'
+import LineSettingMessage from './LineSettingMessage.vue'
 
 import axios from "axios";
 import { mapActions } from "vuex";
@@ -79,7 +78,8 @@ export default {
         LineSettingDepositFormat,
         LineSettingWithdrawFormat,
         LineSettingExpire,
-        PaymentTypeSetting
+        PaymentTypeSetting,
+        LineSettingMessage
     },
     data() {
         return {
@@ -87,6 +87,7 @@ export default {
             settingdata: {},
             pagePermission: [],
             settingTokenReadonly: false,
+            
         }
     },
     async created() {
@@ -140,6 +141,7 @@ export default {
     },
     methods: {
         ...mapActions(["GetPagePermission"]),
+        
         async getPagePermission() {
             console.log('getPagePermission');
 
@@ -177,6 +179,7 @@ export default {
             }
 
         },
+        
     },
 }
 </script>

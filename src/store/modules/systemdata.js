@@ -1926,10 +1926,9 @@ async GetActiveAdminBank({commit}, search) {
         product_id: inputData.get("product_id"),
         note: inputData.get("note"),
         purchase_type: inputData.get("purchase_type"),
+        previous_order_id: inputData.get("previous_order_id"),
     }
-
-    console.log('CreateAndApproveSubScribeOrder - body:', body);
-
+    
     let response;
     await axios.post("api/product/CreateAndApproveSubScribeOrder",body,
     {
@@ -1952,6 +1951,34 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async RenewSubScribeOrder({commit}, inputData) {
+    var headers = {
+      userid: inputData.get("userid"),
+      token: inputData.get("token"),
+    }
+    
+    var body = {
+        previous_order_id: inputData.get("previous_order_id"),
+    }
+
+    let response;
+    await axios.post("api/product/RenewSubScribeOrder",body,
+    {
+      headers: {            
+      'Content-Type': 'application/json',
+      'userid': headers.userid,
+      'token': headers.token,
+    }
+    }).then(
+      resp => 
+      {
+        response = resp;
+      }
+    );
+
+    return response;
+  },
+
   async GetHistorySubScribeOrderByMemberID({commit}, inputData) {
         
     var headers = {
@@ -2427,12 +2454,93 @@ async GetActiveAdminBank({commit}, search) {
         order_id: inputData.get("order_id"),       
         slip_correct: inputData.get("slip_correct"),    
         note :  inputData.get("note"),       
+        invite_link : inputData.get("invite_link"),
     }
 
     // console.log(body);
 
     let response;
     await axios.post("api/product/VerifySlipOrder",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async UpdatePersonalData({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        order_id: inputData.get("order_id"),       
+        email: inputData.get("email"),
+        password: inputData.get("password"),
+        order_id: inputData.get("order_id"),
+        purchase_type: inputData.get("purchase_type"),
+        group_id: inputData.get("group_id"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/UpdatePersonalData",body,    
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async UpdateEndDateById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    
+    var body = {
+        username: inputData.get("userid"),        
+        id: inputData.get("id"),               
+        end_date :  inputData.get("end_date"),               
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/product/UpdateEndDateById",body,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -2629,6 +2737,104 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async CheckRemainEmailStockPersonal({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),        
+    }
+
+    let response;
+    await axios.post("api/product/CheckRemainEmailStockPersonal", body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async CheckRemainEmailStockFamily({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),        
+    }
+
+    let response;
+    await axios.post("api/product/CheckRemainEmailStockFamily", body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+
+  async CheckRemainInviteStockFamily({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        userid: inputData.get("userid"),        
+    }
+
+    let response;
+    await axios.post("api/product/CheckRemainInviteStockFamily", body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+
   async GetPersonalEmailStatusByOrderId({commit}, inputData) {
         
     var headers = {
@@ -3110,6 +3316,78 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async GetSubscriptionGroupStock({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        searchWord: inputData.get("searchWord"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscriptionGroupStock",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetSubscriptionGroupForReport({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {
+        searchWord: inputData.get("searchWord"),
+        page_name: inputData.get("page_name"),
+    }
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscriptionGroupForReport",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetActiveSubscriptionGroup({commit}, inputData) {
         
     var headers = {
@@ -3188,6 +3466,45 @@ async GetActiveAdminBank({commit}, search) {
     }
     return response;
   },
+  async GetSubscribeMemberByGroupStockById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        id: inputData.get("id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscribeMemberByGroupStockById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
   async GetGroupOfMemberByMemberId({commit}, inputData) {
         
     var headers = {
@@ -3246,6 +3563,45 @@ async GetActiveAdminBank({commit}, search) {
 
     let response;
     await axios.post("api/subscriptiongroup/getSubscribePaymentById",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async GetSubscribePaymentStockById({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+    var body = {
+        // userid: search.get("userid"),
+        // token: search.get("token"),
+        group_id: inputData.get("group_id"),
+        page_name: inputData.get("page_name"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/subscriptiongroup/getSubscribePaymentStockById",body,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -3407,6 +3763,49 @@ async GetActiveAdminBank({commit}, search) {
 
     let response;
     await axios.post("api/subscriptiongroup/addPaymentNoteGroup",body,
+    {
+        headers: {            
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+        }
+    }).then(
+        resp => 
+        {
+            response = resp;
+        }
+    );
+
+    // console.log(response);
+    if (response.data.status=="success") 
+    {
+      
+    }
+    return response;
+  },
+  async AddPaymentNoteGroupStock({commit}, inputData) {
+        
+    var headers = {
+        userid: inputData.get("userid"),
+        token: inputData.get("token"),
+    }
+
+    var body = {        
+        username : inputData.get("admin_id"),
+        page_name: inputData.get("page_name"),        
+        group_id: inputData.get("group_id"),
+        start_at: inputData.get("start_at"),
+        end_at: inputData.get("end_at"),
+        paid_amount: inputData.get("paid_amount"),
+        paid_by: inputData.get("paid_by"),
+        ref_img1: inputData.get("ref_img1"),
+        ref_img2: inputData.get("ref_img2"),
+    }
+
+    // console.log(body);
+
+    let response;
+    await axios.post("api/addPaymentNoteGroupStock/addPaymentNoteGroupStock",body,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -4652,8 +5051,14 @@ async GetActiveAdminBank({commit}, search) {
         status: inputData.get("status"),
     }
 
+    var purchase_type = inputData.get("purchase_type")
+    var url = "api/personalemail/updatePersonalEmailStatusByOrderId"
+    if (purchase_type=="email") {
+        url = "api/personal_email/updatePersonalEmailStatusByOrderId"
+    }
+
     let response;
-    await axios.post("api/personal_email/updatePersonalEmailStatusByOrderId", body,
+    await axios.post(url, body,
     {
         headers: {            
         'Content-Type': 'application/json',
@@ -4695,9 +5100,11 @@ async GetActiveAdminBank({commit}, search) {
             purchase_type: inputData.get("purchase_type"),
         }
     
+        // อ่าน webhook URL จาก environment variable
+        const webhookBaseUrl = process.env.VUE_APP_WEBHOOK_BASE_URL || 'http://localhost:11000';
         
         let response;
-        await axios.post("http://localhost:11000/api/strippayment/checkout", body,
+        await axios.post(`https://payment.allpremium.online/api/strippayment/checkout`, body,
         {
             headers: {            
             'Content-Type': 'application/json',

@@ -2,7 +2,7 @@
   <div class="payment-type-setting">
     <div class="card">
       <div class="card-header">
-        <h4 class="card-title">
+        <h4 class="card-title" style="color: white;">
           <feather-icon icon="CreditCardIcon" class="mr-50" />
           ตั้งค่าประเภทการชำระเงิน
         </h4>

@@ -1,7 +1,7 @@
 export default [
   {
     header: "Manage Member",
-    submenu: ["apps-members-manage", "apps-alliances-manage", "apps-agent-refer", "apps-group-sub", "apps-personal-email-manage", "apps-individual-email-stock"],
+    submenu: ["apps-group-sub-stock","apps-members-manage", "apps-alliances-manage", "apps-agent-refer", "apps-group-sub", "apps-personal-email-manage", "apps-individual-email-stock"],
   },
   {
     title: "Member",
@@ -9,23 +9,31 @@ export default [
     children: [
 
       {
-        title: "Group Subscription",
+        title: "เมลร้านบุคคล",
+        route: "apps-individual-email-stock",
+        icon: "MailIcon",
+      },
+      {
+        title: "เมลร้านแฟมมิลี่",
         route: "apps-group-sub",
+        icon: "MailIcon",
       },
       {
-        title: "Manage Member personal",
-        route: "apps-members-manage",
-      },
-      {
-        title: "Personal Email",
+        title: "เมลลูกค้าแบบบุคคล",
         route: "apps-personal-email-manage",
         icon: "MailIcon",
       },
       {
-        title: "Email Stock แบบบุคคล",
-        route: "apps-individual-email-stock",
+        title: "เมลลูกค้าแฟมมิลี่",
+        route: "apps-group-sub-stock",
         icon: "MailIcon",
       },
+      // {
+      //   title: "Manage Member personal",
+      //   route: "apps-members-manage",
+      // },
+     
+      
     ],
   },
   // {

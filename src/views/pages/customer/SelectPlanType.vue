@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="select-plan-container">
     <div class="select-background">
       <div class="background-overlay"></div>
@@ -278,6 +278,9 @@ export default {
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
+      console.log('SelectPlanType - sourceUserId received:', this.sourceUserId)
+    } else {
+      console.log('SelectPlanType - No sourceUserId in query parameters')
     }
   },
   methods: {
@@ -355,7 +358,7 @@ export default {
 </script>
 
 <style lang="scss">
-// Pastel Theme - Matching SelectTopic.vue
+// Pastel Theme - Matching littlebeem Brand
 .select-plan-container {
   min-height: 100vh;
   display: flex;
@@ -383,8 +386,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(248, 187, 217, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(248, 187, 217, 0.05) 0%, transparent 50%);
   z-index: 2;
 }
 
@@ -397,7 +400,7 @@ export default {
 }
 
 .select-card {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: #ffffff !important;
   border: none !important;
   border-radius: 24px !important;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
@@ -426,28 +429,28 @@ export default {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
-    border: 3px solid rgba(255, 182, 193, 0.2);
+    box-shadow: 0 8px 25px rgba(248, 187, 217, 0.3);
+    border: 3px solid #F8BBD9;
     transition: all 0.3s ease;
     object-fit: cover;
-    background: linear-gradient(135deg, rgba(255, 240, 245, 0.9) 0%, rgba(240, 248, 255, 0.9) 100%);
+    background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
     padding: 8px;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(255, 182, 193, 0.4);
-      border-color: rgba(255, 182, 193, 0.3);
+      box-shadow: 0 12px 35px rgba(248, 187, 217, 0.4);
+      border-color: rgba(248, 187, 217, 0.4);
     }
   }
 
   .brand-text {
-    color: #ff69b4 !important;
+    background-clip: text;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    text-shadow: 0 2px 4px rgba(255, 182, 193, 0.3);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
 }
 
@@ -456,7 +459,7 @@ export default {
   margin-bottom: 2rem;
 
   .welcome-title {
-    color: #87ceeb;
+    color: #4a4a4a;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.5rem;
@@ -464,7 +467,7 @@ export default {
   }
 
   .welcome-subtitle {
-    color: #333333;
+    color: #757575;
     font-family: 'MiSansMU', sans-serif;
     font-size: 1rem;
     margin: 0;
@@ -478,13 +481,12 @@ export default {
 .option-card {
   position: relative;
   padding: 2rem 1.5rem;
-  border: 2px solid rgba(255, 182, 193, 0.3);
+  border: 2px solid #e0e0e0;
   border-radius: 20px;
   text-align: center;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
-  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(15px);
   overflow: hidden;
 
@@ -495,54 +497,53 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(248, 187, 217, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%);
     border-radius: 20px;
     pointer-events: none;
     transition: all 0.3s ease;
   }
 
   &:hover {
-    border-color: #ff69b4;
+    border-color: #F8BBD9;
     transform: translateY(-5px) scale(1.02);
     box-shadow:
-      0 15px 35px rgba(255, 105, 180, 0.2),
-      0 5px 15px rgba(255, 105, 180, 0.1);
-    background: rgba(255, 255, 255, 0.95);
+      0 15px 35px rgba(248, 187, 217, 0.2),
+      0 5px 15px rgba(248, 187, 217, 0.1);
 
     &::before {
-      background: linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(135, 206, 235, 0.1) 100%);
+      background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
     }
   }
 
   &.selected {
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.25) 0%, rgba(135, 206, 235, 0.15) 100%);
-    border-color: #ff69b4;
+    background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
+    border-color: #F8BBD9;
     box-shadow:
-      0 10px 30px rgba(255, 105, 180, 0.3),
+      0 10px 30px rgba(248, 187, 217, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
 
     &::before {
-      background: linear-gradient(135deg, rgba(255, 182, 193, 0.3) 0%, rgba(135, 206, 235, 0.2) 100%);
+      background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(248, 187, 217, 0.08) 100%);
     }
   }
 }
 
 .option-icon {
   margin-bottom: 1rem;
-  color: #ff69b4;
+  color: #F8BBD9;
   position: relative;
   z-index: 1;
 
   .selected & {
-    color: #ff69b4;
+    color: #F8BBD9;
   }
 }
 
 .option-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #000000;
+  color: #4a4a4a;
   font-family: 'MiSansMU', sans-serif;
   margin-bottom: 0.5rem;
   position: relative;
@@ -550,7 +551,7 @@ export default {
 }
 
 .option-description {
-  color: #333333;
+  color: #5a5a5a;
   font-family: 'MiSansMU', sans-serif;
   font-size: 0.95rem;
   margin: 0;
@@ -562,7 +563,7 @@ export default {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  color: #98fb98;
+  color: #F8BBD9;
   animation: scaleIn 0.3s ease;
   z-index: 2;
 }
@@ -586,17 +587,17 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   border-radius: 12px !important;
-  background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
+  background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
   border: none !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+  box-shadow: 0 4px 15px rgba(248, 187, 217, 0.4);
   transition: all 0.3s ease;
   font-family: 'MiSansMU', sans-serif;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5) !important;
-    background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
+    box-shadow: 0 8px 25px rgba(248, 187, 217, 0.5) !important;
+    background: #E8A5C9 !important;
   }
 
   &:active:not(:disabled) {
@@ -606,6 +607,7 @@ export default {
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    background: #FFB6C1 !important;
   }
 
   .button-icon {
@@ -622,14 +624,14 @@ export default {
     font-weight: 600;
     border-radius: 12px !important;
     background: transparent !important;
-    border: 2px solid rgba(255, 182, 193, 0.5) !important;
-    color: #ff69b4 !important;
+    border: 2px solid rgba(248, 187, 217, 0.3) !important;
+    color: #4a4a4a !important;
     transition: all 0.3s ease;
     font-family: 'MiSansMU', sans-serif;
 
     &:hover {
-      background: rgba(255, 182, 193, 0.1) !important;
-      border-color: #ff69b4 !important;
+      background: rgba(187, 222, 251, 0.1) !important;
+      border-color: #4a4a4a !important;
       transform: translateY(-1px);
     }
 
@@ -732,14 +734,14 @@ export default {
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(248, 187, 217, 0.15) 100%);
     border-radius: 12px;
     margin-bottom: 1.25rem;
 
     .plan-icon {
       width: 32px;
       height: 32px;
-      color: #ff69b4;
+      color: #F8BBD9;
       margin-right: 0.75rem;
     }
 
@@ -747,15 +749,15 @@ export default {
       margin: 0;
       font-weight: 700;
       font-size: 1.25rem;
-      color: #ff1493;
+      color: #E8A5C9;
     }
   }
 
   .benefits-card {
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.08) 0%, rgba(135, 206, 235, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(248, 187, 217, 0.08) 0%, rgba(248, 187, 217, 0.08) 100%);
     border-radius: 12px;
     padding: 1.25rem;
-    border: 1px solid rgba(255, 105, 180, 0.15);
+    border: 1px solid rgba(248, 187, 217, 0.15);
 
     .benefits-grid {
       display: grid;
@@ -772,7 +774,7 @@ export default {
         .benefit-icon {
           width: 20px;
           height: 20px;
-          color: #ff69b4;
+          color: #F8BBD9;
           margin-right: 0.75rem;
           margin-top: 2px;
           flex-shrink: 0;
@@ -780,7 +782,7 @@ export default {
 
         span {
           flex: 1;
-          color: #333333;
+          color: #5a5a5a;
           font-size: 0.95rem;
           line-height: 1.5;
         }
@@ -795,7 +797,7 @@ export default {
 
   .divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.1) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(187, 222, 251, 0.1) 50%, transparent 100%);
     margin: 1.5rem 0;
   }
 
@@ -882,23 +884,23 @@ export default {
   .agreement-section {
     margin-top: 1.5rem;
     padding: 1rem;
-    background: rgba(255, 182, 193, 0.08);
+    background: rgba(248, 187, 217, 0.08);
     border-radius: 10px;
-    border: 2px dashed rgba(255, 105, 180, 0.2);
+    border: 2px dashed rgba(248, 187, 217, 0.2);
 
     .custom-checkbox {
       ::v-deep .custom-control-label {
         font-family: 'MiSansMU', sans-serif;
         font-size: 1rem;
-        color: #333333;
+        color: #5a5a5a;
         cursor: pointer;
         padding-left: 0.5rem;
       }
 
       ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: #ff69b4;
-        border-color: #ff69b4;
-        box-shadow: 0 2px 8px rgba(255, 105, 180, 0.3);
+        background-color: #F8BBD9;
+        border-color: #F8BBD9;
+        box-shadow: 0 2px 8px rgba(248, 187, 217, 0.3);
       }
 
       ::v-deep .custom-control-label::before {
@@ -909,7 +911,7 @@ export default {
 
     .checkbox-label {
       font-weight: 600;
-      color: #000000;
+      color: #4a4a4a;
     }
   }
 
@@ -921,10 +923,10 @@ export default {
       font-size: 1.05rem;
       font-weight: 600;
       border-radius: 10px !important;
-      background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
+      background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
       border: none !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+      box-shadow: 0 4px 12px rgba(248, 187, 217, 0.3);
       transition: all 0.3s ease;
       font-family: 'MiSansMU', sans-serif;
 
@@ -936,8 +938,8 @@ export default {
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(255, 105, 180, 0.4) !important;
-        background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
+        box-shadow: 0 6px 18px rgba(248, 187, 217, 0.4) !important;
+        background: #E8A5C9 !important;
       }
 
       &:active:not(:disabled) {
@@ -947,7 +949,7 @@ export default {
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        background: linear-gradient(135deg, #d1d1d1 0%, #a8a8a8 100%) !important;
+        background: #FFB6C1 !important;
         box-shadow: none;
       }
     }
@@ -988,16 +990,16 @@ export default {
 ::v-deep #modal-family-info {
   .modal-content {
     border: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 40px rgba(248, 187, 217, 0.15);
   }
 
   .modal-header {
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.1) 100%);
-    border-bottom: 2px solid rgba(255, 105, 180, 0.15);
+    background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(187, 222, 251, 0.1) 100%);
+    border-bottom: 2px solid rgba(248, 187, 217, 0.15);
     padding: 1.25rem 1.5rem;
 
     .modal-title {
-      color: #ff69b4;
+      color: #F8BBD9;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 700;
       font-size: 1.35rem;
@@ -1010,5 +1012,6 @@ export default {
   }
 }
 </style>
+
 
 

@@ -87,7 +87,7 @@
 
           <span v-if="props.column.field === 'action'">
             <b-badge
-              style="cursor: pointer; margin-right: 2px"
+              style="cursor: pointer; width: 100%;margin-right: 2px"
               variant="info"
               @click="viewPersonalEmailDetail(props.row)"
             >
@@ -95,14 +95,25 @@
               <span class="d-none d-sm-inline">{{ t("View") }}</span>
             </b-badge>
             <b-badge
-              style="cursor: pointer; margin-right: 2px"
+              style="cursor: pointer; width: 100%;margin-right: 2px"
               :variant="props.row.status_regis == 1 ? 'warning' : 'success'"
               @click="togglePersonalEmailStatus(props.row)"
             >
               <feather-icon icon="PowerIcon" size="16" class="mr-0 mr-sm-50" />
               <span class="d-none d-sm-inline">{{ props.row.status_regis == 1 ? t('Deactivate') : t('Activate') }}</span>
             </b-badge>
+
+            <b-badge              
+              style="cursor: pointer; width: 100%; display: block; text-align: center"
+              variant="danger"
+              @click="deleteitem(props.row)"
+            >
+              <feather-icon icon="TrashIcon" size="16" class="mr-0 mr-sm-50" />
+              <span class="d-none d-sm-inline">{{ t("Delete")}}</span>
+            </b-badge>
+
           </span>
+
 
           <span>
             {{ props.formattedRow[props.column.field] }}
@@ -204,7 +215,13 @@
               <feather-icon icon="MailIcon" size="16" />
               {{ t("Email Address") }}
             </div>
-            <div class="info-value email-value">{{ selectedPersonalEmail.email }}</div>
+            <div class="info-value email-value">
+              <b-form-input
+                      id="price"
+                      placeholder=""
+                      v-model="selectedPersonalEmail.email"
+                    />
+            </div>
           </div>
 
           <div class="info-item">
@@ -212,7 +229,13 @@
               <feather-icon icon="LockIcon" size="16" />
               {{ t("Password") }}
             </div>
-            <div class="info-value password-value">{{ selectedPersonalEmail.password }}</div>
+            <div class="info-value password-value">              
+              <b-form-input
+                      id="price"
+                      placeholder=""
+                      v-model="selectedPersonalEmail.password"
+                    />
+            </div>
           </div>
 
           <div class="info-item">
@@ -258,9 +281,11 @@
           <div class="info-item">
             <div class="info-label">
               <feather-icon icon="ClockIcon" size="16" />
-              {{ t("Updated At") }}
+              {{ t("Updated At") }}              
             </div>
-            <div class="info-value">{{ selectedPersonalEmail.updated_at ? formatDateAssigned(selectedPersonalEmail.updated_at) : '-' }}</div>
+            <div class="info-value">
+              <b-form-datepicker id="updateDate" v-model="selectedPersonalEmail.updated_at" :date-format-options="{ year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' }" locale="th"></b-form-datepicker>            
+            </div>
           </div>
         </div>
 
@@ -273,6 +298,16 @@
             <feather-icon icon="CopyIcon" size="14" />
             {{ t("Copy Credentials") }}
           </b-button>
+          &nbsp;&nbsp;
+          <b-button
+            variant="success"
+            size="sm"
+            @click="updatePersonalData()"
+          >
+            <feather-icon icon="EditIcon" size="14" />
+            {{ t("Update Data") }}
+          </b-button>
+
         </div>
       </div>
     </b-modal>
@@ -297,6 +332,7 @@ import {
   BModal,
   BCardText,
   BImg,
+  BFormDatepicker,
 } from "bootstrap-vue";
 import { VueGoodTable } from "vue-good-table";
 import store from "@/store/index";
@@ -305,6 +341,7 @@ import { mapActions } from "vuex";
 import { useUtils as useI18nUtils } from "@core/libs/i18n";
 
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import axios from 'axios'
 
 export default {
   components: {
@@ -325,6 +362,7 @@ export default {
     BModal,
     BCardText,
     BImg,
+    BFormDatepicker,
   },
   setup() {
     const { t } = useI18nUtils();
@@ -391,6 +429,7 @@ export default {
       showModalPersonalEmailDetail: false,
       selectedPersonalEmail: null,
       pagePermission: [],
+      selected_update_at : new Date()
     };
   },
   computed: {
@@ -455,17 +494,17 @@ export default {
           this.rowsPersonalEmail = response.data.data;
           console.log('Personal emails loaded:', this.rowsPersonalEmail.length);
 
-          this.$toast({
-            component: ToastificationContent,
-            position: 'top-right',
-            props: {
-              title: 'Success',
-              icon: 'CheckIcon',
-              variant: 'success',
-              text: `Loaded ${this.rowsPersonalEmail.length} personal emails`,
-            },
-            autoHideDelay: 2000,
-          });
+          // this.$toast({
+          //   component: ToastificationContent,
+          //   position: 'top-right',
+          //   props: {
+          //     title: 'Success',
+          //     icon: 'CheckIcon',
+          //     variant: 'success',
+          //     text: `Loaded ${this.rowsPersonalEmail.length} personal emails`,
+          //   },
+          //   autoHideDelay: 2000,
+          // });
         } else {
           this.rowsPersonalEmail = [];
           this.$toast({
@@ -501,7 +540,7 @@ export default {
 
     async viewPersonalEmailDetail(personalEmail) {
       try {
-        console.log('Loading personal email detail for order ID:', personalEmail.order_id);
+        //console.log('Loading personal email detail for order ID:', personalEmail.order_id);
         
         // Show loading
         this.selectedPersonalEmail = { ...personalEmail, loading: true };
@@ -520,6 +559,7 @@ export default {
         
         if (response.data.status === 'success' && response.data.data && response.data.data.length > 0) {
           this.selectedPersonalEmail = response.data.data[0];
+          this.selected_update_at = this.selectedPersonalEmail.updated_at
           console.log('Personal email detail loaded:', this.selectedPersonalEmail);
         } else {
           console.log('No personal email detail found:', response.data.message);
@@ -675,6 +715,165 @@ export default {
         formattedDate.toLocaleTimeString("th-TH", { hour12: false })
       );
     },
+    async deleteitem(row) {
+      this.boxTwo = '';
+      await this.$bvModal.msgBoxConfirm('Please confirm that you want to Delete.', {
+        title: this.$t('Please Confirm'),
+        size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'danger',
+        okTitle: 'YES',
+        cancelTitle: 'NO',
+        footerClass: 'p-2',
+        hideHeaderClose: false,
+        centered: true
+      })
+        .then(value => {
+
+          if (value) {
+            let selectID = [];
+            selectID.push(row.id);            
+            this.deleteEmail(selectID);
+
+          }
+
+        })
+        .catch(err => {
+
+        })
+    },
+    async deleteEmail(listId) {
+      //const passwordCrypted = bcrypt.hash(user.get("password"),saltRounds);
+
+      console.log("deleteEmail");
+
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const formData = new FormData();
+
+      var headers = {
+        userid: userData.username,
+        token: userData.token,
+      }
+
+      var body = {
+        listId: listId
+      }
+
+      // console.log(body);
+
+      let response;
+      await axios.post("api/personalemail/deletePersonalEmail/", body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+          }
+        }).then(
+          resp => {
+            response = resp;
+          }
+        );
+
+      // console.log(response);
+      if (response.data.status == "success") {
+        //
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Delete`,
+            icon: 'PowerIcon',
+            variant: 'warning',
+            text: `Delete Succesful.`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.loadPersonalEmails();
+
+      }
+      else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Delete`,
+            icon: 'PowerIcon',
+            variant: 'danger',
+            text: `Delete UnSuccesful ${response.data.message}`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.loadPersonalEmails();
+      }
+
+    }, 
+    async updatePersonalData()
+    {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const formData = new FormData();
+
+      var headers = {
+        userid: userData.username,
+        token: userData.token,
+      }
+
+      var body = {
+        id: this.selectedPersonalEmail.id,
+        email : this.selectedPersonalEmail.email,
+        password : this.selectedPersonalEmail.password,
+        updated_at : this.selected_update_at,
+        order_id : this.selectedPersonalEmail.order_id,
+      }
+
+      console.log(body);
+
+      let response;
+      await axios.post("api/personalemail/updatePersonalData/"+this.selectedPersonalEmail.id, body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'userid': headers.userid,
+            'token': headers.token,
+          }
+        }).then(
+          resp => {
+            response = resp;
+          }
+        );
+
+      // console.log(response);
+      if (response.data.status == "success") {
+        //
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Update`,
+            icon: 'EditIcon',
+            variant: 'success',
+            text: `Update Succesful.`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.loadPersonalEmails();
+
+      }
+      else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: `Update`,
+            icon: 'EditIcon',
+            variant: 'danger',
+            text: `Update UnSuccesful ${response.data.message}`,
+          },
+          autoHideDelay: 3000,
+        });
+        this.loadPersonalEmails();
+      }
+    }
   },
 };
 </script>

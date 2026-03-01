@@ -108,6 +108,12 @@ export default [
     name: 'apps-group-sub',
     component: () => import('@/views/apps/members/GroupSub.vue'),
   },
+
+  {
+    path: '/apps/members/groupsubstock',
+    name: 'apps-group-sub-stock',
+    component: () => import('@/views/apps/members/GroupSubStock.vue'),
+  },
   
   {
     path: '/apps/members/personalemail',

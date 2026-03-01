@@ -26,43 +26,21 @@
                   <div class="option-icon">
                     <feather-icon icon="ShoppingBagIcon" size="48" />
                   </div>
-                  <h4 class="option-title">ซื้อแบบรหัสร้าน</h4>
-                  <p class="option-description">
-                    เหมาะสำหรับลูกค้าที่มีรหัสร้านจากทางเรา
-                  </p>
+                  <h4 class="option-title">ซื้อแบบเมลร้าน</h4>
                   <div class="check-icon" v-if="selectedType === 'shop'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
                 </div>
               </b-col>
 
-              <b-col v-if="showUserCode" cols="12" :md="getColumnSize" class="option-col">
-                <div class="option-card" :class="{ 'selected': selectedType === 'personal' }"
-                  @click="selectType('personal')">
+              <b-col v-if="showCustomerEmail" cols="12" :md="getColumnSize" class="option-col">
+                <div class="option-card" :class="{ 'selected': selectedType === 'customer-email' }"
+                  @click="selectType('customer-email')">
                   <div class="option-icon">
-                    <feather-icon icon="UserIcon" size="48" />
+                    <feather-icon icon="UserCheckIcon" size="48" />
                   </div>
-                  <h4 class="option-title">รหัสตัวเอง</h4>
-                  <p class="option-description">
-                    ใช้รหัสส่วนตัวของคุณเองในการซื้อ
-                  </p>
-                  <div class="check-icon" v-if="selectedType === 'personal'">
-                    <feather-icon icon="CheckCircleIcon" size="24" />
-                  </div>
-                </div>
-              </b-col>
-
-              <b-col v-if="showUserEmail" cols="12" :md="getColumnSize" class="option-col">
-                <div class="option-card" :class="{ 'selected': selectedType === 'email' }"
-                  @click="selectType('email')">
-                  <div class="option-icon">
-                    <feather-icon icon="MailIcon" size="48" />
-                  </div>
-                  <h4 class="option-title">เมลตัวเอง</h4>
-                  <p class="option-description">
-                    ใช้อีเมลส่วนตัวของคุณในการซื้อ
-                  </p>
-                  <div class="check-icon" v-if="selectedType === 'email'">
+                  <h4 class="option-title">ซื้อแบบเมลลูกค้า</h4>
+                  <div class="check-icon" v-if="selectedType === 'customer-email'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
                   </div>
                 </div>
@@ -86,60 +64,54 @@
     </div>
 
     <!-- Terms and Conditions Modal -->
-    <b-modal
-      id="modal-terms"
-      ref="modalTerms"
-      v-model="showTermsModal"
-      :title="t('ข้อกำหนดและเงื่อนไข')"
-      size="lg"
-      :hideHeaderClose="true"
-      hide-footer
-      no-close-on-backdrop
-      no-close-on-esc
-      @hidden="resetTermsModal"
-    >
+    <b-modal id="modal-terms" ref="modalTerms" v-model="showTermsModal" :title="t('ข้อกำหนดและเงื่อนไข')" size="lg"
+      :hideHeaderClose="true" hide-footer no-close-on-backdrop no-close-on-esc @hidden="resetTermsModal">
       <div class="terms-content">
         <div class="terms-card">
-          <div class="terms-item important">
+          <div class="terms-item important"
+            v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage'] || settingdata['line_token']['recommendImage'].length <= 0">
             <feather-icon icon="AlertCircleIcon" class="terms-icon" />
             <div class="terms-text">
               <p class="terms-title">Youtube official มีข้อกำหนด และ official อาจมีการปรับเปลี่ยนกฎ</p>
               <p class="terms-desc">ทางร้านต้องยึดตามข้อกำหนดของ official</p>
             </div>
           </div>
-
-          <div class="terms-item support">
-            <feather-icon icon="ShieldIcon" class="terms-icon" />
-            <div class="terms-text">
-              <p class="terms-title">หากเกิดปัญหา ทางร้านดูแลให้ลูกค้าตลอดการใช้งาน</p>
+          <div
+            v-if="settingdata['line_token'] && settingdata['line_token']['recommendImage'] && settingdata['line_token']['recommendImage'].length > 0">
+            <div style="display: block;">
+              <img :src="settingdata['line_token']['recommendImage']" width="100%" />
             </div>
           </div>
 
-          <div class="terms-item contact">
-            <feather-icon icon="MessageCircleIcon" class="terms-icon" />
-            <div class="terms-text">
-              <p class="terms-desc">ต้องการสอบถามเพิ่มเติมทักไลน์</p>
+          <div
+            v-if="!settingdata['line_token'] || !settingdata['line_token']['recommendImage'] || settingdata['line_token']['recommendImage'].length === 0"
+            class="terms-card">
+
+            <div class="terms-item support">
+              <feather-icon icon="ShieldIcon" class="terms-icon" />
+              <div class="terms-text">
+                <p class="terms-title">หากเกิดปัญหา ทางร้านดูแลให้ลูกค้าตลอดการใช้งาน</p>
+              </div>
+            </div>
+
+            <div class="terms-item contact">
+              <feather-icon icon="MessageCircleIcon" class="terms-icon" />
+              <div class="terms-text">
+                <p class="terms-desc">ต้องการสอบถามเพิ่มเติมทักไลน์</p>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="agreement-section">
-          <b-form-checkbox
-            v-model="agreedToTerms"
-            class="custom-checkbox"
-          >
+          <b-form-checkbox v-model="agreedToTerms" class="custom-checkbox">
             <span class="checkbox-label">ฉันได้อ่านและยินยอมตามข้อกำหนดและเงื่อนไขแล้ว</span>
           </b-form-checkbox>
         </div>
 
         <div class="action-section">
-          <b-button
-            variant="primary"
-            block
-            class="confirm-button"
-            :disabled="!agreedToTerms"
-            @click="handleTermsConfirm"
-          >
+          <b-button variant="primary" block class="confirm-button" :disabled="!agreedToTerms"
+            @click="handleTermsConfirm">
             <feather-icon icon="CheckIcon" class="button-icon" />
             เลือกซื้อสินค้า
           </b-button>
@@ -179,30 +151,78 @@ export default {
   },
   data() {
     return {
-      selectedType: null, // 'shop', 'personal' หรือ 'email'
+      selectedType: null, // 'shop' หรือ 'customer-email'
       sourceUserId: null, // รับมาจาก LINE
       showShopCode: true, // แสดงปุ่มซื้อแบบรหัสร้าน
-      showUserCode: true, // แสดงปุ่มรหัสตัวเอง
-      showUserEmail: true, // แสดงปุ่มเมลตัวเอง
+      showUserCode: true, // แสดงปุ่มรหัสตัวเอง (ใช้สำหรับตรวจสอบว่าควรแสดง customer-email หรือไม่)
+      showUserEmail: true, // แสดงปุ่มเมลตัวเอง (ใช้สำหรับตรวจสอบว่าควรแสดง customer-email หรือไม่)
+      showCustomerEmail: true, // แสดงปุ่มซื้อแบบเมลลูกค้า
       isLoading: true, // สถานะการโหลดข้อมูล
       showTermsModal: true, // แสดง modal ข้อกำหนดทันทีที่เข้าหน้า
       agreedToTerms: false, // สถานะการยินยอมข้อกำหนด
+      settingdata: {},
     }
   },
   computed: {
     getColumnSize() {
       // คำนวณขนาดคอลัมน์ตามจำนวนปุ่มที่แสดง
-      const visibleButtons = [this.showShopCode, this.showUserCode, this.showUserEmail].filter(Boolean).length
+      const visibleButtons = [this.showShopCode, this.showCustomerEmail].filter(Boolean).length
       if (visibleButtons === 1) return 12
-      if (visibleButtons === 2) return 6
-      return 4 // 3 ปุ่ม
+      return 6 // 2 ปุ่ม
     },
   },
-  mounted() {
+  async mounted() {
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
+      console.log('SelectTopic - sourceUserId received:', this.sourceUserId)
+    } else {
+      console.log('SelectTopic - No sourceUserId in query parameters')
     }
+
+    // โหลดข้อมูล setting
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const formData = new FormData();
+
+    var headers = {
+      userid: 'big',
+      token: 'big',
+    }
+
+    var body = {
+      userid: 'big',
+      token: 'big',
+    }
+
+    let response;
+    await axios.get("api/adminsetting/getadminsetting", {
+      headers: {
+        'Content-Type': 'application/json',
+        'userid': headers.userid,
+        'token': headers.token,
+      }
+    }).then(
+      resp => {
+        response = resp.data.data;
+      }
+    );
+
+    let tmpSettingData = {};
+
+    for (let index = 0; index < response.length; index++) {
+      const element = response[index];
+      let meta_name = element.meta;
+      let meta_data = JSON.parse(element.value);
+      for (const [key, value] of Object.entries(meta_data)) {
+        if (key.includes("enable")) {
+          meta_data[key] = value == 1 ? true : false;
+        }
+      }
+      tmpSettingData[meta_name] = meta_data;
+    }
+
+    this.settingdata = tmpSettingData;
+
     // โหลดสถานะการแสดงปุ่ม
     this.fetchButtonStatus()
   },
@@ -215,6 +235,8 @@ export default {
           this.showShopCode = btnStatus.show_shop_code === 1
           this.showUserCode = btnStatus.show_user_code === 1
           this.showUserEmail = btnStatus.show_user_email === 1
+          // แสดงปุ่มซื้อแบบเมลลูกค้าถ้าอย่างน้อยหนึ่งในสองตัวเลือก (รหัสตัวเองหรือเมลตัวเอง) เปิดอยู่
+          this.showCustomerEmail = (btnStatus.show_user_code === 1 || btnStatus.show_user_email === 1)
         }
       } catch (error) {
         console.error('Error fetching button status:', error)
@@ -228,7 +250,7 @@ export default {
     },
     handleConfirm() {
       if (!this.selectedType) return
-      
+
       // นำทางตาม type ที่เลือก
       this.navigateToNextPage()
     },
@@ -237,7 +259,7 @@ export default {
     },
     handleTermsConfirm() {
       if (!this.agreedToTerms) return
-      
+
       // ปิด modal
       this.showTermsModal = false
     },
@@ -248,23 +270,19 @@ export default {
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
+        console.log('SelectTopic - Navigating to select-plan-type with query:', query)
         this.$router.push({ name: 'select-plan-type', query })
-      } else if (this.selectedType === 'personal') {
-        // นำไปหน้าลงทะเบียนด้วยรหัสตัวเอง พร้อมส่ง sourceUserId
-        const query = { type: 'personal' }
+      } else if (this.selectedType === 'customer-email') {
+        // นำไปหน้าเลือกระหว่างรหัสตัวเองและเมลตัวเอง พร้อมส่ง sourceUserId
+        const query = {}
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
-        this.$router.push({ name: 'user-regis', query })
-      } else if (this.selectedType === 'email') {
-        // นำไปหน้ากรอกเมลตัวเอง พร้อมส่ง sourceUserId
-        const query = { type: 'email' }
-        if (this.sourceUserId) {
-          query.sourceUserId = this.sourceUserId
-        }
-        this.$router.push({ name: 'registeremail', query })
+        console.log('SelectTopic - Navigating to select-customer-email with query:', query)
+        this.$router.push({ name: 'select-customer-email', query })
       }
     },
+
   },
 }
 </script>
@@ -833,7 +851,7 @@ export default {
         padding-left: 0.5rem;
       }
 
-      ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
+      ::v-deep .custom-control-input:checked~.custom-control-label::before {
         background-color: #ff0000;
         border-color: #ff0000;
         box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);

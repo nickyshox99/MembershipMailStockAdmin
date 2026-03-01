@@ -50,7 +50,9 @@
         :rtl="directionOrderHistory"
         :line-numbers="true"
         :search-options="{
-          enabled: false,
+          enabled: true,
+          externalQuery: searchTerm,
+          searchFn: searchOnTable,
         }"
         :select-options="{
           enabled: false,
@@ -60,7 +62,7 @@
           clearSelectionText: 'clear',
           disableSelectInfo: true, // disable the select info panel on top
           selectAllByGroup: true, // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
-          searchFn: searchOnTable,
+          
         }"
         :pagination-options="{
           enabled: true,
@@ -935,8 +937,15 @@ export default {
               for (let index = 0; index < this.rowsOrderHistory.length; index++) {
                   const element = this.rowsOrderHistory[index];
                   
+                  // if (element.purchase_type === 'personal') {
+                  //     await this.fetchPersonalEmailStatus(element.id, index);
+                  // }
                   if (element.purchase_type === 'personal') {
-                      await this.fetchPersonalEmailStatus(element.id, index);
+                    //await this.fetchPersonalEmailStatus(element, index);
+                    this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].user_email_status_regis            
+                  } else if (element.purchase_type === 'email') {
+                    //await this.fetchEmailStatus(element, index);
+                    this.rowsOrderHistory[index].personal_email_status = this.rowsOrderHistory[index].personal_email_status_regis
                   }
               }
           } else {

@@ -688,6 +688,19 @@
   "Days Left":"Days Left",
   "Latest Sent Message":"Latest Sent Message",
   "Send Message Succesful":"Send Message Succesful",
-  "Order Expired":"Order Expired"
-
+  "Order Expired":"Order Expired",
+  "Group Invite Stock":"Group Invite Stock",
+  "Group Subscription Stock":"Group Subscription Stock",
+  "Inactive":"Inactive",
+  "Invite Link":"Invite Link",
+  "Confirm Update Status":"Confirm Update Status",
+  "Personal Email Information":"Personal Email Information",
+  "No personal email data found for this order":"No personal email data found for this order",
+  "LINE":"LINE",
+  "Personal":"Personal",
+  "Update Status":"Update Status",
+  "Unregistered":"Unregistered",
+  "Renew":"Renew",
+  "Please confirm that you want to Renew.":"Please confirm that you want to Renew.",
+  "Email Account":"Email Account"
 }

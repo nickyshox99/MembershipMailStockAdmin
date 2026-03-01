@@ -1,7 +1,7 @@
 <template>
   <Transition name="bounce">
     <div>
-      <b-row>
+      <b-row v-if="!isEditMode">
         <b-col md="9">
           <b-card-code
             v-if="isMemberFormActive"
@@ -47,6 +47,20 @@
                         </b-button>
                       </b-input-group-append>
                     </b-input-group>
+                  </b-form-group>
+                </b-col>
+
+                <b-col md="12">
+                  <b-form-group
+                    :label="t('Note')"
+                    label-for="note"
+                  >
+                    <b-form-input
+                      id="note"
+                      placeholder="ใส่ข้อความที่อยากใส่ให้ลูกค้าตอนอนุมัติ"
+                      v-model="note"
+                      type="text"
+                    />
                   </b-form-group>
                 </b-col>
 
@@ -123,6 +137,20 @@
                         </b-button>
                       </b-input-group-append>
                     </b-input-group>
+                  </b-form-group>
+                </b-col>
+
+                <b-col md="12">
+                  <b-form-group
+                    :label="t('Note')"
+                    label-for="note"
+                  >
+                    <b-form-input
+                      id="note"
+                      placeholder="ใส่ข้อความที่อยากใส่ให้ลูกค้าตอนอนุมัติ"
+                      v-model="note"
+                      type="text"
+                    />
                   </b-form-group>
                 </b-col>
 
@@ -464,6 +492,7 @@ export default {
       lineContacts: [],
       selectedLineContact: null,
       isLoadingLineContacts: false,
+      note : '',
       
     };
   },
@@ -845,6 +874,7 @@ export default {
                 user_id: '', // line_user_id ว่างตามที่ระบุ
                 group_id: this.pRowData.id,
                 page_name: this.$route.name,
+                note : this.note,
             }
 
             let response;
@@ -939,6 +969,7 @@ export default {
             password: this.editingPassword,
             user_id: this.editingLineUserId,
             page_name: this.$route.name,
+            note : this.note,
         }
 
         let response;
@@ -974,6 +1005,7 @@ export default {
             this.editingEmail = '';
             this.editingPassword = '';
             this.editingLineUserId = '';
+            this.note ='';
             
             this.getSubscribeMemberByGroupById();
             this.$emit("refetch-data");

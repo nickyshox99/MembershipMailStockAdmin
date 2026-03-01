@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="confirm-payment-container">
     <div class="confirm-payment-background">
       <div class="background-overlay"></div>
@@ -8,9 +8,9 @@
       <div class="auth-inner">
         <b-card class="confirm-payment-card mb-0">
           <div class="logo-section">
-            <img src="/logo_lb2.png" alt="BigaByte Membership" class="logo-image">
+            <img src="/logo_lb2.png" alt="littlebeem" class="logo-image">
             <h2 class="brand-text">
-              BigaByte Membership
+              littlebeem
             </h2>
           </div>
 
@@ -63,7 +63,7 @@
               <!-- <div class="divider"></div> -->
 
               <!-- Payment Info -->
-              <div v-if="!showCompleteDialog && !showSlipCorrect" class="payment-section">
+              <div v-if="!showCompleteDialog && !showSlipCorrect && paymentType !== 'stripe'" class="payment-section">
                 <h4 class="payment-title">
                   <feather-icon icon="CreditCardIcon" class="title-icon" />
                   ชำระเงินโดยโอนเข้าบัญชี
@@ -82,7 +82,7 @@
               </div>
 
               <!-- QR Code Section -->
-              <div v-if="!showCompleteDialog && !showSlipCorrect" class="qr-section">
+              <div v-if="!showCompleteDialog && !showSlipCorrect && paymentType !== 'stripe'" class="qr-section">
                 <!-- Auto Generated QR Code (PromptPay) -->
                 <template v-if="enableAutoGenerateQR && generatedQRCode">
                   <h4 class="qr-title">
@@ -101,7 +101,8 @@
                     <div class="qr-info">
                       <p class="qr-amount">ยอดชำระ: ฿{{ productPrice.toLocaleString('th-TH', {
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2 }) }}</p>
+                        maximumFractionDigits: 2
+                      }) }}</p>
                     </div>
                   </div>
                 </template>
@@ -128,7 +129,7 @@
               <!-- <div class="divider"></div> -->
 
               <!-- Slip Upload -->
-              <div v-if="!showCompleteDialog && !showSlipCorrect" class="slip-section">
+              <div v-if="!showCompleteDialog && !showSlipCorrect && paymentType !== 'stripe'" class="slip-section">
                 <h4 class="slip-title">
                   <feather-icon icon="UploadIcon" class="title-icon" />
                   อัปโหลดสลิปการโอนเงิน
@@ -154,9 +155,15 @@
 
               <!-- Action Buttons -->
               <div v-if="!showCompleteDialog && !showSlipCorrect" class="action-section">
-                <b-button variant="success" class="confirm-btn" @click="confirmPayment()">
-                  <feather-icon icon="CheckIcon" class="button-icon" />
-                  ยืนยันการชำระเงิน
+                <b-button 
+                  variant="success" 
+                  class="confirm-btn" 
+                  @click="confirmPayment()"
+                  :disabled="isProcessingPayment"
+                >
+                  <b-spinner v-if="isProcessingPayment" small class="button-spinner" />
+                  <feather-icon v-else icon="CheckIcon" class="button-icon" />
+                  {{ isProcessingPayment ? 'กำลังตรวจสอบการชำระเงิน...' : 'ยืนยันการชำระเงิน' }}
                 </b-button>
               </div>
 
@@ -209,7 +216,7 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, BCard, BAvatar
+  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, BCard, BAvatar, BSpinner
 } from 'bootstrap-vue'
 
 import { required, user_id } from '@validations'
@@ -228,6 +235,7 @@ import { useUtils as useI18nUtils } from '@core/libs/i18n'
 import generatePayload from 'promptpay-qr'
 import QRCode from 'qrcode'
 import axios from 'axios'
+import { integer } from '@/@core/utils/validations/validations'
 
 export default {
   components: {
@@ -249,14 +257,13 @@ export default {
     ValidationObserver,
     BCard,
     BAvatar,
+    BSpinner,
   },
   mixins: [togglePasswordVisibility],
   setup(props, {
     emit
   }) {
-
     const { t } = useI18nUtils();
-
     return {
       t,
     }
@@ -270,10 +277,8 @@ export default {
       sideImg: require('@/assets/images/pages/login-v3.png'),
       // validation rulesimport store from '@/store/index'
       required,
-
       user_id: '',
       lineId: '',
-
       avatarImgUrl: require('@/assets/images/avatars/4.png'),
       displayName: '',
       errorMessage: '',
@@ -290,6 +295,11 @@ export default {
       productPrice: 0,
       purchaseType: '',
       email: '',
+      paymentType: '',
+      isProcessingPayment: false,
+      paymentPollingInterval: null,
+      paymentPollingTimeout: null,
+      pollingStartTime: null,
     }
   },
   computed: {
@@ -319,11 +329,13 @@ export default {
     console.log('ConfirmPayment - email:', this.email);
 
     await this.loadSetting();
+    await this.loadPaymentType();
     await this.getOrderData();
   },
   methods: {
     ...mapActions(["GetOrderData"]),
     ...mapActions(["PaymentOrderWithSlip"]),
+    ...mapActions(["CheckOutStripe"]),
     ...mapActions(["UploadFileAndDeleteOldFile"]),
     ...mapActions(["CustomerDeleteOldFile"]),
     ...mapActions(["GetActiveProductSetting"]),
@@ -408,6 +420,12 @@ export default {
           console.log('LINE Picture URL:', this.orderData.line_profile_url);
           console.log('Product Price (from use_credit/price/etc):', this.productPrice);
           console.log('Enable Auto Generate QR:', this.enableAutoGenerateQR);
+
+          // เช็คว่าชำระเงินสำเร็จแล้วหรือยัง
+          if (this.orderData.payment_status === 'success') {
+            console.log('Payment already completed on page load');
+            this.showSlipCorrect = true;
+          }
 
           // Generate PromptPay QR if enabled
           if (this.enableAutoGenerateQR && this.productPrice > 0) {
@@ -576,73 +594,167 @@ export default {
     },
     async confirmPayment() {
       console.log('confirmPayment');
-
-      // Check if slip is uploaded
-      if (!this.slip_file_url || this.slip_file_url === '') {
-        this.$toast({
-          component: ToastificationContent,
-          props: {
-            title: 'กรุณาอัปโหลดสลิปการโอนเงินก่อน',
-            icon: 'AlertCircleIcon',
-            variant: 'error',
-          },
-        });
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("userid", "-");
-      formData.append("token", "-");
-      formData.append("order_id", this.orderData.id);
-      formData.append("user_id", this.orderData.user_id);
-      formData.append("slip_file_url", this.slip_file_url);
-
-      console.log('Sending payment confirmation with:', {
-        order_id: this.orderData.id,
-        user_id: this.orderData.user_id,
-        slip_file_url: this.slip_file_url
-      });
-
-      const response = await this.PaymentOrderWithSlip(formData);
-      console.log('Payment confirmation response:', response);
+      console.log('paymentType:', this.paymentType);
 
 
-      if (response && response.data && response.data.status == 'success') {
-        // Insert user email data after payment confirmation success
-        await this.insertUserEmailData();
-        // await this.insertPersonalEmailData();
-        // if (this.purchaseType === 'personal') {
-        //   await this.InsertPersonalEmail(data);
-        // } else if (this.purchaseType === 'email') {
-        //   await this.InsertPersonalEmail(data);
-        // }
+      if (this.paymentType === 'stripe') {
+        // เริ่ม loading
+        this.isProcessingPayment = true;
 
-        this.showCompleteDialog = true;
-        this.$toast(
-          {
+        // await this.insertUserEmailData();
+
+        const formData = new FormData();
+        formData.append("userid", "-");
+        formData.append("token", "-");
+        formData.append("order_id", this.orderData.id);
+        formData.append("user_id", this.orderData.user_id);
+        formData.append("slip_file_url", this.slip_file_url);
+        formData.append("amount", (parseInt(this.productPrice) * 100));
+        formData.append("currency", "thb");
+        formData.append("username", this.orderData.user_id);
+        formData.append("user_id", this.orderData.user_id);
+        formData.append("server_id", this.orderData.id);
+        formData.append("order_id", this.orderData.id);
+        formData.append("description", this.orderData.product_name);
+        formData.append("imageurl", "http://localhost:9900/img/image.10008f5a.png");
+        formData.append("email", this.email);
+        formData.append("purchase_type", this.purchaseType);
+
+
+        const response = await this.CheckOutStripe(formData);
+        console.log('CheckOutStripe response:', response);
+        
+        // เช็คว่าชำระเงินไปแล้วหรือยัง
+        if (response && response.data && response.data.status === 'already_paid') {
+          this.isProcessingPayment = false;
+          this.showSlipCorrect = true;
+          this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'ยืนยันการชำระเงินสำเร็จ',
-              icon: 'CheckIcon',
+              title: 'ท่านได้ชำระเงินไปแล้ว',
+              icon: 'CheckCircleIcon',
               variant: 'success',
             },
           });
-      }
-      else {
-        const errorMessage = (response && response.data && response.data.message) ||
-          (response && response.message) ||
-          'ยืนยันการชำระเงินล้มเหลว';
-
-        this.$toast(
-          {
+          return;
+        }
+        
+        //เอา URL จาก response.data.data.url มาแล้ว redirect ไปหน้าใหม่ จาก URL ที่ส่งมา
+        const stripeUrl = response.data.data.url;
+        if (response && response.data && response.data.status == 'success') {
+          window.open(stripeUrl, '_blank');
+          
+          // เริ่ม polling เช็ค payment status
+          this.startPaymentPolling();
+          
+          this.$toast({
             component: ToastificationContent,
             props: {
-              title: errorMessage,
+              title: 'กรุณาทำการชำระเงินในหน้าต่างใหม่ ระบบกำลังตรวจสอบการชำระเงิน...',
+              icon: 'InfoIcon',
+              variant: 'info',
+            },
+          });
+        }
+        else {
+          this.isProcessingPayment = false;
+          const errorMessage = (response && response.data && response.data.message) ||
+            (response && response.message) ||
+            'ยืนยันการชำระเงินล้มเหลว';
+          this.$toast(
+            {
+              component: ToastificationContent,
+              props: {
+                title: errorMessage,
+                icon: 'AlertCircleIcon',
+                variant: 'error',
+              },
+            });
+        }
+      }
+      else {
+        // Check if slip is uploaded
+        if (!this.slip_file_url || this.slip_file_url === '') {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'กรุณาอัปโหลดสลิปการโอนเงินก่อน',
               icon: 'AlertCircleIcon',
               variant: 'error',
             },
           });
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("userid", "-");
+        formData.append("token", "-");
+        formData.append("order_id", this.orderData.id);
+        formData.append("user_id", this.orderData.user_id);
+        formData.append("slip_file_url", this.slip_file_url);
+
+        console.log('Sending payment confirmation with:', {
+          order_id: this.orderData.id,
+          user_id: this.orderData.user_id,
+          slip_file_url: this.slip_file_url
+        });
+
+        const response = await this.PaymentOrderWithSlip(formData);
+        console.log('Payment confirmation response:', response);
+
+        // เช็คว่าชำระเงินไปแล้วหรือยัง
+        if (response && response.data && response.data.status === 'already_paid') {
+          this.showSlipCorrect = true;
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'ท่านได้ชำระเงินไปแล้ว',
+              icon: 'CheckCircleIcon',
+              variant: 'success',
+            },
+          });
+          return;
+        }
+
+        if (response && response.data && response.data.status == 'success') {
+          // Insert user email data after payment confirmation success
+          await this.insertUserEmailData();
+          // await this.insertPersonalEmailData();
+          // if (this.purchaseType === 'personal') {
+          //   await this.InsertPersonalEmail(data);
+          // } else if (this.purchaseType === 'email') {
+          //   await this.InsertPersonalEmail(data);
+          // }
+
+          this.showCompleteDialog = true;
+          this.$toast(
+            {
+              component: ToastificationContent,
+              props: {
+                title: 'ยืนยันการชำระเงินสำเร็จ',
+                icon: 'CheckIcon',
+                variant: 'success',
+              },
+            });
+        }
+        else {
+          const errorMessage = (response && response.data && response.data.message) ||
+            (response && response.message) ||
+            'ยืนยันการชำระเงินล้มเหลว';
+
+          this.$toast(
+            {
+              component: ToastificationContent,
+              props: {
+                title: errorMessage,
+                icon: 'AlertCircleIcon',
+                variant: 'error',
+              },
+            });
+        }
       }
+
+
     },
     async deleteSlip() {
       console.log('deleteSlip');
@@ -787,10 +899,62 @@ export default {
             if (k.toLowerCase().includes('enable')) val[k] = val[k] === 1 || val[k] === true
           })
           this.enableAutoGenerateQR = !!val.enableAutoGenerateQR
+
         }
       } catch (e) {
         console.error('Error loading setting:', e)
         this.enableAutoGenerateQR = false
+      }
+    },
+
+    async loadPaymentType() {
+      try {
+        console.log('=== LOADING PAYMENT TYPE ===');
+        
+        // ลองดึงจาก localStorage ก่อน
+        const localPaymentType = localStorage.getItem('selectedPaymentType');
+        console.log('Payment type from localStorage:', localPaymentType);
+        
+        if (localPaymentType) {
+          this.paymentType = localPaymentType;
+          console.log('Using payment type from localStorage:', this.paymentType);
+          return;
+        }
+
+        // ถ้าไม่มีใน localStorage ให้ดึงจาก API
+        const userData = JSON.parse(localStorage.getItem('userData')) || {}
+        const response = await axios.get('/api/paymenttype', {
+          headers: {
+            'Content-Type': 'application/json',
+            'userid': userData.username || '-',
+            'token': userData.token || '-',
+          }
+        });
+
+        console.log('Payment type API response:', response.data);
+
+        if (response.data.status === 'success' && response.data.data && response.data.data.length > 0) {
+          // หา payment type ที่มี ID = 1 (ตามที่เราตั้งค่าไว้)
+          const activePaymentType = response.data.data.find(pt => pt.id === 1);
+          
+          if (activePaymentType) {
+            this.paymentType = activePaymentType.type_code;
+            console.log('Using payment type from API:', this.paymentType);
+            
+            // บันทึกลง localStorage เพื่อใช้ครั้งต่อไป
+            localStorage.setItem('selectedPaymentType', this.paymentType);
+          } else {
+            console.log('No active payment type found, defaulting to qr');
+            this.paymentType = 'qr';
+          }
+        } else {
+          console.log('API response failed, defaulting to qr');
+          this.paymentType = 'qr';
+        }
+      } catch (error) {
+        console.error('Error loading payment type:', error);
+        console.log('Error occurred, defaulting to qr');
+        this.paymentType = 'qr';
       }
     },
     async getProductPrice(productId) {
@@ -1036,7 +1200,109 @@ export default {
         console.error('Error in insertUserEmailData:', error);
         // Silent error - ไม่แสดง error toast เพื่อไม่ให้รบกวน flow การชำระเงิน
       }
+    },
+    startPaymentPolling() {
+      console.log('Starting payment polling...');
+      
+      // Clear existing interval if any
+      if (this.paymentPollingInterval) {
+        clearInterval(this.paymentPollingInterval);
+      }
+      
+      if (this.paymentPollingTimeout) {
+        clearTimeout(this.paymentPollingTimeout);
+      }
+      
+      // บันทึกเวลาเริ่มต้น
+      this.pollingStartTime = Date.now();
+      
+      // Poll every 3 seconds
+      this.paymentPollingInterval = setInterval(async () => {
+        await this.checkPaymentStatus();
+      }, 3000);
+      
+      // ตั้ง timeout 10 นาที (600,000 ms)
+      this.paymentPollingTimeout = setTimeout(() => {
+        console.log('Payment polling timeout after 10 minutes');
+        this.stopPaymentPolling();
+        this.isProcessingPayment = false;
+        
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'หมดเวลาตรวจสอบการชำระเงิน กรุณารีเฟรชหน้าเพื่อดูสถานะล่าสุด',
+            icon: 'ClockIcon',
+            variant: 'warning',
+          },
+        });
+      }, 600000); // 10 minutes
+    },
+    async checkPaymentStatus() {
+      try {
+        console.log('Checking payment status...');
+        
+        const formData = new FormData();
+        formData.append("userid", "-");
+        formData.append("token", "-");
+        formData.append("page_name", this.$route.name);
+        formData.append("id", this.$route.query.id || "");
+        formData.append("user_id", this.$route.query.user_id || "");
+
+        const response = await this.GetOrderData(formData);
+        
+        if (response && response.data && response.data.status === 'success' && response.data.data && response.data.data.length > 0) {
+          const orderData = response.data.data[0];
+          
+          console.log('Payment status check:', {
+            slip_correct: orderData.slip_correct,
+            wait_check_payment: orderData.wait_check_payment
+          });
+          
+          // เช็คว่าชำระเงินสำเร็จหรือยัง
+          if (orderData.payment_status === 'success') {
+            console.log('Payment successful!');
+            
+            // หยุด polling
+            this.stopPaymentPolling();
+            
+            // อัพเดท order data
+            this.orderData = orderData;
+            this.showSlipCorrect = true;
+            this.isProcessingPayment = false;
+            
+            // Insert email data
+            await this.insertUserEmailData();
+            
+            // แสดง success message
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'ชำระเงินสำเร็จ! กรุณารอการดำเนินการจากทีมงาน',
+                icon: 'CheckCircleIcon',
+                variant: 'success',
+              },
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error checking payment status:', error);
+      }
+    },
+    stopPaymentPolling() {
+      console.log('Stopping payment polling...');
+      if (this.paymentPollingInterval) {
+        clearInterval(this.paymentPollingInterval);
+        this.paymentPollingInterval = null;
+      }
+      if (this.paymentPollingTimeout) {
+        clearTimeout(this.paymentPollingTimeout);
+        this.paymentPollingTimeout = null;
+      }
     }
+  },
+  beforeDestroy() {
+    // Cleanup polling when component is destroyed
+    this.stopPaymentPolling();
   },
 }
 </script>
@@ -1044,7 +1310,7 @@ export default {
 <style lang="scss">
 @import '@core/scss/vue/pages/page-auth.scss';
 
-// Modern Confirm Payment Styling - Pastel Theme
+// Modern Confirm Payment Styling - YouTube Theme
 .confirm-payment-container {
   min-height: 100vh;
   display: flex;
@@ -1073,8 +1339,8 @@ export default {
   right: 0;
   bottom: 0;
 
-  background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(248, 187, 217, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(248, 187, 217, 0.05) 0%, transparent 50%);
 
   z-index: 2;
 }
@@ -1087,7 +1353,7 @@ export default {
 }
 
 .confirm-payment-card {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: #ffffff !important;
   border: none !important;
   border-radius: 24px !important;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
@@ -1117,29 +1383,29 @@ export default {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
-    border: 3px solid rgba(255, 182, 193, 0.2);
+    box-shadow: 0 8px 25px rgba(248, 187, 217, 0.3);
+    border: 3px solid #F8BBD9;
     transition: all 0.3s ease;
     object-fit: cover;
-    background: linear-gradient(135deg, rgba(255, 240, 245, 0.9) 0%, rgba(240, 248, 255, 0.9) 100%);
+    background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
     padding: 8px;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(255, 182, 193, 0.4);
-      border-color: rgba(255, 182, 193, 0.3);
+      box-shadow: 0 12px 35px rgba(248, 187, 217, 0.4);
+      border-color: rgba(248, 187, 217, 0.4);
     }
   }
 
 
   .brand-text {
-    color: #ff69b4 !important;
+    background-clip: text;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    text-shadow: 0 2px 4px rgba(255, 182, 193, 0.3);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
 }
 
@@ -1152,12 +1418,12 @@ export default {
       .error-icon {
         width: 64px;
         height: 64px;
-        color: #ff69b4;
+        color: #F8BBD9;
         margin-bottom: 1.5rem;
       }
 
       .error-title {
-        color: #ff69b4;
+        color: #F8BBD9;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.4rem;
@@ -1165,7 +1431,7 @@ export default {
       }
 
       .error-message {
-        color: #666666;
+        color: #757575;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 400;
         font-size: 1rem;
@@ -1180,7 +1446,7 @@ export default {
       margin-bottom: 2rem;
 
       .section-title {
-        color: #87ceeb;
+        color: #4a4a4a;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.3rem;
@@ -1192,18 +1458,18 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
-        border: 2px solid rgba(255, 182, 193, 0.2);
+        background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
+        border: 3px solid rgba(248, 187, 217, 0.2);
         border-radius: 20px;
         padding: 1.5rem;
 
-        box-shadow: 0 8px 25px rgba(255, 182, 193, 0.15);
+        box-shadow: 0 8px 25px rgba(248, 187, 217, 0.15);
         transition: all 0.3s ease;
 
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 12px 35px rgba(255, 182, 193, 0.25);
-          border-color: rgba(255, 182, 193, 0.3);
+          box-shadow: 0 12px 35px rgba(248, 187, 217, 0.25);
+          border-color: rgba(248, 187, 217, 0.3);
         }
 
 
@@ -1212,7 +1478,7 @@ export default {
           height: 80px;
           border-radius: 16px;
           margin-bottom: 1rem;
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 6px 20px rgba(248, 187, 217, 0.15);
           transition: transform 0.3s ease;
 
           &:hover {
@@ -1221,7 +1487,7 @@ export default {
         }
 
         .product-name {
-          color: #000000;
+          color: #4a4a4a;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 600;
           font-size: 1.1rem;
@@ -1233,7 +1499,7 @@ export default {
 
     .divider {
       height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(255, 182, 193, 0.3) 50%, transparent 100%);
+      background: linear-gradient(90deg, transparent 0%, rgba(248, 187, 217, 0.3) 50%, transparent 100%);
       margin: 1.5rem 0;
     }
 
@@ -1243,7 +1509,7 @@ export default {
 
 
       .userid-title {
-        color: #000000;
+        color: #4a4a4a;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.1rem;
@@ -1255,23 +1521,23 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #ff69b4;
+          color: #F8BBD9;
         }
       }
 
 
       .userid-display {
-        background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
-        border: 2px solid rgba(255, 182, 193, 0.2);
+        background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
+        border: 3px solid rgba(248, 187, 217, 0.2);
         border-radius: 16px;
         padding: 1rem;
-        box-shadow: 0 4px 15px rgba(255, 182, 193, 0.1);
+        box-shadow: 0 4px 15px rgba(248, 187, 217, 0.1);
         transition: all 0.3s ease;
 
         &:hover {
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(255, 182, 193, 0.15);
-          border-color: rgba(255, 182, 193, 0.3);
+          box-shadow: 0 6px 20px rgba(248, 187, 217, 0.15);
+          border-color: rgba(248, 187, 217, 0.3);
         }
 
         .line-profile {
@@ -1284,7 +1550,7 @@ export default {
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(248, 187, 217, 0.15);
             transition: transform 0.3s ease;
 
             &:hover {
@@ -1296,17 +1562,17 @@ export default {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(135, 206, 235, 0.2) 100%);
+            background: linear-gradient(135deg, rgba(248, 187, 217, 0.2) 0%, rgba(248, 187, 217, 0.2) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(187, 222, 251, 0.1);
             transition: transform 0.3s ease;
 
             .placeholder-icon {
               width: 24px;
               height: 24px;
-              color: #ff69b4;
+              color: #F8BBD9;
             }
 
             &:hover {
@@ -1320,7 +1586,7 @@ export default {
             gap: 0.25rem;
 
             .line-name {
-              color: #000000;
+              color: #4a4a4a;
               font-family: 'MiSansMU', sans-serif;
               font-weight: 600;
               font-size: 1.1rem;
@@ -1328,7 +1594,7 @@ export default {
             }
 
             .line-id {
-              color: #666666;
+              color: #757575;
               font-family: 'MiSansMU', sans-serif;
               font-weight: 400;
               font-size: 0.9rem;
@@ -1347,7 +1613,7 @@ export default {
       margin-bottom: 2rem;
 
       .payment-title {
-        color: #000000;
+        color: #4a4a4a;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.1rem;
@@ -1359,25 +1625,25 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #ff69b4;
+          color: #F8BBD9;
         }
       }
 
       .bank-info {
         display: flex;
         align-items: center;
-        background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
-        border: 2px solid rgba(255, 182, 193, 0.2);
+        background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
+        border: 3px solid rgba(248, 187, 217, 0.2);
         border-radius: 20px;
         padding: 1.5rem;
 
-        box-shadow: 0 8px 25px rgba(255, 182, 193, 0.15);
+        box-shadow: 0 8px 25px rgba(248, 187, 217, 0.15);
         transition: all 0.3s ease;
 
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 12px 35px rgba(255, 182, 193, 0.25);
-          border-color: rgba(255, 182, 193, 0.3);
+          box-shadow: 0 12px 35px rgba(248, 187, 217, 0.25);
+          border-color: rgba(248, 187, 217, 0.3);
         }
 
 
@@ -1388,7 +1654,7 @@ export default {
             width: 80px;
             height: 80px;
             border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 20px rgba(248, 187, 217, 0.15);
             transition: transform 0.3s ease;
 
             &:hover {
@@ -1401,7 +1667,7 @@ export default {
           flex: 1;
 
           .bank-name {
-            color: #000000;
+            color: #4a4a4a;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 600;
             font-size: 1.2rem;
@@ -1409,7 +1675,7 @@ export default {
           }
 
           .bank-account {
-            color: #ff69b4;
+            color: #F8BBD9;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 500;
             font-size: 1.1rem;
@@ -1417,7 +1683,7 @@ export default {
           }
 
           .bank-holder {
-            color: #666666;
+            color: #757575;
             font-family: 'MiSansMU', sans-serif;
             font-weight: 400;
             font-size: 0.95rem;
@@ -1431,7 +1697,7 @@ export default {
       margin-bottom: 2rem;
 
       .qr-title {
-        color: #000000;
+        color: #4a4a4a;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.1rem;
@@ -1443,7 +1709,7 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #ff69b4;
+          color: #F8BBD9;
         }
       }
 
@@ -1464,13 +1730,13 @@ export default {
             width: 150px;
             height: 150px;
             border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border: 3px solid rgba(255, 182, 193, 0.2);
+            box-shadow: 0 8px 25px rgba(248, 187, 217, 0.15);
+            border: 3px solid rgba(248, 187, 217, 0.2);
             transition: all 0.3s ease;
 
             &:hover {
-              box-shadow: 0 12px 35px rgba(255, 182, 193, 0.3);
-              border-color: rgba(255, 182, 193, 0.4);
+              box-shadow: 0 12px 35px rgba(248, 187, 217, 0.3);
+              border-color: rgba(248, 187, 217, 0.4);
             }
           }
 
@@ -1480,7 +1746,7 @@ export default {
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 105, 180, 0.8);
+            background: rgba(248, 187, 217, 0.8);
             border-radius: 16px;
             display: flex;
             flex-direction: column;
@@ -1516,7 +1782,7 @@ export default {
       margin-bottom: 2rem;
 
       .slip-title {
-        color: #000000;
+        color: #4a4a4a;
         font-family: 'MiSansMU', sans-serif;
         font-weight: 600;
         font-size: 1.1rem;
@@ -1528,7 +1794,7 @@ export default {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
-          color: #ff69b4;
+          color: #F8BBD9;
         }
       }
 
@@ -1539,7 +1805,7 @@ export default {
           max-width: 100%;
           max-height: 400px;
           border-radius: 12px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 4px 15px rgba(187, 222, 251, 0.1);
           margin-bottom: 1rem;
         }
 
@@ -1547,7 +1813,7 @@ export default {
           margin-top: 1rem;
 
           .delete-btn {
-            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
+            background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
             border: none !important;
             border-radius: 12px !important;
             padding: 0.5rem 1rem !important;
@@ -1555,7 +1821,7 @@ export default {
             font-weight: 500;
             font-size: 0.9rem;
             color: #ffffff !important;
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+            box-shadow: 0 4px 15px rgba(248, 187, 217, 0.4);
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
@@ -1568,8 +1834,8 @@ export default {
 
             &:hover {
               transform: translateY(-2px);
-              box-shadow: 0 6px 20px rgba(255, 105, 180, 0.5) !important;
-              background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
+              box-shadow: 0 6px 20px rgba(248, 187, 217, 0.5) !important;
+              background: #E8A5C9 !important;
             }
           }
         }
@@ -1581,19 +1847,19 @@ export default {
         .file-input {
           margin-bottom: 1rem;
           padding: 0.5rem;
-          border: 2px dashed #ff69b4;
+          border: 2px dashed #F8BBD9;
           border-radius: 12px;
-          background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+          background: linear-gradient(135deg, rgba(248, 187, 217, 0.1) 0%, rgba(248, 187, 217, 0.05) 100%);
           transition: all 0.3s ease;
 
           &:hover {
-            border-color: #ff1493;
-            background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.1) 100%);
+            border-color: rgba(248, 187, 217, 0.4);
+            background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(187, 222, 251, 0.1) 100%);
           }
         }
 
         .upload-hint {
-          color: #666666;
+          color: #757575;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 400;
           font-size: 0.9rem;
@@ -1608,7 +1874,7 @@ export default {
       text-align: center;
 
       .confirm-btn {
-        background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%) !important;
+        background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
         border: none !important;
         border-radius: 12px !important;
         padding: 0.875rem 2rem !important;
@@ -1616,21 +1882,28 @@ export default {
         font-weight: 600;
         font-size: 1rem;
         color: #ffffff !important;
-        box-shadow: 0 4px 15px rgba(152, 251, 152, 0.4);
+        box-shadow: 0 4px 15px rgba(248, 187, 217, 0.4);
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
         margin: 0 auto;
+        justify-content: center;
 
-        .button-icon {
+        .button-icon, .button-spinner {
           width: 18px;
           height: 18px;
           margin-right: 0.5rem;
         }
 
-        &:hover {
+        &:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(152, 251, 152, 0.5) !important;
+          box-shadow: 0 8px 25px rgba(248, 187, 217, 0.5) !important;
+          background: #E8A5C9 !important;
+        }
+
+        &:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
         }
       }
     }
@@ -1647,13 +1920,13 @@ export default {
         .correct-icon {
           width: 64px;
           height: 64px;
-          color: #98fb98;
+          color: #F8BBD9;
           margin-bottom: 1.5rem;
         }
 
         .complete-title,
         .correct-title {
-          color: #000000;
+          color: #4a4a4a;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 600;
           font-size: 1.4rem;
@@ -1662,7 +1935,7 @@ export default {
 
         .complete-message,
         .correct-message {
-          color: #666666;
+          color: #757575;
           font-family: 'MiSansMU', sans-serif;
           font-weight: 400;
           font-size: 1rem;
@@ -1684,14 +1957,14 @@ export default {
     height: 280px;
     border-radius: 18px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-    border: 3px solid rgba(255, 182, 193, 0.25);
+    border: 3px solid rgba(248, 187, 217, 0.25);
     margin-bottom: 1.2rem;
-    background: #ffffff;
+    background: linear-gradient(135deg, #F8BBD9 0%, #FDD5B4 25%, #FFF2CC 50%, #E1F5FE 75%, #BBDEFB 100%);
     padding: 12px;
   }
 
   .qr-modal-text {
-    color: #ff69b4;
+    color: #F8BBD9;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 500;
     font-size: 1rem;
@@ -1699,7 +1972,7 @@ export default {
   }
 
   .qr-modal-amount {
-    color: #000000;
+    color: #4a4a4a;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.2rem;
@@ -1714,94 +1987,551 @@ export default {
   margin-top: 1rem;
 
   .qr-amount {
-    color: #000000;
+    color: #4a4a4a;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.1rem;
     margin-bottom: 0;
     padding: 0.75rem;
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(187, 222, 251, 0.1) 100%);
     border-radius: 12px;
-    border: 2px solid rgba(255, 182, 193, 0.2);
+    border: 3px solid rgba(248, 187, 217, 0.2);
   }
 }
 
 // Responsive Design
 @media (max-width: 768px) {
+  .auth-wrapper {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
   .confirm-payment-card {
-    margin: 1rem;
-    padding: 2rem;
+    padding: 2rem 1.5rem;
     border-radius: 20px !important;
   }
 
-  // .logo-section {
-  //   .logo-image {
-  //     width: 100px;
-  //     height: 100px;
-  //     border-radius: 50%;
-  //   }
+  .logo-section {
+    margin-bottom: 1.5rem;
 
-  //   .brand-text {
-  //     font-size: 1.5rem;
-  //   }
-  // }
+    .logo-image {
+      width: 140px;
+      height: 140px;
+    }
 
-  .content-section .main-content .payment-section .bank-info {
-    flex-direction: column;
-    text-align: center;
-
-    .bank-logo {
-      margin-right: 0;
-      margin-bottom: 1rem;
+    .brand-text {
+      font-size: 1.5rem;
+      margin-top: 0.75rem;
     }
   }
 
-  .content-section .main-content .qr-section .qr-display .qr-container .qr-image {
-    width: 120px;
-    height: 120px;
+  .content-section {
+    .error-section {
+      padding: 1.5rem 0;
+
+      .error-content {
+        .error-icon {
+          width: 56px;
+          height: 56px;
+        }
+
+        .error-title {
+          font-size: 1.3rem;
+        }
+
+        .error-message {
+          font-size: 0.95rem;
+        }
+      }
+    }
+
+    .main-content {
+      .product-info-section {
+        margin-bottom: 1.5rem;
+
+        .section-title {
+          font-size: 1.2rem;
+          margin-bottom: 1rem;
+        }
+
+        .product-display {
+          padding: 1.25rem;
+
+          .product-image {
+            width: 70px;
+            height: 70px;
+          }
+
+          .product-name {
+            font-size: 1rem;
+          }
+        }
+      }
+
+      .divider {
+        margin: 1.25rem 0;
+      }
+
+      .userid-section,
+      .payment-section,
+      .qr-section,
+      .slip-section {
+        margin-bottom: 1.5rem;
+
+        .userid-title,
+        .payment-title,
+        .qr-title,
+        .slip-title {
+          font-size: 1rem;
+          margin-bottom: 1rem;
+        }
+      }
+
+      .userid-section .userid-display {
+        padding: 0.875rem;
+
+        .line-profile {
+          gap: 0.75rem;
+
+          .line-avatar,
+          .line-avatar-placeholder {
+            width: 45px;
+            height: 45px;
+
+            .placeholder-icon {
+              width: 22px;
+              height: 22px;
+            }
+          }
+
+          .line-info {
+            .line-name {
+              font-size: 1rem;
+            }
+
+            .line-id {
+              font-size: 0.85rem;
+              max-width: 180px;
+            }
+          }
+        }
+      }
+
+      .payment-section .bank-info {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.25rem;
+
+        .bank-logo {
+          margin-right: 0;
+          margin-bottom: 1rem;
+
+          .bank-icon {
+            width: 70px;
+            height: 70px;
+          }
+        }
+
+        .bank-details {
+          .bank-name {
+            font-size: 1.1rem;
+          }
+
+          .bank-account {
+            font-size: 1rem;
+          }
+
+          .bank-holder {
+            font-size: 0.9rem;
+          }
+        }
+      }
+
+      .qr-section .qr-display {
+        .qr-container .qr-image {
+          width: 130px;
+          height: 130px;
+        }
+
+        .qr-info .qr-amount {
+          font-size: 1rem;
+          padding: 0.625rem;
+        }
+      }
+
+      .slip-section {
+        .slip-display {
+          .slip-image {
+            max-height: 350px;
+          }
+
+          .slip-actions .delete-btn {
+            padding: 0.375rem 0.875rem !important;
+            font-size: 0.85rem;
+
+            .button-icon {
+              width: 12px;
+              height: 12px;
+            }
+          }
+        }
+
+        .slip-upload {
+          .upload-hint {
+            font-size: 0.85rem;
+          }
+        }
+      }
+
+      .action-section .confirm-btn {
+        padding: 0.75rem 1.75rem !important;
+        font-size: 0.95rem;
+      }
+
+      .complete-section,
+      .slip-correct-section {
+        padding: 1.5rem 0;
+
+        .complete-content,
+        .slip-correct-content {
+
+          .complete-icon,
+          .correct-icon {
+            width: 56px;
+            height: 56px;
+          }
+
+          .complete-title,
+          .correct-title {
+            font-size: 1.3rem;
+          }
+
+          .complete-message,
+          .correct-message {
+            font-size: 0.95rem;
+          }
+        }
+      }
+    }
   }
 
-  .qr-modal-content .qr-modal-image {
-    width: 260px;
-    height: 260px;
+  .qr-modal-content {
+    padding: 1.25rem;
+
+    .qr-modal-image {
+      width: 240px;
+      height: 240px;
+    }
+
+    .qr-modal-text {
+      font-size: 0.95rem;
+    }
+
+    .qr-modal-amount {
+      font-size: 1.1rem;
+    }
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
+  .auth-wrapper {
+    padding: 0 0.5rem;
+  }
+
   .confirm-payment-card {
-    margin: 0.5rem;
-    padding: 1.5rem;
+    padding: 1.5rem 1rem;
     border-radius: 16px !important;
   }
 
-  // .logo-section {
-  //   .logo-image {
-  //     width: 80px;
-  //     height: 80px;
-  //     border-radius: 50%;
-  //   }
+  .logo-section {
+    margin-bottom: 1.25rem;
 
-  //   .brand-text {
-  //     font-size: 1.3rem;
-  //   }
-  // }
+    .logo-image {
+      width: 120px;
+      height: 120px;
+    }
 
-  .content-section .main-content .product-info-section .section-title {
-    font-size: 1.1rem;
+    .brand-text {
+      font-size: 1.3rem;
+      margin-top: 0.5rem;
+    }
   }
 
-  .content-section .main-content .qr-section .qr-display .qr-container .qr-image {
-    width: 100px;
-    height: 100px;
+  .content-section {
+    .error-section {
+      padding: 1.25rem 0;
+
+      .error-content {
+        .error-icon {
+          width: 48px;
+          height: 48px;
+        }
+
+        .error-title {
+          font-size: 1.2rem;
+        }
+
+        .error-message {
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    .main-content {
+      .product-info-section {
+        margin-bottom: 1.25rem;
+
+        .section-title {
+          font-size: 1.1rem;
+          margin-bottom: 0.875rem;
+        }
+
+        .product-display {
+          padding: 1rem;
+
+          .product-image {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 0.75rem;
+          }
+
+          .product-name {
+            font-size: 0.95rem;
+          }
+        }
+      }
+
+      .divider {
+        margin: 1rem 0;
+      }
+
+      .userid-section,
+      .payment-section,
+      .qr-section,
+      .slip-section {
+        margin-bottom: 1.25rem;
+
+        .userid-title,
+        .payment-title,
+        .qr-title,
+        .slip-title {
+          font-size: 0.95rem;
+          margin-bottom: 0.875rem;
+
+          .title-icon {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+
+      .userid-section .userid-display {
+        padding: 0.75rem;
+
+        .line-profile {
+          gap: 0.625rem;
+
+          .line-avatar,
+          .line-avatar-placeholder {
+            width: 40px;
+            height: 40px;
+
+            .placeholder-icon {
+              width: 20px;
+              height: 20px;
+            }
+          }
+
+          .line-info {
+            .line-name {
+              font-size: 0.95rem;
+            }
+
+            .line-id {
+              font-size: 0.8rem;
+              max-width: 150px;
+            }
+          }
+        }
+      }
+
+      .payment-section .bank-info {
+        padding: 1rem;
+
+        .bank-logo {
+          margin-bottom: 0.875rem;
+
+          .bank-icon {
+            width: 60px;
+            height: 60px;
+          }
+        }
+
+        .bank-details {
+          .bank-name {
+            font-size: 1rem;
+            margin-bottom: 0.375rem;
+          }
+
+          .bank-account {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+          }
+
+          .bank-holder {
+            font-size: 0.85rem;
+          }
+        }
+      }
+
+      .qr-section .qr-display {
+        .qr-container {
+          .qr-image {
+            width: 110px;
+            height: 110px;
+          }
+
+          .qr-overlay {
+            .qr-icon {
+              width: 20px;
+              height: 20px;
+            }
+
+            .qr-text {
+              font-size: 0.8rem;
+            }
+          }
+        }
+
+        .qr-info .qr-amount {
+          font-size: 0.95rem;
+          padding: 0.5rem;
+        }
+      }
+
+      .slip-section {
+        .slip-display {
+          .slip-image {
+            max-height: 300px;
+            border-radius: 10px;
+          }
+
+          .slip-actions .delete-btn {
+            padding: 0.375rem 0.75rem !important;
+            font-size: 0.8rem;
+            border-radius: 10px !important;
+
+            .button-icon {
+              width: 12px;
+              height: 12px;
+            }
+          }
+        }
+
+        .slip-upload {
+          .file-input {
+            padding: 0.375rem;
+            border-radius: 10px;
+          }
+
+          .upload-hint {
+            font-size: 0.8rem;
+          }
+        }
+      }
+
+      .action-section .confirm-btn {
+        padding: 0.625rem 1.5rem !important;
+        font-size: 0.9rem;
+        border-radius: 10px !important;
+
+        .button-icon {
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      .complete-section,
+      .slip-correct-section {
+        padding: 1.25rem 0;
+
+        .complete-content,
+        .slip-correct-content {
+
+          .complete-icon,
+          .correct-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+          }
+
+          .complete-title,
+          .correct-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+          }
+
+          .complete-message,
+          .correct-message {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
   }
 
   .qr-modal-content {
     padding: 1rem;
 
     .qr-modal-image {
-      width: 220px;
-      height: 220px;
+      width: 200px;
+      height: 200px;
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .qr-modal-text {
+      font-size: 0.9rem;
+    }
+
+    .qr-modal-amount {
+      font-size: 1rem;
     }
   }
 }
+
+@media (max-width: 375px) {
+  .confirm-payment-card {
+    padding: 1.25rem 0.875rem;
+  }
+
+  .logo-section {
+    .logo-image {
+      width: 100px;
+      height: 100px;
+    }
+
+    .brand-text {
+      font-size: 1.2rem;
+    }
+  }
+
+  .content-section .main-content {
+    .qr-section .qr-display .qr-container .qr-image {
+      width: 100px;
+      height: 100px;
+    }
+
+    .action-section .confirm-btn {
+      padding: 0.5rem 1.25rem !important;
+      font-size: 0.85rem;
+    }
+  }
+
+  .qr-modal-content .qr-modal-image {
+    width: 180px;
+    height: 180px;
+  }
+}
 </style>
+

@@ -42,9 +42,9 @@
                   <div class="option-icon">
                     <feather-icon icon="UserIcon" size="48" />
                   </div>
-                  <h4 class="option-title">รหัสตัวเอง</h4>
-                  <p class="option-description">
-                    ใช้รหัสส่วนตัวของคุณเองในการซื้อ
+                  <h4 class="option-title">Personal</h4>
+                  <p class="option-description">                    
+                    แพ็กเก็จสำหรับใช้งานส่วนบุคคล                    
                   </p>
                   <div class="check-icon" v-if="selectedType === 'personal'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
@@ -58,9 +58,9 @@
                   <div class="option-icon">
                     <feather-icon icon="MailIcon" size="48" />
                   </div>
-                  <h4 class="option-title">เมลตัวเอง</h4>
-                  <p class="option-description">
-                    ใช้อีเมลส่วนตัวของคุณในการซื้อ
+                  <h4 class="option-title">Family</h4>
+                  <p class="option-description">                    
+                    แพ็กเก็จสำหรับใช้งานแบบครอบครัว
                   </p>
                   <div class="check-icon" v-if="selectedType === 'email'">
                     <feather-icon icon="CheckCircleIcon" size="24" />
@@ -202,6 +202,9 @@ export default {
     // รับ sourceUserId จาก query parameters
     if (this.$route.query.sourceUserId) {
       this.sourceUserId = this.$route.query.sourceUserId
+      console.log('SelectTopic - sourceUserId received:', this.sourceUserId)
+    } else {
+      console.log('SelectTopic - No sourceUserId in query parameters')
     }
     // โหลดสถานะการแสดงปุ่ม
     this.fetchButtonStatus()
@@ -248,6 +251,7 @@ export default {
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
+        console.log('SelectTopic - Navigating to select-plan-type with query:', query)
         this.$router.push({ name: 'select-plan-type', query })
       } else if (this.selectedType === 'personal') {
         // นำไปหน้าลงทะเบียนด้วยรหัสตัวเอง พร้อมส่ง sourceUserId
@@ -255,6 +259,7 @@ export default {
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
+        console.log('SelectTopic - Navigating to user-regis with query:', query)
         this.$router.push({ name: 'user-regis', query })
       } else if (this.selectedType === 'email') {
         // นำไปหน้ากรอกเมลตัวเอง พร้อมส่ง sourceUserId
@@ -262,6 +267,7 @@ export default {
         if (this.sourceUserId) {
           query.sourceUserId = this.sourceUserId
         }
+        console.log('SelectTopic - Navigating to registeremail with query:', query)
         this.$router.push({ name: 'registeremail', query })
       }
     },
@@ -270,7 +276,7 @@ export default {
 </script>
 
 <style lang="scss">
-// Pastel Theme - Matching BuyProduct.vue
+// Pastel Theme - Matching littlebeem Brand
 .select-topic-container {
   min-height: 100vh;
   display: flex;
@@ -351,18 +357,18 @@ export default {
     &:hover {
       transform: scale(1.05);
       box-shadow: 0 12px 35px rgba(255, 182, 193, 0.4);
-      border-color: rgba(255, 182, 193, 0.3);
+      border-color: rgba(255, 182, 193, 0.4);
     }
   }
 
   .brand-text {
-    color: #ff69b4 !important;
+    background-clip: text;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    text-shadow: 0 2px 4px rgba(255, 182, 193, 0.3);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
 }
 
@@ -371,7 +377,7 @@ export default {
   margin-bottom: 2rem;
 
   .welcome-title {
-    color: #87ceeb;
+    color: #4a4a4a;
     font-family: 'MiSansMU', sans-serif;
     font-weight: 600;
     font-size: 1.5rem;
@@ -379,7 +385,7 @@ export default {
   }
 
   .welcome-subtitle {
-    color: #333333;
+    color: #757575;
     font-family: 'MiSansMU', sans-serif;
     font-size: 1rem;
     margin: 0;
@@ -410,7 +416,7 @@ export default {
   padding: 3rem 0;
 
   p {
-    color: #333333;
+    color: #757575;
     font-family: 'MiSansMU', sans-serif;
     font-size: 1rem;
   }
@@ -419,7 +425,7 @@ export default {
 .option-card {
   position: relative;
   padding: 2rem 1.5rem;
-  border: 2px solid rgba(255, 182, 193, 0.3);
+  border: 2px solid rgba(248, 187, 217, 0.3);
   border-radius: 20px;
   text-align: center;
   cursor: pointer;
@@ -439,54 +445,54 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(135, 206, 235, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(248, 187, 217, 0.05) 0%, rgba(187, 222, 251, 0.05) 100%);
     border-radius: 20px;
     pointer-events: none;
     transition: all 0.3s ease;
   }
 
   &:hover {
-    border-color: #ff69b4;
+    border-color: rgba(248, 187, 217, 0.6);
     transform: translateY(-5px) scale(1.02);
     box-shadow:
-      0 15px 35px rgba(255, 105, 180, 0.2),
-      0 5px 15px rgba(255, 105, 180, 0.1);
+      0 15px 35px rgba(248, 187, 217, 0.3),
+      0 5px 15px rgba(248, 187, 217, 0.2);
     background: rgba(255, 255, 255, 0.95);
 
     &::before {
-      background: linear-gradient(135deg, rgba(255, 182, 193, 0.2) 0%, rgba(135, 206, 235, 0.1) 100%);
+      background: linear-gradient(135deg, rgba(248, 187, 217, 0.15) 0%, rgba(187, 222, 251, 0.15) 100%);
     }
   }
 
   &.selected {
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.25) 0%, rgba(135, 206, 235, 0.15) 100%);
-    border-color: #ff69b4;
+    background: linear-gradient(135deg, rgba(248, 187, 217, 0.2) 0%, rgba(187, 222, 251, 0.2) 100%);
+    border-color: #F8BBD9;
     box-shadow:
-      0 10px 30px rgba(255, 105, 180, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      0 10px 30px rgba(248, 187, 217, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
 
     &::before {
-      background: linear-gradient(135deg, rgba(255, 182, 193, 0.3) 0%, rgba(135, 206, 235, 0.2) 100%);
+      background: linear-gradient(135deg, rgba(248, 187, 217, 0.25) 0%, rgba(187, 222, 251, 0.25) 100%);
     }
   }
 }
 
 .option-icon {
   margin-bottom: 1rem;
-  color: #ff69b4;
+  color: #F8BBD9;
   position: relative;
   z-index: 1;
 
   .selected & {
-    color: #ff69b4;
+    color: #F8BBD9;
   }
 }
 
 .option-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #000000;
+  color: #4a4a4a;
   font-family: 'MiSansMU', sans-serif;
   margin-bottom: 0.5rem;
   position: relative;
@@ -494,7 +500,7 @@ export default {
 }
 
 .option-description {
-  color: #333333;
+  color: #757575;
   font-family: 'MiSansMU', sans-serif;
   font-size: 0.95rem;
   margin: 0;
@@ -506,7 +512,7 @@ export default {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  color: #98fb98;
+  color: #F8BBD9;
   animation: scaleIn 0.3s ease;
   z-index: 2;
 }
@@ -530,17 +536,17 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   border-radius: 12px !important;
-  background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
+  background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
   border: none !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+  box-shadow: 0 4px 15px rgba(248, 187, 217, 0.4);
   transition: all 0.3s ease;
   font-family: 'MiSansMU', sans-serif;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5) !important;
-    background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
+    box-shadow: 0 8px 25px rgba(248, 187, 217, 0.5) !important;
+    background: linear-gradient(135deg, #F8BBD9 20%, #BBDEFB 80%) !important;
   }
 
   &:active:not(:disabled) {
@@ -550,6 +556,7 @@ export default {
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    background: linear-gradient(135deg, #FFB6C1 0%, #ADD8E6 100%) !important;
   }
 
   .button-icon {
@@ -647,8 +654,8 @@ export default {
     margin-bottom: 1.25rem;
 
     .logo-image {
-      width: 80px;
-      height: 80px;
+      width: 90px;
+      height: 90px;
     }
 
     .brand-text {
@@ -707,7 +714,7 @@ export default {
   }
 }
 
-// Terms Modal Styles - Modern Design
+// Terms Modal Styles - Pastel Theme
 .terms-content {
   font-family: 'MiSansMU', sans-serif;
   padding: 0.5rem 0;
@@ -753,23 +760,23 @@ export default {
       }
 
       &.important {
-        background: rgba(255, 182, 193, 0.12);
-        border-left-color: #ff69b4;
+        background: rgba(248, 187, 217, 0.15);
+        border-left-color: #F8BBD9;
 
         .terms-icon {
-          color: #ff69b4;
+          color: #F8BBD9;
         }
 
         .terms-text {
-          color: #333333;
+          color: #5a5a5a;
 
           .terms-title {
-            color: #ff1493;
+            color: #4a4a4a;
           }
         }
 
         &:hover {
-          background: rgba(255, 182, 193, 0.18);
+          background: rgba(248, 187, 217, 0.25);
           transform: translateX(4px);
         }
       }
@@ -797,19 +804,19 @@ export default {
       }
 
       &.contact {
-        background: rgba(135, 206, 235, 0.12);
-        border-left-color: #17a2b8;
+        background: rgba(187, 222, 251, 0.2);
+        border-left-color: #BBDEFB;
 
         .terms-icon {
-          color: #17a2b8;
+          color: #87CEEB;
         }
 
         .terms-text {
-          color: #0c5460;
+          color: #4a4a4a;
         }
 
         &:hover {
-          background: rgba(135, 206, 235, 0.18);
+          background: rgba(187, 222, 251, 0.3);
           transform: translateX(4px);
         }
       }
@@ -819,23 +826,23 @@ export default {
   .agreement-section {
     margin-top: 1.5rem;
     padding: 1rem;
-    background: rgba(255, 182, 193, 0.08);
+    background: rgba(248, 187, 217, 0.1);
     border-radius: 10px;
-    border: 2px dashed rgba(255, 105, 180, 0.2);
+    border: 2px dashed rgba(248, 187, 217, 0.3);
 
     .custom-checkbox {
       ::v-deep .custom-control-label {
         font-family: 'MiSansMU', sans-serif;
         font-size: 1rem;
-        color: #333333;
+        color: #5a5a5a;
         cursor: pointer;
         padding-left: 0.5rem;
       }
 
       ::v-deep .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: #ff69b4;
-        border-color: #ff69b4;
-        box-shadow: 0 2px 8px rgba(255, 105, 180, 0.3);
+        background-color: #F8BBD9;
+        border-color: #F8BBD9;
+        box-shadow: 0 2px 8px rgba(248, 187, 217, 0.3);
       }
 
       ::v-deep .custom-control-label::before {
@@ -846,7 +853,7 @@ export default {
 
     .checkbox-label {
       font-weight: 600;
-      color: #000000;
+      color: #4a4a4a;
     }
   }
 
@@ -858,10 +865,10 @@ export default {
       font-size: 1.05rem;
       font-weight: 600;
       border-radius: 10px !important;
-      background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%) !important;
+      background: linear-gradient(135deg, #F8BBD9 0%, #BBDEFB 100%) !important;
       border: none !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+      box-shadow: 0 4px 12px rgba(248, 187, 217, 0.3);
       transition: all 0.3s ease;
       font-family: 'MiSansMU', sans-serif;
 
@@ -873,8 +880,8 @@ export default {
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(255, 105, 180, 0.4) !important;
-        background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%) !important;
+        box-shadow: 0 6px 18px rgba(248, 187, 217, 0.4) !important;
+        background: linear-gradient(135deg, #F8BBD9 20%, #BBDEFB 80%) !important;
       }
 
       &:active:not(:disabled) {
@@ -884,14 +891,14 @@ export default {
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        background: linear-gradient(135deg, #d1d1d1 0%, #a8a8a8 100%) !important;
+        background: linear-gradient(135deg, #FFB6C1 0%, #ADD8E6 100%) !important;
         box-shadow: none;
       }
     }
   }
 }
 
-// Modal Header Customization - Modern
+// Modal Header Customization - Pastel Theme
 ::v-deep #modal-terms {
   .modal-content {
     border: none;
@@ -899,12 +906,15 @@ export default {
   }
 
   .modal-header {
-    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15) 0%, rgba(135, 206, 235, 0.1) 100%);
-    border-bottom: 2px solid rgba(255, 105, 180, 0.15);
+    background: linear-gradient(135deg, rgba(248, 187, 217, 0.2) 0%, rgba(187, 222, 251, 0.2) 100%);
+    border-bottom: 2px solid rgba(248, 187, 217, 0.2);
     padding: 1.25rem 1.5rem;
 
     .modal-title {
-      color: #ff69b4;
+      background: linear-gradient(135deg, #F8BBD9 0%, #87CEEB 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       font-family: 'MiSansMU', sans-serif;
       font-weight: 700;
       font-size: 1.35rem;
